@@ -1,0 +1,34 @@
+{
+  "name": "d3-server-renderer",
+  "version": "1.1.3",
+  "description": "A D3 renderer server that returns the generated svg",
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org"
+  },
+  "keywords": [
+    "d3",
+    "d3 server side",
+    "d3 server",
+    "d3 renderer",
+    "chats server side",
+    "chats generator"
+  ],
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michele Di Salvatore",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Objectway/d3-server-renderer.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "d3": "~3.5.6",
+    "express": "~4.13.3",
+    "fusioncharts2svg": "^0.6.2",
+    "jsdom": "~6.5.1",
+    "serve-static": "~1.10.2",
+    "xmldom": "0.1.19"
+  }
+}
