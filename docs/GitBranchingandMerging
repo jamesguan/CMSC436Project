@@ -1,0 +1,221 @@
+C:\Abhishek\work>git clone git@github.com:jamesguan/CMSC436Project.git
+Cloning into 'CMSC436Project'...
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+remote: Counting objects: 10, done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 10 (delta 2), reused 7 (delta 1), pack-reused 0
+Receiving objects: 100% (10/10), 11.62 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (2/2), done.
+
+C:\Abhishek\work>cd CMSC436Project
+
+C:\Abhishek\work\CMSC436Project>git install
+git: 'install' is not a git command. See 'git --help'.
+
+Did you mean this?
+        instaweb
+
+C:\Abhishek\work\CMSC436Project>npm install
+
+C:\Abhishek\work\CMSC436Project>rm -rf node_modules
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Abhishek\work\CMSC436Project>rm - rf node_modules
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Abhishek\work\CMSC436Project>rm node_modules
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Abhishek\work\CMSC436Project>node .
+App listening at http://:::1337
+^C
+C:\Abhishek\work\CMSC436Project>git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   .gitignore
+        deleted:    MapAPIKey.docx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        LICENSE
+        charts-server-renderer.iml
+        config/
+        docs/
+        lib/
+        main.js
+        package.json
+        views/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+C:\Abhishek\work\CMSC436Project>git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+
+C:\Abhishek\work\CMSC436Project>git add .
+
+C:\Abhishek\work\CMSC436Project>git commit -m "added node and basic google map API"
+[master 82434d4] added node and basic google map API
+ 15 files changed, 513 insertions(+), 47 deletions(-)
+ rewrite .gitignore (100%)
+ create mode 100644 LICENSE
+ create mode 100644 charts-server-renderer.iml
+ create mode 100644 config/d3/README.md
+ create mode 100644 config/d3/multipleLine.js
+ create mode 100644 "config/d3/radial-reingold\342\200\223tilford-tree.js"
+ create mode 100644 config/fusion-charts/doughnut2d.js
+ rename MapAPIKey.docx => docs/MapAPIKey.docx (100%)
+ create mode 100644 lib/d3.js
+ create mode 100644 lib/fusion-charts.js
+ create mode 100644 lib/http.js
+ create mode 100644 main.js
+ create mode 100644 package.json
+ create mode 100644 views/example.html
+ create mode 100644 views/stations.json
+
+C:\Abhishek\work\CMSC436Project>git push
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+Counting objects: 22, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (17/17), done.
+Writing objects: 100% (22/22), 8.24 KiB | 0 bytes/s, done.
+Total 22 (delta 0), reused 0 (delta 0)
+To github.com:jamesguan/CMSC436Project.git
+   98a51c0..82434d4  master -> master
+
+C:\Abhishek\work\CMSC436Project>git fetch --all
+Fetching origin
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+From github.com:jamesguan/CMSC436Project
+ * [new branch]      develop    -> origin/develop
+
+C:\Abhishek\work\CMSC436Project>git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+nothing to commit, working tree clean
+
+C:\Abhishek\work\CMSC436Project>git branch
+* master
+
+C:\Abhishek\work\CMSC436Project>git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/develop
+  remotes/origin/master
+
+C:\Abhishek\work\CMSC436Project>git checkout develop
+Branch develop set up to track remote branch develop from origin.
+Switched to a new branch 'develop'
+
+C:\Abhishek\work\CMSC436Project>git sysc
+git: 'sysc' is not a git command. See 'git --help'.
+
+Did you mean this?
+        stash
+
+C:\Abhishek\work\CMSC436Project>git sync
+git: 'sync' is not a git command. See 'git --help'.
+
+Did you mean this?
+        svn
+
+C:\Abhishek\work\CMSC436Project>git pull
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+Already up-to-date.
+
+C:\Abhishek\work\CMSC436Project>node .
+module.js:327
+    throw err;
+    ^
+
+Error: Cannot find module '../data/Sheet0.json'
+    at Function.Module._resolveFilename (module.js:325:15)
+    at Function.Module._load (module.js:276:25)
+    at Module.require (module.js:353:17)
+    at require (internal/module.js:12:17)
+    at Object.<anonymous> (C:\Abhishek\work\CMSC436Project\lib\http.js:4:18)
+    at Module._compile (module.js:409:26)
+    at Object.Module._extensions..js (module.js:416:10)
+    at Module.load (module.js:343:32)
+    at Function.Module._load (module.js:300:12)
+    at Module.require (module.js:353:17)
+
+C:\Abhishek\work\CMSC436Project>node .
+App listening at http://:::1337
+^C
+C:\Abhishek\work\CMSC436Project>c
+
+C:\Abhishek\work\CMSC436Project>git status
+On branch develop
+Your branch is up-to-date with 'origin/develop'.
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        data/
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+C:\Abhishek\work\CMSC436Project>git add.
+git: 'add.' is not a git command. See 'git --help'.
+
+Did you mean this?
+        add
+
+C:\Abhishek\work\CMSC436Project>git add .
+
+C:\Abhishek\work\CMSC436Project>git commit -m "added data folder"
+[develop 8caeb41] added data folder
+ 1 file changed, 204230 insertions(+)
+ create mode 100644 data/Sheet0.json
+
+C:\Abhishek\work\CMSC436Project>git push
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+Counting objects: 4, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 289.11 KiB | 0 bytes/s, done.
+Total 4 (delta 1), reused 0 (delta 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local objects.
+To github.com:jamesguan/CMSC436Project.git
+   82434d4..8caeb41  develop -> develop
+
+C:\Abhishek\work\CMSC436Project>git checkout master
+Switched to branch 'master'
+Your branch is up-to-date with 'origin/master'.
+
+C:\Abhishek\work\CMSC436Project>git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+nothing to commit, working tree clean
+
+C:\Abhishek\work\CMSC436Project>git merge develop
+Updating 82434d4..8caeb41
+Fast-forward
+ data/Sheet0.json | 204230 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 204230 insertions(+)
+ create mode 100644 data/Sheet0.json
+
+C:\Abhishek\work\CMSC436Project>git add .
+
+C:\Abhishek\work\CMSC436Project>git commit -m "merged develop"
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+nothing to commit, working tree clean
+
+C:\Abhishek\work\CMSC436Project>git push
+Enter passphrase for key '/c/Users/Abhishek/.ssh/id_rsa':
+Total 0 (delta 0), reused 0 (delta 0)
+To github.com:jamesguan/CMSC436Project.git
+   82434d4..8caeb41  master -> master
+
+C:\Abhishek\work\CMSC436Project>
