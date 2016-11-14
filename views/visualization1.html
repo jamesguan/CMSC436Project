@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+
+    <style>
+        .axis path {
+            fill: none;
+            stroke: #777;
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-family: Lato;
+            font-size: 13px;
+        }
+        .legend {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+        .lineCurve {
+            visibility: visible;
+        }
+
+        .WTEMP line{
+            stroke: red;
+        }
+
+        .WTEMP path{
+            stroke: red;
+        }
+
+        .WTEMP text{
+            fill: red;
+        }
+
+        .CHLA line{
+            stroke: blue;
+        }
+
+        .CHLA path{
+            stroke: blue;
+        }
+
+        .CHLA text{
+            fill: blue;
+        }
+
+        .DO line{
+            stroke: grey;
+        }
+
+        .DO path{
+            stroke: grey;
+        }
+
+        .DO text{
+            fill: grey;
+        }
+
+        .SALINITY line{
+            stroke: green;
+        }
+
+        .SALINITY path{
+            stroke: green;
+        }
+
+        .SALINITY text{
+            fill: green;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <svg id="visualisation" width="1000" height="600"></svg>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script>
+                function InitChart() {
+
+                    var data = $.ajax({
+                        type: 'POST',
+                        url: 'http://127.0.0.1:1337/getData',
+                        data: JSON.stringify({
+                            data: undefined
+                        }),
+                        dataType: 'json',
+                        async: false,
+                        success: function (data) {
+                            $('body').append(data)
+                        }
+                    });
+
+                    data = JSON.parse(data.responseText);
+
+
+
+                    var color = d3.scale.category10();
+                    var colorArr = {"CHLAData": "blue", "WTEMP": "red", "DO": "grey", "SECCHI": "green", "SALINITY" : "green"};
+                    var vis = d3.select("#visualisation"),
+                            WIDTH = 800,
+                            HEIGHT = 600,
+                            padding = 30,
+                            MARGINS = {
+                                top: 100,
+                                right: 20,
+                                bottom: 100,
+                                left: 70
+                            }/*,
+                            lSpace = WIDTH / (dataGroupGender.length)*/;
+                    //xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]),
+                            yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([data.maxDepth,0]),
+                            /*xAxis = d3.svg.axis()
+                                    .scale(xScale),*/
+                            yAxis = d3.svg.axis()
+                                    .scale(yScale)
+                                    .orient("left");
+
+                    var xScales = [];
+                    xScales['CHLA'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]);
+                    xScales['DO'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.DO.max]);
+                    xScales['SALINITY'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.SALINITY.max]);
+                    xScales['WTEMP'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.WTEMP.max]);
+
+                    var xAxis = [];
+                    xAxis['CHLA'] = d3.svg.axis().scale(xScales['CHLA']);
+                    xAxis['DO'] = d3.svg.axis().scale(xScales['DO']);
+                    xAxis['SALINITY'] = d3.svg.axis().scale(xScales['SALINITY']);
+                    xAxis['WTEMP'] = d3.svg.axis().scale(xScales['WTEMP']);
+
+                    vis.append("svg:g")
+                            .attr("class", "x axis CHLA")
+                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                            .attr("transform", "translate(0,30)")
+                            .call(xAxis['CHLA']);
+                    vis.append("svg:g")
+                            .attr("class", "x axis DO")
+                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                            .attr("transform", "translate(0,80)")
+                            .call(xAxis['DO']);
+                    vis.append("svg:g")
+                            .attr("class", "x axis SALINITY")
+                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                            .attr("transform", "translate(0,520)")
+                            .call(xAxis['SALINITY']);
+                    vis.append("svg:g")
+                            .attr("class", "x axis WTEMP")
+                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                            .attr("transform", "translate(0,570)")
+ /*                           .attr('stroke', colorArr['WTEMP'])
+                            .attr('fill', colorArr['WTEMP'])*/
+                            .call(xAxis['WTEMP']);
+
+                    vis.append("svg:g")
+                            .attr("class", "y axis")
+                            .attr("transform", "translate(" + (MARGINS.left - 20 ) + ",0)")
+                            .call(yAxis);
+                    var lineGen = []
+
+                    lineGen['CHLAData'] = d3.svg.line()
+                            .x(function (d) {
+                                return xScales['CHLA'](d.x);
+                            })
+                            .y(function (d) {
+                                return yScale(d.y);
+                            })
+                            .interpolate("basis");
+
+                    lineGen['DO'] = d3.svg.line()
+                            .x(function (d) {
+                                return xScales['DO'](d.x);
+                            })
+                            .y(function (d) {
+                                return yScale(d.y);
+                            })
+                            .interpolate("basis");
+                    lineGen['SALINITY'] = d3.svg.line()
+                            .x(function (d) {
+                                return xScales['SALINITY'](d.x);
+                            })
+                            .y(function (d) {
+                                return yScale(d.y);
+                            })
+                            .interpolate("basis");
+                    lineGen['WTEMP'] = d3.svg.line()
+                            .x(function (d) {
+                                return xScales['WTEMP'](d.x);
+                            })
+                            .y(function (d) {
+                                return yScale(d.y);
+                            })
+                            .interpolate("basis");
+
+
+                    for (var key in data) {
+                        //d = data.CHLAData[key]
+                        if (key == 'maxDepth') {
+                            continue;
+                        }
+                        var func = lineGen[key];
+                        vis.append('svg:path')
+                                .attr('class', 'lineCurve')
+                                .attr('d', func(data[key].vals))
+                                .attr('stroke', colorArr[key])
+                                .attr('stroke-width', 2)
+                                .attr('id', 'line_')
+                                .attr('fill', 'none');
+                        /*vis.append("text")
+                                .attr("x", (lSpace / 2) + i * lSpace)
+                                .attr("y", HEIGHT)
+                                .style("fill", colorArr[d.gender])
+                                .attr("class", "legend")
+                                /!*.on('click', function () {
+                                    var active = d.active ? false : true;
+                                    var opacity = active ? 0 : 1;
+                                    d3.select("#line_" + d.gender).style("opacity", opacity);
+                                    d.active = active;
+                                })
+                                .text(d.gender);*!/*/
+                    }
+
+                    /*vis.append("svg:g").selectAll("scatter-dots")
+                            .data(data.CHLAData.vals)
+                            .enter().append("svg:circle")
+                            .attr("cx", function (d,i) { return xScale(d.x); } )
+                            .attr("cy", function (d) { return yScale(d.y); } )
+                            .attr("r", 4);*/
+
+
+                    vis.append("text")
+                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                            .attr("transform", "translate(" + (padding / 2) + "," + (HEIGHT / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+                            .text("Depth");
+
+                    vis.append("text")
+                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 30) + ")")  // centre below axis
+                            .attr("fill", "red")
+                            .text("Water Temperature (in celcius)");
+
+                    vis.append("text")
+                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (20) + ")")  // centre below axis
+                            .attr("fill", "blue")
+                            .text("CHLA");
+
+                    vis.append("text")
+                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (70) + ")")  // centre below axis
+                            .attr("fill", "grey")
+                            .text("Dissolved Oxygen");
+
+                    vis.append("text")
+                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 80) + ")")  // centre below axis
+                            .attr("fill", "green")
+                            .text("Salinity");
+
+                }
+
+                InitChart();
+            </script>
+    </div>
+
+</div>
+
+</body>
+
+</html>
