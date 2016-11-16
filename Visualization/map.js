@@ -3,7 +3,7 @@ var map;
 var image;
 var shape;
 var gotData = false;
-var sortedData;
+//var sortedData;
 var markers = [];
 
 function compareMeasureValue(a,b){
@@ -174,10 +174,13 @@ d3.csv("cedr.csv", function(error, raw_data){
   if(error) throw error;
   
   // Sort the data for easier use
-  sortedData = raw_data.sort(compareStation);
+  var sortedData = raw_data.sort(compareStation);
   
   // Call function to plot the stations using the data
   plotStations(map, sortedData);
+  
+  //sortedData = null;
+  //raw_data = null;
   drawScale();
 });
 
@@ -203,5 +206,5 @@ function initMap(){
     type: 'poly'
   };
   
-  loadKML("https://jamesguan.github.io/Public/doc.kml", map);
+  loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
 }
