@@ -29,17 +29,18 @@ function populateMonthButtons() {
 
 function fetchMonthData(month) {
 
-    alert("HI");
+    //alert("HI");
 
 }
 
-function createViz() {
+function createViz(stationId) {
+    $('#myModal').modal('show');
     d3.selectAll("svg > *").remove();
-    $("#stationId").text("EE3.1");
+    $("#stationId").text(stationId);
     var params = {};
-    params.to = '01/05/15';
-    params.from = '04/05/15';
-    params.stationId = "EE3.1";
+    params.to = '06/05/15';
+    params.from = '08/05/15';
+    params.stationId = stationId.trim();
     params.chartType = "scatter";
     parameters = params;
     fetchData(params);
