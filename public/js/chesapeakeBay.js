@@ -22,15 +22,17 @@ function getval(sel) {
 function populateMonthButtons() {
     var html= '';
     for (var key in monthArr) {
-        html+='<div class="col-md-1"><button type="button" class="btn btn-primary btn-xs" onclick="fetchMonthData()"> '+key + '</button> </div>';
+        html+='<div class="col-md-1"><button type="button" id="'+ key+'" class="btn btn-primary btn-xs" onclick="fetchMonthData(this)"> '+key + '</button> </div>';
         $("#monthButtons").html(html);
     }
 }
 
 function fetchMonthData(month) {
-
-    //alert("HI");
-
+    d3.selectAll("svg > *").remove();
+    var dates = monthArr[month.id].split("-");
+    parameters.to = dates[0];
+    parameters.from = dates[1];
+    fetchData(parameters);
 }
 
 function createViz(stationId) {
@@ -43,7 +45,7 @@ function createViz(stationId) {
     params.stationId = stationId.trim();
     params.chartType = "scatter";
     parameters = params;
-    fetchData(params);
+    fetchData(params, undefined, true);
     populateMonthButtons();
 }
 
@@ -65,7 +67,8 @@ function createHabitatDiv( hData) {
 }
 
 function getHabitatInfo(sel) {
-
+    d3.selectAll("svg > *").remove();
+    fetchData(parameters);
 }
 
 function getSelectedSpecie(specie, lifeStage) {
@@ -78,7 +81,7 @@ function getSelectedSpecie(specie, lifeStage) {
 
 //createViz();
 
-function fetchData(params, update) {
+function fetchData(params, update, createHabitat) {
     var data = $.ajax({
         type: 'POST',
         url: 'http://127.0.0.1:1337/getData',
@@ -90,7 +93,9 @@ function fetchData(params, update) {
         success: function (data) {
             $('body').append(data);
             habitatData = data.habitatData;
-            createHabitatDiv(habitatData);
+            if (createHabitat) {
+                createHabitatDiv(habitatData);
+            }
             if (params.chartType) {
                 createChart(data, update, params.chartType);
             } else {
