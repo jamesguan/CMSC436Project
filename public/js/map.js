@@ -155,14 +155,6 @@ function plotStations(map, data){
   }
 }
 
-d3.csv("cedr.csv", function(error, raw_data){
-  if(error) throw error;
-
-  sortedData = raw_data.sort(compareStation);
-  plotStations(map, sortedData);
-
-});
-
 function initMap(){
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 38.014390, lng: -76.177689},
@@ -190,5 +182,13 @@ function initMap(){
           coords: [1, 1, 1, 20, 18, 20, 18, 1],
           type: 'poly'
   };
+
+    d3.csv("cedr.csv", function(error, raw_data){
+        if(error) throw error;
+
+        sortedData = raw_data.sort(compareStation);
+        plotStations(map, sortedData);
+
+    });
 
 }
