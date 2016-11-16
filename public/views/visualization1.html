@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/css/chesapeakeBay.css">
+</head>
+
+<body>
+<div class="container">
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onclick="createViz()">Open Modal</button>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class = 'row'>
+                        <div class="col-md-3">
+                            Station ID: <label id="stationId"/>
+                        </div>
+                        <div class="col-md-5">
+                            Date range : <input type="text" name="datefilter"/>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="chartType" style = "height: 25px;" onchange="getval(this);">
+                                <option value="scatter">Scatter Plot</option>
+                                <option value="line">Line Curve</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class = 'row modal-header' id = "monthButtons">
+                    </div>
+                    <div class = 'row'>
+                        <div class="col-md-10" id="svgDiv">
+                            <svg id="visualisation" width="800" height="600"></svg>
+                        </div>
+                        <div class="col-md-2" id="habitatDiv">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/chesapeakeBay.js"></script>
+</body>
+
+</html>
