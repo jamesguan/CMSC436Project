@@ -1,0 +1,398 @@
+[
+    {
+        "Species": "Eastern Oyster",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 1.0",
+        "Temp_Low": "19",
+        "Temp_High": "32",
+        "Salinity_Low": "12",
+        "Salinity_High": "27",
+        "CLS_Start": "June",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Eastern Oyster",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 1.0",
+        "Temp_Low": "19",
+        "Temp_High": "32",
+        "Salinity_Low": "12",
+        "Salinity_High": "27",
+        "CLS_Start": "June",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Eastern Oyster",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 1.0",
+        "Temp_Low": "7",
+        "Temp_High": "32"
+    },
+    {
+        "Species": "Soft Shell Clam",
+        "Life_Stage": "Eggs",
+        "Temp_Low": "10",
+        "Temp_High": "20",
+        "Salinity_Low": "8",
+        "CLS_Start": "May",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Soft Shell Clam",
+        "Life_Stage": "Adult",
+        "Temp_Low": "2",
+        "Temp_High": "34",
+        "Salinity_Low": "8"
+    },
+    {
+        "Species": "Hard Clam",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "7.5",
+        "Temp_High": "32.5",
+        "Salinity_Low": "20",
+        "Salinity_High": "35",
+        "CLS_Start": "May",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Hard Clam",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "12.5",
+        "Temp_High": "33",
+        "Salinity_Low": "17",
+        "Salinity_High": "35",
+        "CLS_Start": "May",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Hard Clam",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "1",
+        "Temp_High": "34",
+        "Salinity_Low": "15"
+    },
+    {
+        "Species": "Blue Crab",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "5",
+        "Temp_High": "39",
+        "Salinity_Low": "20",
+        "CLS_Start": "June",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Blue Crab",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "5",
+        "Temp_High": "39",
+        "Salinity_Low": "0",
+        "Salinity_High": "30"
+    },
+    {
+        "Species": "Atlantic Menhaden",
+        "Life_Stage": "Juvenile",
+        "Salinity_Low": "5",
+        "Salinity_High": "10",
+        "CLS_Start": "April",
+        "CLS_End": "October"
+    },
+    {
+        "Species": "Atlantic Menhaden",
+        "Life_Stage": "Adult",
+        "Salinity_Low": "3.5"
+    },
+    {
+        "Species": "Bay Anchovy",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "13",
+        "Temp_High": "30",
+        "Salinity_Low": "4",
+        "Salinity_High": "20",
+        "CLS_Start": "May",
+        "CLS_End": "September"
+    },
+    {
+        "Species": "Bay Anchovy",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "15",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "15",
+        "CLS_Start": "May",
+        "CLS_End": "September"
+    },
+    {
+        "Species": "Bay Anchovy",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "9",
+        "Salinity_High": "30",
+        "CLS_Start": "May",
+        "CLS_End": "September"
+    },
+    {
+        "Species": "Bay Anchovy",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 3.0",
+        "Temp_Low": "8",
+        "Temp_High": "32",
+        "Salinity_Low": "9",
+        "Salinity_High": "30"
+    },
+    {
+        "Species": "American Shad",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "13",
+        "Temp_High": "26",
+        "Salinity_Low": "0",
+        "Salinity_High": "15",
+        "CLS_Start": "February",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "American Shad",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "15.5",
+        "Temp_High": "26.1",
+        "CLS_Start": "February",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "American Shad",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "15.6",
+        "Temp_High": "23.9",
+        "Salinity_Low": "0",
+        "Salinity_High": "30",
+        "CLS_Start": "February",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "American Shad",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "30"
+    },
+    {
+        "Species": "Alewife",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "11",
+        "Temp_High": "28",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Alewife",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0 ",
+        "Temp_Low": "8",
+        "Temp_High": "31",
+        "Salinity_Low": "0",
+        "Salinity_High": "3",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Alewife",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 3.6",
+        "Temp_Low": "10",
+        "Temp_High": "28",
+        "Salinity_Low": "0",
+        "Salinity_High": "5",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Alewife",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 3.6",
+        "Salinity_Low": "0",
+        "Salinity_High": "30"
+    },
+    {
+        "Species": "Blueback Herring",
+        "Life_Stage": "Eggs",
+        "Temp_Low": "14",
+        "Temp_High": "26",
+        "Salinity_Low": "0",
+        "Salinity_High": "1",
+        "CLS_Start": "April",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Blueback Herring",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "14",
+        "Temp_High": "28",
+        "CLS_Start": "April",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Blueback Herring",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 3.6",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "April",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Blueback Herring",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Salinity_Low": "0",
+        "Salinity_High": "35"
+    },
+    {
+        "Species": "Spot",
+        "Dissolved_Oxygen": "> 2.0",
+        "Temp_Low": "6",
+        "Temp_High": "25"
+    },
+    {
+        "Species": "White Perch",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "12",
+        "Temp_High": "20",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "White Perch",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "12",
+        "Temp_High": "20",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "White Perch",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "3",
+        "CLS_Start": "March",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "White Perch",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "5",
+        "Salinity_High": "18"
+    },
+    {
+        "Species": "Striped Bass",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "12",
+        "Temp_High": "23",
+        "Salinity_Low": "0.5",
+        "Salinity_High": "10",
+        "CLS_Start": "April",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Striped Bass",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "12",
+        "Temp_High": "23",
+        "Salinity_Low": "1",
+        "Salinity_High": "10.5",
+        "CLS_Start": "April",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Striped Bass",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "27",
+        "Salinity_Low": "0",
+        "Salinity_High": "16",
+        "CLS_Start": "April",
+        "CLS_End": "June"
+    },
+    {
+        "Species": "Striped Bass",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "20",
+        "Temp_High": "22"
+    },
+    {
+        "Species": "Yellow Perch",
+        "Life_Stage": "Eggs",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "7",
+        "Temp_High": "20",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "February",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Yellow Perch",
+        "Life_Stage": "Larvae",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "2",
+        "CLS_Start": "February",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Yellow Perch",
+        "Life_Stage": "Juvenile",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "10",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "5",
+        "CLS_Start": "February",
+        "CLS_End": "May"
+    },
+    {
+        "Species": "Yellow Perch",
+        "Life_Stage": "Adult",
+        "Dissolved_Oxygen": "> 5.0",
+        "Temp_Low": "6",
+        "Temp_High": "30",
+        "Salinity_Low": "0",
+        "Salinity_High": "13"
+    }
+]

@@ -8,7 +8,29 @@
 
     <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
 
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <!-- Include Date Range Picker -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
     <style>
+
+        .habitatInfo {
+            padding-top: 5px;
+            padding-bottom: 2px;
+        }
+        #svgDiv{
+            border-right: 1px solid #e5e5e5
+        }
+
+        .modal-content {
+            width: 1000px;
+            left: -200px;
+        }
         .axis path {
             fill: none;
             stroke: #777;
@@ -28,15 +50,15 @@
         }
 
         .WTEMP line{
-            stroke: red;
+            stroke: #cc66ff;
         }
 
         .WTEMP path{
-            stroke: red;
+            stroke: #cc66ff;
         }
 
         .WTEMP text{
-            fill: red;
+            fill: #cc66ff;
         }
 
         .CHLA line{
@@ -52,27 +74,27 @@
         }
 
         .DO line{
-            stroke: grey;
+            stroke: #7a7a52;
         }
 
         .DO path{
-            stroke: grey;
+            stroke: #7a7a52;
         }
 
         .DO text{
-            fill: grey;
+            fill: #7a7a52;
         }
 
         .SALINITY line{
-            stroke: green;
+            stroke: #ffcccc;
         }
 
         .SALINITY path{
-            stroke: green;
+            stroke: #ffcccc;
         }
 
         .SALINITY text{
-            fill: green;
+            fill: #ffcccc;
         }
     </style>
 
@@ -80,196 +102,397 @@
 
 <body>
 <div class="container">
-    <div class="jumbotron">
-        <svg id="visualisation" width="1000" height="600"></svg>
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-        <script>
-                function InitChart() {
+    <!-- Trigger the modal with a button -->
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onclick=" createViz()">Open Modal</button>
 
-                    var data = $.ajax({
-                        type: 'POST',
-                        url: 'http://127.0.0.1:1337/getData',
-                        data: JSON.stringify({
-                            data: undefined
-                        }),
-                        dataType: 'json',
-                        async: false,
-                        success: function (data) {
-                            $('body').append(data)
-                        }
-                    });
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
-                    data = JSON.parse(data.responseText);
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                        <div class = 'row'>
+                            <div class="col-md-3">
+                                Station ID: <label id="stationId"/>
+                            </div>
+                            <div class="col-md-5">
+                                Date range : <input type="text" name="datefilter"/>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="chartType" style = "height: 25px;" onchange="getval(this);">
+                                    <option value="scatter">Scatter Plot</option>
+                                    <option value="line">Line Curve</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-body">
+                    <!--<div class="jumbotron">-->
+                    <div class = 'row modal-header' id = "monthButtons">
+                    </div>
+                    <div class = 'row'>
+                        <div class="col-md-10" id="svgDiv">
+                            <svg id="visualisation" width="800" height="600"></svg>
+                        </div>
+                        <div class="col-md-2" id="habitatDiv">
+
+                        </div>
+                    </div>
+
+                        <script>
+                            var parameters = {};
+                            var habitatData = {};
+                            var monthArr = {
+                                'January':'1/1/15-2/1/15',
+                                'February':'2/1/15-3/1/15',
+                                'March   ':'3/1/15-4/1/15',
+                                'April   ':'4/1/15-5/1/15',
+                                'May     ':'5/1/15-6/1/15',
+                                'June    ':'6/1/15-7/1/15',
+                                'July    ':'7/1/15-8/1/15',
+                                'August  ':'8/1/15-9/1/15',
+                                'September':'9/1/15-10/1/15',
+                                'October ':'10/1/15-11/1/15',
+                                'November':'11/1/15-12/1/15',
+                                'Decemeber':'12/1/15-12/311/15'
+                            }
+                            function getval(sel) {
+                                parameters.chartType = sel.value;
+                                fetchData(parameters, true);
+                            }
+
+                            function populateMonthButtons() {
+                                var html= '';
+                                for (var key in monthArr) {
+                                    html+='<div class="col-md-1"><button type="button" class="btn btn-primary btn-xs" onclick="fetchMonthData()"> '+key + '</button> </div>';
+                                    $("#monthButtons").html(html);
+                                }
+                            }
+
+                            function fetchMonthData(month) {
+
+                                alert("HI");
+
+                            }
+
+                            function createViz() {
+                                d3.selectAll("svg > *").remove();
+                                $("#stationId").text("EE3.1");
+                                var params = {};
+                                params.to = '01/05/15';
+                                params.from = '04/05/15';
+                                params.stationId = "EE3.1";
+                                params.chartType = "scatter";
+                                parameters = params;
+                                fetchData(params);
+                                populateMonthButtons();
+                            }
+
+                            function createHabitatDiv( hData) {
+                                var specieHtml = '<div class="habitatInfo"><select id="species" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
+                                for (var key in hData) {
+                                    specieHtml+= '<option value="'+hData[key].Species+'">'+hData[key].Species+'</option>'
+                                }
+                                specieHtml+= '</select></div>';
+                                $("#habitatDiv").html(specieHtml);
+
+                                var lifeStageHtml = '<div class="habitatInfo"><select id="lifeStage" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
+                                for (var key in hData) {
+                                    lifeStageHtml+= '<option value="'+hData[key].Life_Stage+'">'+hData[key].Life_Stage+'</option>'
+                                }
+                                lifeStageHtml+= '</select></div>';
+                                $("#habitatDiv").html(specieHtml + lifeStageHtml);
+
+                            }
+
+                            function getHabitatInfo(sel) {
+
+                            }
+
+                            function getSelectedSpecie(specie, lifeStage) {
+                                for (var key in habitatData) {
+                                    if (habitatData[key].Species == specie && habitatData[key].Life_Stage == lifeStage) {
+                                        return habitatData[key];
+                                    }
+                                }
+                            }
+
+                            //createViz();
+
+                            function fetchData(params, update) {
+                                var data = $.ajax({
+                                    type: 'POST',
+                                    url: 'http://127.0.0.1:1337/getData',
+                                    data: JSON.stringify({
+                                        data: params
+                                    }),
+                                    dataType: 'json',
+                                    async: false,
+                                    success: function (data) {
+                                        $('body').append(data);
+                                        habitatData = data.habitatData;
+                                        createHabitatDiv(habitatData);
+                                        if (params.chartType) {
+                                            createChart(data, update, params.chartType);
+                                        } else {
+                                            createChart(data, update);
+                                        }
+                                    }
+                                });
+                            }
+
+                            function updateViz(dateRange) {
+                                var params = {};
+                                var dates = dateRange.split(' - ');
+                                var to = dates[0];
+                                var from = dates[1];
+                                var toDate = to.split('/');
+                                params.to = toDate[0] + "/" + toDate[1] + "/" + toDate[2].substring(2, 4);
+                                var fromDate = from.split('/');
+                                params.from = fromDate[0] + "/" + fromDate[1] + "/" + fromDate[2].substring(2, 4);
+                                params.stationId = "EE3.1";
+                                parameters = params;
+                                fetchData(params, true);
+                                //alert(params.to + " : " + params.from);
+                            }
+
+                            $(function() {
+
+                                $('input[name="datefilter"]').daterangepicker({
+                                    autoUpdateInput: false,
+                                    locale: {
+                                        cancelLabel: 'Clear'
+                                    }
+                                });
+
+                                $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+                                    $(this).val(picker.startDate.format('M/D/Y') + ' - ' + picker.endDate.format('M/D/Y'));
+                                    updateViz($(this).val());
+                                });
+
+                                $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+                                    $(this).val('');
+                                });
+
+                            });
+
+                            function createChart(data, update, chartType) {
+                                //var data = JSON.parse(data.responseText);
+                                var vis = d3.select("#visualisation");
+                                if (update) {
+                                    d3.selectAll("svg > *").remove();
+                                    //var vis = d3.select("#visualisation");
+                                }
+                                InitChart(data, vis, chartType);
+                            }
+                            function InitChart(data, vis, chartType) {
+
+                                var color = d3.scale.category10();
+                                var colorArr = {"CHLAData": "blue", "WTEMP": "#cc66ff", "DO": "#7a7a52", "SECCHI": "#ffcccc", "SALINITY" : "#ffcccc"};
+                                var WIDTH = 800,
+                                        HEIGHT = 600,
+                                        padding = 30,
+                                        MARGINS = {
+                                            top: 100,
+                                            right: 20,
+                                            bottom: 100,
+                                            left: 70
+                                        }/*,
+                                         lSpace = WIDTH / (dataGroupGender.length)*/;
+                                //xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]),
+                                yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([data.maxDepth,0]),
+                                        /*xAxis = d3.svg.axis()
+                                         .scale(xScale),*/
+                                        yAxis = d3.svg.axis()
+                                                .scale(yScale)
+                                                .orient("left");
+
+                                var xScales = [];
+                                xScales['CHLAData'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]);
+                                xScales['DO'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.DO.max]);
+                                xScales['SALINITY'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.SALINITY.max]);
+                                xScales['WTEMP'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.WTEMP.max]);
+
+                                var xAxis = [];
+                                xAxis['CHLAData'] = d3.svg.axis().scale(xScales['CHLAData']);
+                                xAxis['DO'] = d3.svg.axis().scale(xScales['DO']);
+                                xAxis['SALINITY'] = d3.svg.axis().scale(xScales['SALINITY']);
+                                xAxis['WTEMP'] = d3.svg.axis().scale(xScales['WTEMP']);
+
+                                vis.append("svg:g")
+                                        .attr("class", "x axis CHLA")
+                                        /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                                        .attr("transform", "translate(0,30)")
+                                        .call(xAxis['CHLAData']);
+                                vis.append("svg:g")
+                                        .attr("class", "x axis DO")
+                                        /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                                        .attr("transform", "translate(0,80)")
+                                        .call(xAxis['DO']);
+                                vis.append("svg:g")
+                                        .attr("class", "x axis SALINITY")
+                                        /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                                        .attr("transform", "translate(0,520)")
+                                        .call(xAxis['SALINITY']);
+                                vis.append("svg:g")
+                                        .attr("class", "x axis WTEMP")
+                                        /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
+                                        .attr("transform", "translate(0,570)")
+                                        /*                           .attr('stroke', colorArr['WTEMP'])
+                                         .attr('fill', colorArr['WTEMP'])*/
+                                        .call(xAxis['WTEMP']);
+
+                                vis.append("svg:g")
+                                        .attr("class", "y axis")
+                                        .attr("transform", "translate(" + (MARGINS.left - 20 ) + ",0)")
+                                        .call(yAxis);
+                                var lineGen = []
+
+                                lineGen['CHLAData'] = d3.svg.line()
+                                        .x(function (d) {
+                                            return xScales['CHLAData'](d.x);
+                                        })
+                                        .y(function (d) {
+                                            return yScale(d.y);
+                                        })
+                                        .interpolate("basis");
+
+                                lineGen['DO'] = d3.svg.line()
+                                        .x(function (d) {
+                                            return xScales['DO'](d.x);
+                                        })
+                                        .y(function (d) {
+                                            return yScale(d.y);
+                                        })
+                                        .interpolate("basis");
+                                lineGen['SALINITY'] = d3.svg.line()
+                                        .x(function (d) {
+                                            return xScales['SALINITY'](d.x);
+                                        })
+                                        .y(function (d) {
+                                            return yScale(d.y);
+                                        })
+                                        .interpolate("basis");
+                                lineGen['WTEMP'] = d3.svg.line()
+                                        .x(function (d) {
+                                            return xScales['WTEMP'](d.x);
+                                        })
+                                        .y(function (d) {
+                                            return yScale(d.y);
+                                        })
+                                        .interpolate("basis");
+
+                                if (chartType == 'scatter') {
+                                    var selectedSpecie = getSelectedSpecie($("#species").val(),$("#lifeStage").val());
+                                    for (var key in data) {
+                                        if (key == 'maxDepth' || key == 'habitatData') {
+                                            continue;
+                                        }
+                                        vis.append("svg:g").selectAll("scatter-dots")
+                                                .data(data[key].vals)
+                                                .enter().append("svg:circle")
+                                                .attr("cx", function (d) { return xScales[key](d.x); })
+                                                .attr("cy", function (d) { return yScale(d.y); } )
+                                                .attr("r", 5)
+                                                .attr("stroke", function(d) {
+                                                    if (key == "DO") {
+                                                        if (d.x > parseFloat(selectedSpecie.Dissolved_Oxygen.split(" ")[1] || 0)) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'red';
+                                                        }
+                                                    } else if (key == "SALINITY") {
+                                                        if (d.x > parseFloat(selectedSpecie.Salinity_Low || 0) && d.x < parseFloat(selectedSpecie.Salinity_High ||0)) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'red';
+                                                        }
+                                                    } else if (key == "WTEMP") {
+                                                        if (d.x > parseFloat(selectedSpecie.Temp_Low || 0) && d.x < parseFloat(selectedSpecie.Temp_High || 0 )) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'red';
+                                                        }
+                                                    } else {
+                                                        return 'green';
+                                                    }
+                                                })
+                                                .attr("shape-rendering", "geometricPrecision")
+                                                .attr("fill", colorArr[key]);
+                                    }
+                                } else {
+                                    for (var key in data) {
+                                        if (key == 'maxDepth' || key == 'habitatData') {
+                                            continue;
+                                        }
+                                        var func = lineGen[key];
+                                        vis.append('svg:path')
+                                                .attr('class', 'lineCurve')
+                                                .attr('d', func(data[key].vals))
+                                                .attr('stroke', colorArr[key])
+                                                .attr('stroke-width', 2)
+                                                .attr('id', 'line_')
+                                                .attr('fill', 'none');
+                                        /*vis.append("text")
+                                         .attr("x", (lSpace / 2) + i * lSpace)
+                                         .attr("y", HEIGHT)
+                                         .style("fill", colorArr[d.gender])
+                                         .attr("class", "legend")
+                                         /!*.on('click', function () {
+                                         var active = d.active ? false : true;
+                                         var opacity = active ? 0 : 1;
+                                         d3.select("#line_" + d.gender).style("opacity", opacity);
+                                         d.active = active;
+                                         })
+                                         .text(d.gender);*!/*/
+                                    } }
 
 
+                                vis.append("text")
+                                        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                                        .attr("transform", "translate(" + (padding / 2) + "," + (HEIGHT / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+                                        .text("Depth");
 
-                    var color = d3.scale.category10();
-                    var colorArr = {"CHLAData": "blue", "WTEMP": "red", "DO": "grey", "SECCHI": "green", "SALINITY" : "green"};
-                    var vis = d3.select("#visualisation"),
-                            WIDTH = 800,
-                            HEIGHT = 600,
-                            padding = 30,
-                            MARGINS = {
-                                top: 100,
-                                right: 20,
-                                bottom: 100,
-                                left: 70
-                            }/*,
-                            lSpace = WIDTH / (dataGroupGender.length)*/;
-                    //xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]),
-                            yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([data.maxDepth,0]),
-                            /*xAxis = d3.svg.axis()
-                                    .scale(xScale),*/
-                            yAxis = d3.svg.axis()
-                                    .scale(yScale)
-                                    .orient("left");
+                                vis.append("text")
+                                        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                                        .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 30) + ")")  // centre below axis
+                                        .attr("fill", "#cc66ff")
+                                        .text("Water Temperature (in celcius)");
 
-                    var xScales = [];
-                    xScales['CHLA'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.CHLAData.max]);
-                    xScales['DO'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.DO.max]);
-                    xScales['SALINITY'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.SALINITY.max]);
-                    xScales['WTEMP'] = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, data.WTEMP.max]);
+                                vis.append("text")
+                                        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                                        .attr("transform", "translate(" + (WIDTH / 2) + "," + (20) + ")")  // centre below axis
+                                        .attr("fill", "blue")
+                                        .text("CHLA");
 
-                    var xAxis = [];
-                    xAxis['CHLA'] = d3.svg.axis().scale(xScales['CHLA']);
-                    xAxis['DO'] = d3.svg.axis().scale(xScales['DO']);
-                    xAxis['SALINITY'] = d3.svg.axis().scale(xScales['SALINITY']);
-                    xAxis['WTEMP'] = d3.svg.axis().scale(xScales['WTEMP']);
+                                vis.append("text")
+                                        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                                        .attr("transform", "translate(" + (WIDTH / 2) + "," + (70) + ")")  // centre below axis
+                                        .attr("fill", "#7a7a52")
+                                        .text("Dissolved Oxygen");
 
-                    vis.append("svg:g")
-                            .attr("class", "x axis CHLA")
-                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-                            .attr("transform", "translate(0,30)")
-                            .call(xAxis['CHLA']);
-                    vis.append("svg:g")
-                            .attr("class", "x axis DO")
-                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-                            .attr("transform", "translate(0,80)")
-                            .call(xAxis['DO']);
-                    vis.append("svg:g")
-                            .attr("class", "x axis SALINITY")
-                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-                            .attr("transform", "translate(0,520)")
-                            .call(xAxis['SALINITY']);
-                    vis.append("svg:g")
-                            .attr("class", "x axis WTEMP")
-                            /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-                            .attr("transform", "translate(0,570)")
- /*                           .attr('stroke', colorArr['WTEMP'])
-                            .attr('fill', colorArr['WTEMP'])*/
-                            .call(xAxis['WTEMP']);
+                                vis.append("text")
+                                        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                                        .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 80) + ")")  // centre below axis
+                                        .attr("fill", "#ffcccc")
+                                        .text("Salinity");
 
-                    vis.append("svg:g")
-                            .attr("class", "y axis")
-                            .attr("transform", "translate(" + (MARGINS.left - 20 ) + ",0)")
-                            .call(yAxis);
-                    var lineGen = []
+                            }
+                        </script>
+                    <!--</div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
 
-                    lineGen['CHLAData'] = d3.svg.line()
-                            .x(function (d) {
-                                return xScales['CHLA'](d.x);
-                            })
-                            .y(function (d) {
-                                return yScale(d.y);
-                            })
-                            .interpolate("basis");
-
-                    lineGen['DO'] = d3.svg.line()
-                            .x(function (d) {
-                                return xScales['DO'](d.x);
-                            })
-                            .y(function (d) {
-                                return yScale(d.y);
-                            })
-                            .interpolate("basis");
-                    lineGen['SALINITY'] = d3.svg.line()
-                            .x(function (d) {
-                                return xScales['SALINITY'](d.x);
-                            })
-                            .y(function (d) {
-                                return yScale(d.y);
-                            })
-                            .interpolate("basis");
-                    lineGen['WTEMP'] = d3.svg.line()
-                            .x(function (d) {
-                                return xScales['WTEMP'](d.x);
-                            })
-                            .y(function (d) {
-                                return yScale(d.y);
-                            })
-                            .interpolate("basis");
-
-
-                    for (var key in data) {
-                        //d = data.CHLAData[key]
-                        if (key == 'maxDepth') {
-                            continue;
-                        }
-                        var func = lineGen[key];
-                        vis.append('svg:path')
-                                .attr('class', 'lineCurve')
-                                .attr('d', func(data[key].vals))
-                                .attr('stroke', colorArr[key])
-                                .attr('stroke-width', 2)
-                                .attr('id', 'line_')
-                                .attr('fill', 'none');
-                        /*vis.append("text")
-                                .attr("x", (lSpace / 2) + i * lSpace)
-                                .attr("y", HEIGHT)
-                                .style("fill", colorArr[d.gender])
-                                .attr("class", "legend")
-                                /!*.on('click', function () {
-                                    var active = d.active ? false : true;
-                                    var opacity = active ? 0 : 1;
-                                    d3.select("#line_" + d.gender).style("opacity", opacity);
-                                    d.active = active;
-                                })
-                                .text(d.gender);*!/*/
-                    }
-
-                    /*vis.append("svg:g").selectAll("scatter-dots")
-                            .data(data.CHLAData.vals)
-                            .enter().append("svg:circle")
-                            .attr("cx", function (d,i) { return xScale(d.x); } )
-                            .attr("cy", function (d) { return yScale(d.y); } )
-                            .attr("r", 4);*/
-
-
-                    vis.append("text")
-                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                            .attr("transform", "translate(" + (padding / 2) + "," + (HEIGHT / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-                            .text("Depth");
-
-                    vis.append("text")
-                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 30) + ")")  // centre below axis
-                            .attr("fill", "red")
-                            .text("Water Temperature (in celcius)");
-
-                    vis.append("text")
-                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (20) + ")")  // centre below axis
-                            .attr("fill", "blue")
-                            .text("CHLA");
-
-                    vis.append("text")
-                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (70) + ")")  // centre below axis
-                            .attr("fill", "grey")
-                            .text("Dissolved Oxygen");
-
-                    vis.append("text")
-                            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                            .attr("transform", "translate(" + (WIDTH / 2) + "," + (HEIGHT - (padding / 3) - 80) + ")")  // centre below axis
-                            .attr("fill", "green")
-                            .text("Salinity");
-
-                }
-
-                InitChart();
-            </script>
+        </div>
     </div>
+
 
 </div>
 
