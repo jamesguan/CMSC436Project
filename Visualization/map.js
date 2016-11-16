@@ -1,7 +1,4 @@
 //require('./lib/http');
-
-
-
 var map;
 var image;
 var shape;
@@ -59,15 +56,17 @@ function toggleBounce() {
 }
 
 function addMarkerWithTimeout(position, timeout) {
-        window.setTimeout(function() {
-          markers.push(new google.maps.Marker({
-            position: position,
-            map: map,
-            animation: google.maps.Animation.DROP
-          }));
-        }, timeout);
-      }
+    window.setTimeout(function() {
+        markers.push(new google.maps.Marker({
+        position: position,
+        map: map,
+        animation: google.maps.Animation.DROP
+        }));
+      }, timeout);
+    }
 
+    
+// Use this function to clear the markers from the array/map
 function clearMarkers() {
         for (var i = 0; i < markers.length; i++) {
           markers[i].setMap(null);
@@ -75,6 +74,25 @@ function clearMarkers() {
         markers = [];
 }
 
+function loadKML(src, map) {
+  var kmlLayer = new google.maps.KmlLayer(src, {
+    //suppressInfoWindows: true,
+    //preserveViewport: false,
+    map: map
+  });
+  google.maps.event.addListener(kmlLayer, 'click', function(event) {
+    var content = event.featureData.infoWindowHtml;
+    var overlay = document.getElementById('overlay');
+    overlay.innerHTML = content;
+  });
+  
+  //console.log("KML");
+}
+
+
+/*
+ * This function returns the string for rgb values
+ */
 function rgb(r, g, b){
   if(r > 255){
     r = 255;
@@ -101,20 +119,28 @@ function rgb(r, g, b){
   return ["rgb(",r,",",g,",",b,")"].join("");
 }
 
+// This function will plot all the data and store the markers into a global array
+// Beware that the function is async
 function plotStations(map, data){
-  //console.log(data);
   var prev;
   var curr;
   if (data.length > 1){
     prev = data[0];
     curr = data[1];
     var marker = new google.maps.Marker({
-          position: {lat: parseFloat(curr.Latitude), lng: parseFloat(curr.Longitude)},
-          map: map,
-          icon: image,
-          shape: shape,
-          title: curr.Station,
-          zIndex: 0
+      position: {lat: parseFloat(curr.Latitude), lng: parseFloat(curr.Longitude)},
+      map: map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8.5,
+        fillColor: rgb(0, 240 - (curr.TotalDepth * 4), 215 + curr.TotalDepth),
+        fillOpacity: 0.6,
+        strokeWeight: 0.4
+      },
+      shape: shape,
+      title: curr.Station,      
+      zIndex: 0,
+      animation: google.maps.Animation.DROP
     });
   }
 
@@ -122,28 +148,19 @@ function plotStations(map, data){
     curr = data[i];
     if (curr.Station != prev.Station){
       var marker = new google.maps.Marker({
-            position: {lat: parseFloat(curr.Latitude), lng: parseFloat(curr.Longitude)},
-            map: map,
-            //icon: image,
-            icon: {
-                    /*
-                    url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-                    // This marker is 20 pixels wide by 32 pixels high.
-                    size: new google.maps.Size(20, 32),
-                    // The origin for this image is (0, 0).
-                    origin: new google.maps.Point(0, 0),
-                    // The anchor for this image is the base of the flagpole at (0, 32).
-                    anchor: new google.maps.Point(0, 32)
-                    */
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 8.5,
-                    fillColor: rgb(0, 255 - (curr.TotalDepth * 6), 255),
-                    fillOpacity: 0.4,
-                    strokeWeight: 0.4
-            },
-            shape: shape,
-            title: curr.Station,
-            zIndex: i
+        position: {lat: parseFloat(curr.Latitude), lng: parseFloat(curr.Longitude)},
+        map: map,
+        //icon: image,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8.5,
+          fillColor: rgb(0, 240 - (curr.TotalDepth * 4),  215 + curr.TotalDepth),
+          fillOpacity: 0.6,
+          strokeWeight: 0.4
+        },
+        shape: shape,
+        title: "Station: " + curr.Station + " TotalDepth: " + curr.TotalDepth,
+        zIndex: i
       });
       markers.push(marker);
       //marker.addListener('click', toggleBounce);
@@ -152,40 +169,39 @@ function plotStations(map, data){
   }
 }
 
+// Read in the data to grab the longitude and latitude for the map
 d3.csv("cedr.csv", function(error, raw_data){
   if(error) throw error;
-
+  
+  // Sort the data for easier use
   sortedData = raw_data.sort(compareStation);
+  
+  // Call function to plot the stations using the data
   plotStations(map, sortedData);
-
+  drawScale();
 });
 
+// This is called to initialize the map
 function initMap(){
+  
+  // Latitude coordinates are set to center or chesapeake bay
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 38.014390, lng: -76.177689},
     zoom: 8
   });
 
   image = {
-          /*
-          url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-          // This marker is 20 pixels wide by 32 pixels high.
-          size: new google.maps.Size(20, 32),
-          // The origin for this image is (0, 0).
-          origin: new google.maps.Point(0, 0),
-          // The anchor for this image is the base of the flagpole at (0, 32).
-          anchor: new google.maps.Point(0, 32)
-          */
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8.5,
-          fillColor: "#0000FF",
-          fillOpacity: 0.6,
-          strokeWeight: 0.4
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: 8.5,
+    fillColor: "#0000FF",
+    fillOpacity: 0.6,
+    strokeWeight: 0.4
   };
 
   shape = {
-          coords: [1, 1, 1, 20, 18, 20, 18, 1],
-          type: 'poly'
+    coords: [1, 1, 1, 20, 18, 20, 18, 1],
+    type: 'poly'
   };
-
+  
+  loadKML("https://jamesguan.github.io/Public/doc.kml", map);
 }
