@@ -149,6 +149,48 @@ function createChart(data, update, chartType) {
     }
     InitChart(data, vis, chartType);
 }
+
+function createGlyph(markerId, data) {
+
+    var vis = d3.select("#" + markerId)
+        .append("svg")
+        .attr("width", 50)
+        .attr("height", 60);
+    var WIDTH = 80,
+        HEIGHT = 80;
+    var wTempSScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempS]);
+    var wTempBScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempB]);
+    var salinitySScale = d3.scale.linear().range([30, 50]).domain([0,data.maxSalinityS]);
+    var salinityBScale = d3.scale.linear().range([30, 50]).domain([0,data.maxSalinityB]);
+    var secchiScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSecchi]);
+    var chlaScale = d3.scale.linear().range([40, 60]).domain([0,data.maxCHLA]);
+    vis.append("rect").
+    attr("x", 20).
+    attr("y", 20).
+    attr("width", 10).
+    attr("stroke", 'black').
+    attr("height", 20).attr("fill", 'none');
+
+    vis.append("rect").
+    attr("x", 20- wTempSScale(12)).
+    attr("y", 20).
+    attr("width", wTempSScale(12)).
+    attr("height", 20).attr("fill", 'red')
+
+    vis.append("rect").
+    attr("x", 30).
+    attr("y", 20).
+    attr("width", salinitySScale(20)).
+    attr("height", 20).attr("fill", 'green')
+
+    vis.append("rect").
+    attr("x", 20).
+    attr("y", 20 - secchiScale()).
+    attr("width", 10).
+    attr("height", 20).attr("fill", 'yellow')
+
+}
+
 function InitChart(data, vis, chartType) {
 
     var color = d3.scale.category10();

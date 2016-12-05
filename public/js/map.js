@@ -172,9 +172,54 @@ function plotStations(map, data){
     }
 }
 
+function initMap() {
+
+    var mapData = {};
+    var data = $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:1337/getMapData',
+        data: JSON.stringify({
+            data: undefined
+        }),
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            mapData = data
+        }
+    });
+
+    var myLatlng = new google.maps.LatLng(-31.9546781,115.852662);
+    var mapOptions = {
+        zoom: 14,
+        center: myLatlng,
+        disableDefaultUI: true
+    }
+
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    initializeCustomMapMarker();
+
+    overlay = new CustomMarker(
+        myLatlng,
+        map,
+        {
+            marker_id: '123'
+        }
+    );
+
+    google.maps.event.addListenerOnce(map, 'idle', function(){
+        createGlyph("markerId", mapData);
+        $(".marker").click(function() {
+            alert($(this).attr("id"));
+        });
+
+    });
+
+}
+
 
 // This is called to initialize the map
-function initMap(){
+function initMap1(){
 
     // Latitude coordinates are set to center or chesapeake bay
     map = new google.maps.Map(document.getElementById('map'), {
