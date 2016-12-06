@@ -226,6 +226,16 @@ function initMap() {
 
 }
 
+function initMap2() {
+    var myLatlng = new google.maps.LatLng(38.014390,-76.177689);
+    var mapOptions = {
+        zoom: 9,
+        center: myLatlng,
+        disableDefaultUI: true
+    }
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+}
+
 
 // This is called to initialize the map
 function initMap1(){
