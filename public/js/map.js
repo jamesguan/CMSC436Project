@@ -77,7 +77,7 @@ function clearMarkers() {
 function loadKML(src, map) {
     var kmlLayer = new google.maps.KmlLayer(src, {
         //suppressInfoWindows: true,
-        //preserveViewport: false,
+        preserveViewport: true,
         map: map
     });
     google.maps.event.addListener(kmlLayer, 'click', function(event) {
@@ -174,6 +174,10 @@ function plotStations(map, data){
 
 function initMap() {
 
+    String.prototype.replaceAll = function(target, replacement) {
+        return this.split(target).join(replacement);
+    };
+
     var mapData = {};
     var data = $.ajax({
         type: 'POST',
@@ -188,9 +192,9 @@ function initMap() {
         }
     });
 
-    var myLatlng = new google.maps.LatLng(-31.9546781,115.852662);
+    var myLatlng = new google.maps.LatLng(38.014390,-76.177689);
     var mapOptions = {
-        zoom: 14,
+        zoom: 9,
         center: myLatlng,
         disableDefaultUI: true
     }
@@ -199,19 +203,24 @@ function initMap() {
 
     initializeCustomMapMarker();
 
-    overlay = new CustomMarker(
-        myLatlng,
-        map,
-        {
-            marker_id: '123'
-        }
-    );
+    mapData.stationData.forEach( function(d, index) {
+        var latlng = new google.maps.LatLng(d.lat,d.long);
+        overlay = new CustomMarker(
+            latlng,
+            map,
+            {
+                marker_id: d.id.replaceAll(".", "-"),
+                mapData : mapData
+            }
+        );
+    });
+
 
     google.maps.event.addListenerOnce(map, 'idle', function(){
-        createGlyph("markerId", mapData);
-        $(".marker").click(function() {
-            alert($(this).attr("id"));
+        mapData.stationData.forEach( function(d, index) {
+            createGlyph(d.id.replaceAll(".", "-"), mapData, d);
         });
+        loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
 
     });
 
@@ -255,5 +264,5 @@ function initMap1(){
         drawScale();
     });
 
-    loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
+    //loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
 }

@@ -14,6 +14,10 @@ var monthArr = {
     'November':'11/1/15-12/1/15',
     'Decemeber':'12/1/15-12/311/15'
 }
+$('#myModal').on('hidden.bs.modal', function () {
+    $("#visualisation").empty();
+});
+
 function getval(sel) {
     parameters.chartType = sel.value;
     fetchData(parameters, true);
@@ -28,7 +32,8 @@ function populateMonthButtons() {
 }
 
 function fetchMonthData(month) {
-    d3.selectAll("svg > *").remove();
+    //d3.selectAll("svg:g > *").remove();
+    $("#visualisation").empty();
     var dates = monthArr[month.id].split("-");
     parameters.to = dates[0];
     parameters.from = dates[1];
@@ -37,7 +42,7 @@ function fetchMonthData(month) {
 
 function createViz(stationId) {
     $('#myModal').modal('show');
-    d3.selectAll("svg > *").remove();
+    //d3.selectAll("svg:g > *").remove();
     $("#stationId").text(stationId);
     var params = {};
     params.to = '06/05/15';
@@ -50,16 +55,20 @@ function createViz(stationId) {
 }
 
 function createHabitatDiv( hData) {
+    var speciesList = _.pluck(hData, "Species");
+    var uSpeciesList = _.uniq(speciesList, true);
+    var LSList = _.pluck(hData, "Life_Stage");
+    var uLSList = _.uniq(LSList);
     var specieHtml = '<div class="habitatInfo"><select id="species" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
-    for (var key in hData) {
-        specieHtml+= '<option value="'+hData[key].Species+'">'+hData[key].Species+'</option>'
+    for (var key in uSpeciesList) {
+        specieHtml+= '<option value="'+uSpeciesList[key]+'">'+uSpeciesList[key]+'</option>'
     }
     specieHtml+= '</select></div>';
     $("#habitatDiv").html(specieHtml);
 
     var lifeStageHtml = '<div class="habitatInfo"><select id="lifeStage" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
-    for (var key in hData) {
-        lifeStageHtml+= '<option value="'+hData[key].Life_Stage+'">'+hData[key].Life_Stage+'</option>'
+    for (var key in uLSList) {
+        lifeStageHtml+= '<option value="'+uLSList[key]+'">'+uLSList[key]+'</option>'
     }
     lifeStageHtml+= '</select></div>';
     $("#habitatDiv").html(specieHtml + lifeStageHtml);
@@ -67,7 +76,8 @@ function createHabitatDiv( hData) {
 }
 
 function getHabitatInfo(sel) {
-    d3.selectAll("svg > *").remove();
+    //d3.selectAll("svg:g > *").remove();
+    $("#visualisation").empty();
     fetchData(parameters);
 }
 
@@ -144,51 +154,103 @@ function createChart(data, update, chartType) {
     //var data = JSON.parse(data.responseText);
     var vis = d3.select("#visualisation");
     if (update) {
-        d3.selectAll("svg > *").remove();
+        //d3.selectAll("svg:g > *").remove();
+        $("#visualisation").empty();
         //var vis = d3.select("#visualisation");
     }
     InitChart(data, vis, chartType);
 }
 
-function createGlyph(markerId, data) {
+function createGlyph(markerId, data, station) {
 
-    var vis = d3.select("#" + markerId)
+    var vis = d3.select($("#"+markerId).get(0))
         .append("svg")
-        .attr("width", 50)
-        .attr("height", 60);
+        .attr("width", 54)
+        .attr("height", 64);
     var WIDTH = 80,
         HEIGHT = 80;
     var wTempSScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempS]);
     var wTempBScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempB]);
-    var salinitySScale = d3.scale.linear().range([30, 50]).domain([0,data.maxSalinityS]);
-    var salinityBScale = d3.scale.linear().range([30, 50]).domain([0,data.maxSalinityB]);
+    var salinitySScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSalinityS]);
+    var salinityBScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSalinityB]);
     var secchiScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSecchi]);
-    var chlaScale = d3.scale.linear().range([40, 60]).domain([0,data.maxCHLA]);
+    var chlaScale = d3.scale.linear().range([0, 20]).domain([0,data.maxCHLA]);
     vis.append("rect").
-    attr("x", 20).
-    attr("y", 20).
+    attr("x", 22).
+    attr("y", 22).
     attr("width", 10).
     attr("stroke", 'black').
+    attr("opacity", 0.4).
+    attr("stroke-width", '1').
     attr("height", 20).attr("fill", 'none');
 
     vis.append("rect").
-    attr("x", 20- wTempSScale(12)).
-    attr("y", 20).
-    attr("width", wTempSScale(12)).
-    attr("height", 20).attr("fill", 'red')
+    attr("x", 20- wTempSScale(station.wTempS)).
+    attr("y", 22).
+    attr("width", wTempSScale(station.wTempS)).
+    attr("opacity", 0.7).
+    attr("height", 9).attr("fill", 'blue');
 
     vis.append("rect").
-    attr("x", 30).
-    attr("y", 20).
-    attr("width", salinitySScale(20)).
-    attr("height", 20).attr("fill", 'green')
+    attr("x", 20- wTempBScale(station.wTempB)).
+    attr("y", 32).
+    attr("width", wTempBScale(station.wTempB)).
+    attr("opacity", 0.9).
+    attr("height", 9).attr("fill", 'blue')
 
     vis.append("rect").
-    attr("x", 20).
-    attr("y", 20 - secchiScale()).
+    attr("x", 34).
+    attr("y", 22).
+    attr("width", salinitySScale(station.salinityS)).
+    attr("opacity", 0.8).
+    attr("height", 9).attr("fill", 'red');
+
+    vis.append("rect").
+    attr("x", 34).
+    attr("y", 32).
+    attr("opacity", 1).
+    attr("width", salinityBScale(station.salinityB)).
+    attr("height", 9).attr("fill", 'red')
+
+    vis.append("rect").
+    attr("x", 22).
+    attr("y", 20 - secchiScale(station.secchi)).
     attr("width", 10).
-    attr("height", 20).attr("fill", 'yellow')
+    attr("opacity", 0.8).
+    attr("height", secchiScale(station.secchi)).attr("fill", 'orange')
 
+    vis.append("rect").
+    attr("x", 22).
+    attr("y", 44).
+    attr("width", 10).
+    attr("height", chlaScale(station.CHLA)).attr("fill", 'green');
+
+    fillDepth(vis, data.maxDepth ,station.depth);
+
+}
+
+function fillDepth(vis, maxdepth, depth) {
+    var stickSize = Math.ceil(maxdepth/4);
+    var val = parseFloat(depth/stickSize);
+    var floorVal = Math.floor(val);
+    var decVal = val -floorVal;
+    var i=0;
+    for (i; i<floorVal; i++) {
+        vis.append("rect").
+        attr("x", 23).
+        attr("y", 38 - i*4).
+        attr("width", 8).
+        attr("opacity", 0.7).
+        attr("height", 3).attr("fill", 'black')
+    }
+    var stickHeight = Math.round(decVal*3);
+
+    vis.append("rect").
+    attr("x", 23).
+    attr("y", 38 - i*4).
+    attr("width", 8).
+    attr("opacity", 0.7).
+    attr("height", stickHeight).attr("fill", 'black')
 }
 
 function InitChart(data, vis, chartType) {

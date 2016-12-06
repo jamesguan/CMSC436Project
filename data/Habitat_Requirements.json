@@ -267,6 +267,7 @@
     },
     {
         "Species": "Spot",
+		"Life_Stage": "Adult",
         "Dissolved_Oxygen": "> 2.0",
         "Temp_Low": "6",
         "Temp_High": "25"
