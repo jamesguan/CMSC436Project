@@ -3,8 +3,17 @@ var map;
 var image;
 var shape;
 var gotData = false;
+var chesapeakeBay = {lat: 38.014390, lng: -76.177689}
 //var sortedData;
 var markers = [];
+
+var kml = {
+  Salinity: {
+    name: "Salinity",
+    url: "https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz"
+  }
+
+};
 
 function compareMeasureValue(a,b){
   if (a.MeasureValue < b.MeasureValue){
@@ -65,7 +74,7 @@ function addMarkerWithTimeout(position, timeout) {
       }, timeout);
     }
 
-    
+
 // Use this function to clear the markers from the array/map
 function clearMarkers() {
         for (var i = 0; i < markers.length; i++) {
@@ -85,7 +94,7 @@ function loadKML(src, map) {
     var overlay = document.getElementById('overlay');
     overlay.innerHTML = content;
   });
-  
+
   //console.log("KML");
 }
 
@@ -138,7 +147,7 @@ function plotStations(map, data){
         strokeWeight: 0.4
       },
       shape: shape,
-      title: curr.Station,      
+      title: curr.Station,
       zIndex: 0,
       animation: google.maps.Animation.DROP
     });
@@ -172,21 +181,142 @@ function plotStations(map, data){
 // Read in the data to grab the longitude and latitude for the map
 d3.csv("cedr.csv", function(error, raw_data){
   if(error) throw error;
-  
+
   // Sort the data for easier use
-  var sortedData = raw_data.sort(compareStation);
-  
+  //var sortedData = raw_data.sort(compareStation);
+
   // Call function to plot the stations using the data
-  plotStations(map, sortedData);
-  
+  //plotStations(map, sortedData);
+
   //sortedData = null;
   //raw_data = null;
-  drawScale();
+  //drawScale();
 });
+
+function createButton(text){
+  var controlUI = document.createElement('div');
+
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.marginLeft = '1%';
+  controlUI.style.marginRight = '1%';
+  controlUI.style.width = '10%';
+  controlUI.style.paddingLeft = '5%';
+  controlUI.style.paddingRight = '5%';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.display = "inline-block";
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  controlUI.title = 'Click to recenter the map';
+  controlUI.style.color = 'rgb(25,25,25)';
+  controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlUI.style.fontSize = '12px';
+  controlUI.style.lineHeight = '22px';
+  controlUI.style.paddingLeft = '5px';
+  controlUI.style.paddingRight = '5px';
+  controlUI.innerHTML = text;
+  // Set CSS for the control interior.
+  return controlUI;
+}
+
+function createDropdown(text){
+  dropDownUI = document.getElementById("speciesSelection");
+  //dropDownUI.style.position = 'relative';
+  dropDownUI.style.display = 'inline-block';
+  console.log(document.getElementsByClassName("dropdown-content"));
+  //.style.display = 'none';
+  return dropDownUI;
+/*
+  .dropdown-content {
+      display: none;
+      position: absolute;
+
+      width: 100px;
+
+  }
+  */
+  /*var controlUI = document.getElementById("speciesSelection");
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  //controlUI.title = 'Click to recenter the map';
+
+  controlUI.style.color = 'rgb(25,25,25)';
+  controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlUI.style.fontSize = '12px';
+  controlUI.style.lineHeight = '20px';
+  controlUI.style.paddingLeft = '5px';
+  controlUI.style.paddingRight = '5px';
+  controlUI.innerHTML = text;
+  return controlUI;
+  */
+}
+
+function Controls(buttonBarDiv, map){
+  // Set CSS for the control border.
+
+        //controlUI.float = 'right';
+        var recenterButton = createButton("Recenter");
+        var salinityButton = createButton("Salinity");
+        var dropDown = createDropdown("Species");
+        buttonBarDiv.style.display = 'inline';
+
+        buttonBarDiv.appendChild(salinityButton);
+        buttonBarDiv.appendChild(recenterButton);
+        buttonBarDiv.appendChild(dropDown);
+
+
+        /*
+        var salinityLayer = new google.maps.FusionTablesLayer({
+          url: "https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz"
+
+        });
+        */
+
+        // Setup the click event listeners: simply set the map to Chicago.
+        recenterButton.addEventListener('click', function() {
+          map.setCenter(chesapeakeBay);
+        });
+
+        salinityButton.addEventListener('click', function() {
+          if (kml.Salinity.obj == null){
+            kml.Salinity.obj = new google.maps.KmlLayer(kml.Salinity.url, {
+              //suppressInfoWindows: true,
+              //preserveViewport: false,
+              map: map
+            });
+          }
+          else {
+            kml.Salinity.obj.setMap(null);
+            delete kml.Salinity.obj;
+          }
+        });
+
+        document.getElementById("salinity").addEventListener('click', function() {
+          map.setCenter(chesapeakeBay);
+        });
+
+        //dropDown.onmouseover=function(){document.getElementById("speciesSelection").classList.toggle("show");}
+
+        /*
+        google.maps.event.addListener(salinityLayer, 'click', function(event) {
+          var content = event.featureData.infoWindowHtml;
+          var testimonial = document.getElementById('capture');
+          testimonial.innerHTML = content;
+        });
+        */
+
+}
 
 // This is called to initialize the map
 function initMap(){
-  
+
   // Latitude coordinates are set to center or chesapeake bay
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 38.014390, lng: -76.177689},
@@ -205,6 +335,13 @@ function initMap(){
     coords: [1, 1, 1, 20, 18, 20, 18, 1],
     type: 'poly'
   };
-  
-  loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
+
+  var buttonBarDiv = document.getElementById("bar");
+  var controls = new Controls(buttonBarDiv, map);
+
+  buttonBarDiv.index = 1;
+  buttonBarDiv.style['padding-top'] ='10px';
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(buttonBarDiv);
+
+
 }

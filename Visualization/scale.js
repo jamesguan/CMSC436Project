@@ -1,3 +1,4 @@
+/*
 var base = d3.select("#overlay");
 //var sidebase = d3.select("#sidebar");
 
@@ -20,7 +21,7 @@ function drawScale(){
   ctx.fillText("40", 5, 493);
   ctx.font = "14px Open Sans";
   ctx.fillText("By:", 5, 530);
-  
+
 
   ctx.fillText("Abhishek", 5, 550);
   ctx.fillText("John", 5, 570);
@@ -33,3 +34,4 @@ function drawScale(){
   ctx.stroke();
 }
 
+*/
