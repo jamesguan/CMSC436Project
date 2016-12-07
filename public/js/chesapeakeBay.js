@@ -243,7 +243,7 @@ function fillDepth(vis, maxdepth, depth) {
         attr("opacity", 0.7).
         attr("height", 3).attr("fill", 'black')
     }
-    var stickHeight = Math.round(decVal*3);
+    var stickHeight = Math.round(decVal*3) || 1;
 
     vis.append("rect").
     attr("x", 23).
