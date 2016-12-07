@@ -1,14 +1,24 @@
 .habitatInfo {
-    padding-top: 5px;
+    /*padding-top: 5px;*/
     padding-bottom: 2px;
+}
+.selectBox{
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-left: 5px;
 }
 #svgDiv{
     border-right: 1px solid #e5e5e5
 }
+.modal-open .modal{
+    overflow: hidden;
+}
 
 .modal-content {
-    width: 1000px;
-    left: -200px;
+    width: 440px;
+    left: 530px;
+    top: -30px;
+    overflow: hidden;
 }
 .axis path {
     fill: none;

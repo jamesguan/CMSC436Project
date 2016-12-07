@@ -76,7 +76,7 @@ function clearMarkers() {
 
 function loadKML(src, map) {
     var kmlLayer = new google.maps.KmlLayer(src, {
-        //suppressInfoWindows: true,
+        suppressInfoWindows: true,
         preserveViewport: true,
         map: map
     });
@@ -85,8 +85,6 @@ function loadKML(src, map) {
         var overlay = document.getElementById('overlay');
         overlay.innerHTML = content;
     });
-
-    //console.log("KML");
 }
 
 

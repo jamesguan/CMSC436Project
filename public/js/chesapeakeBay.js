@@ -59,14 +59,14 @@ function createHabitatDiv( hData) {
     var uSpeciesList = _.uniq(speciesList, true);
     var LSList = _.pluck(hData, "Life_Stage");
     var uLSList = _.uniq(LSList);
-    var specieHtml = '<div class="habitatInfo"><select id="species" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
+    var specieHtml = '<div class="habitatInfo"><select class="selectBox" id="species" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
     for (var key in uSpeciesList) {
         specieHtml+= '<option value="'+uSpeciesList[key]+'">'+uSpeciesList[key]+'</option>'
     }
-    specieHtml+= '</select></div>';
-    $("#habitatDiv").html(specieHtml);
+    specieHtml+= '</select>';
+    /*$("#habitatDiv").html(specieHtml);*/
 
-    var lifeStageHtml = '<div class="habitatInfo"><select id="lifeStage" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
+    var lifeStageHtml = '<select class="selectBox" id="lifeStage" style = "height: 25px; width: 142px" onchange="getHabitatInfo(this);">';
     for (var key in uLSList) {
         lifeStageHtml+= '<option value="'+uLSList[key]+'">'+uLSList[key]+'</option>'
     }
@@ -257,8 +257,8 @@ function InitChart(data, vis, chartType) {
 
     var color = d3.scale.category10();
     var colorArr = {"CHLAData": "blue", "WTEMP": "#cc66ff", "DO": "#7a7a52", "SECCHI": "#ffcccc", "SALINITY" : "#ffcccc"};
-    var WIDTH = 800,
-        HEIGHT = 600,
+    var WIDTH = 400,
+        HEIGHT = 400,
         padding = 30,
         MARGINS = {
             top: 100,
@@ -300,12 +300,12 @@ function InitChart(data, vis, chartType) {
     vis.append("svg:g")
         .attr("class", "x axis SALINITY")
         /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-        .attr("transform", "translate(0,520)")
+        .attr("transform", "translate(0,320)")
         .call(xAxis['SALINITY']);
     vis.append("svg:g")
         .attr("class", "x axis WTEMP")
         /*.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")*/
-        .attr("transform", "translate(0,570)")
+        .attr("transform", "translate(0,370)")
         /*                           .attr('stroke', colorArr['WTEMP'])
          .attr('fill', colorArr['WTEMP'])*/
         .call(xAxis['WTEMP']);
