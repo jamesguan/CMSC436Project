@@ -125,6 +125,7 @@ function updateViz(dateRange) {
     var fromDate = from.split('/');
     params.from = fromDate[0] + "/" + fromDate[1] + "/" + fromDate[2].substring(2, 4);
     params.stationId = "EE3.1";
+    params.chartType = "scatter";
     parameters = params;
     fetchData(params, true);
     //alert(params.to + " : " + params.from);

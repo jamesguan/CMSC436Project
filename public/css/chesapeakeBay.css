@@ -7,11 +7,20 @@
     margin-top: 0px;
     margin-left: 5px;
 }
+/*div.daterangepicker{
+    height:85%;
+}
+div.calender.left{
+    height:200px;
+}
+div.calender.right{
+    height:200px;
+}*/
 #svgDiv{
     border-right: 1px solid #e5e5e5
 }
 .modal-open .modal{
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .modal-content {

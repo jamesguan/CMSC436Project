@@ -16,9 +16,55 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow:hidden;
+    /*overflow:hidden;*/
 }
 .clearer { clear: both; }
+
+#bar{
+    width: 100%;
+    text-align: center;
+}
+
+.dropdown{
+    width: 10%;
+    display: inline-block;
+    margin-left: 1%;
+    margin-right: 1%;
+    background-color: #fff;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    cursor: pointer;
+    line-height: 22px;
+    text-align: center;
+    color: rgb(25,25,25);
+    font-family: Roboto,Arial,sans-serif;
+    font-size:12px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    overflow: scroll;
+    overflow-x: hidden;
+    width: 10%;
+    background-color: #fff;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    cursor: pointer;
+
+    text-align: center;
+    color: rgb(25,25,25);
+    font-family: Roboto,Arial,sans-serif;
+    font-size:12px;
+
+
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
 #overlay {
     height: 100%;
