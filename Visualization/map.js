@@ -7,13 +7,23 @@ var chesapeakeBay = {lat: 38.014390, lng: -76.177689}
 //var sortedData;
 var markers = [];
 
-var kml = {
-  Salinity: {
+var kml = [
+  {
     name: "Salinity",
     url: "https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz"
   }
+];
 
-};
+var speciesKML = [
+  {
+    name: "Alewife",
+    url: "https://dl.dropbox.com/s/dbe9rdp0vsdjats/alewife.kmz"
+  },
+  {
+    name: "American Shad",
+    url: "https://dl.dropbox.com/s/h7dch8bm769cc6s/american_shad.kmz"
+  }
+];
 
 function compareMeasureValue(a,b){
   if (a.MeasureValue < b.MeasureValue){
@@ -193,9 +203,10 @@ d3.csv("cedr.csv", function(error, raw_data){
   //drawScale();
 });
 
-function createButton(text){
+function createButton(className, id, text, title){
   var controlUI = document.createElement('div');
-
+  controlUI.className = className;
+  controlUI.id = id;
   controlUI.style.backgroundColor = '#fff';
   controlUI.style.marginLeft = '1%';
   controlUI.style.marginRight = '1%';
@@ -209,7 +220,7 @@ function createButton(text){
   controlUI.style.cursor = 'pointer';
   controlUI.style.marginBottom = '22px';
   controlUI.style.textAlign = 'center';
-  controlUI.title = 'Click to recenter the map';
+  controlUI.title = title;
   controlUI.style.color = 'rgb(25,25,25)';
   controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
   controlUI.style.fontSize = '12px';
@@ -217,6 +228,17 @@ function createButton(text){
   controlUI.style.paddingLeft = '5px';
   controlUI.style.paddingRight = '5px';
   controlUI.innerHTML = text;
+  // Set CSS for the control interior.
+  return controlUI;
+}
+
+function createDropDownButton(className, id, text, title){
+  var controlUI = document.createElement('div');
+  controlUI.className = className;
+  controlUI.id = id;
+  controlUI.innerHTML = text;
+  //display: none;
+
   // Set CSS for the control interior.
   return controlUI;
 }
@@ -262,15 +284,26 @@ function Controls(buttonBarDiv, map){
   // Set CSS for the control border.
 
         //controlUI.float = 'right';
-        var recenterButton = createButton("Recenter");
-        var salinityButton = createButton("Salinity");
-        var dropDown = createDropdown("Species");
-        buttonBarDiv.style.display = 'inline';
+        var recenterButton = createButton("mapButtons", "recenterButton", "Recenter", "Click to recenter to Chesapeake Bay");
 
-        buttonBarDiv.appendChild(salinityButton);
+        for (var i = 0; i < kml.length; i++){
+          buttonBarDiv.appendChild(createButton("mapButtons", kml[i].name, kml[i].name, "Click for " + kml[i].name + " KML"));
+        }
+
+        console.log(document.getElementById("Salinity"));
+        var dropDown = createDropdown("Species");
+
+        buttonBarDiv.style.display = 'inline';
         buttonBarDiv.appendChild(recenterButton);
         buttonBarDiv.appendChild(dropDown);
 
+        var dropDownMenu = document.getElementById("speciesDropDown");
+
+        for (var i = 0; i < speciesKML.length; i++){
+          dropDownMenu.appendChild(createButton("speciesItem", speciesKML[i].name, speciesKML[i].name, "Click for " + speciesKML[i].name + " KML"));
+        }
+
+        //dropDownMenu.appendChild()
 
         /*
         var salinityLayer = new google.maps.FusionTablesLayer({
@@ -284,23 +317,78 @@ function Controls(buttonBarDiv, map){
           map.setCenter(chesapeakeBay);
         });
 
-        salinityButton.addEventListener('click', function() {
-          if (kml.Salinity.obj == null){
-            kml.Salinity.obj = new google.maps.KmlLayer(kml.Salinity.url, {
-              //suppressInfoWindows: true,
-              //preserveViewport: false,
-              map: map
-            });
-          }
-          else {
-            kml.Salinity.obj.setMap(null);
-            delete kml.Salinity.obj;
-          }
-        });
+        /*
+        for (var i = 0; i < kml.length; i++){
+          var tempButton = document.getElementById(kml[i].name);
+          console.log(tempButton);
+          tempButton.addEventListener('click', function(_tempButton) {
+            var index = i;
+            console.log("INDEX: " + index);
+            if (kml[index].obj == null){
+              kml[index].obj = new google.maps.KmlLayer(kml[index].url, {
+                //suppressInfoWindows: true,
+                //preserveViewport: false,
+                map: map
+              });
+            }
+            else {
+              kml[index].obj.setMap(null);
+              delete kml[index].obj;
+            }
+          })(tempButton);
 
-        document.getElementById("salinity").addEventListener('click', function() {
-          map.setCenter(chesapeakeBay);
-        });
+        }*/
+
+        var tempButton;
+        var index;
+        for (var t = 0; t < kml.length; t++){
+          tempButton = document.getElementById(kml[t].name);
+          index = t;
+          if(typeof window.addEventListener === 'function'){
+            (function (_tempButton, _index) {
+              tempButton.addEventListener('click', function(){
+                console.log(_tempButton);
+                console.log("INDEX: " + _index);
+                if (kml[_index].obj == null){
+                  kml[_index].obj = new google.maps.KmlLayer(kml[_index].url, {
+                    //suppressInfoWindows: true,
+                    //preserveViewport: false,
+                    map: map
+                  });
+                }
+                else {
+                  kml[_index].obj.setMap(null);
+                  delete kml[_index].obj;
+                }
+              });
+            })(tempButton, index);
+          }
+        }
+
+        for (var t = 0; t < speciesKML.length; t++){
+          tempButton = document.getElementById(speciesKML[t].name);
+          index = t;
+          if(typeof window.addEventListener === 'function'){
+            (function (_tempButton, _index) {
+              tempButton.addEventListener('click', function(){
+                console.log(_tempButton);
+                console.log("INDEX: " + _index);
+                if (speciesKML[_index].obj == null){
+                  speciesKML[_index].obj = new google.maps.KmlLayer(speciesKML[_index].url, {
+                    //suppressInfoWindows: true,
+                    //preserveViewport: false,
+                    map: map
+                  });
+                }
+                else {
+                  speciesKML[_index].obj.setMap(null);
+                  delete speciesKML[_index].obj;
+                }
+              });
+            })(tempButton, index);
+         }
+         //index = 0;
+      }
 
         //dropDown.onmouseover=function(){document.getElementById("speciesSelection").classList.toggle("show");}
 
