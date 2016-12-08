@@ -221,12 +221,12 @@ function initMap() {
         loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
     });
 
-    /*var buttonBarDiv = document.getElementById("bar");
+    var buttonBarDiv = document.getElementById("bar");
     var controls = new Controls(buttonBarDiv, map);
 
     buttonBarDiv.index = 1;
     buttonBarDiv.style['padding-top'] ='10px';
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(buttonBarDiv);*/
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(buttonBarDiv);
 
 }
 
@@ -283,247 +283,219 @@ function initMap1(){
 
 //James changes
 var chesapeakeBay = {lat: 38.014390, lng: -76.177689}
+
 var kml = [
-    {
-        name: "Salinity",
-        url: "https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz"
-    }
+  {
+    name: "Salinity",
+    url: "https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz"
+  }
 ];
 
 var speciesKML = [
-    {
-        name: "Alewife",
-        url: "https://dl.dropbox.com/s/dbe9rdp0vsdjats/alewife.kmz"
-    },
-    {
-        name: "American Shad",
-        url: "https://dl.dropbox.com/s/h7dch8bm769cc6s/american_shad.kmz"
-    },
-    {
-        name: "Anchovy Adult",
-        url: "https://dl.dropbox.com/s/adbcq3yjkl4b06d/anchovy_adult.kmz"
-    },
-    {
-        name: "Anchovy Juvenile",
-        url: "https://dl.dropbox.com/s/lypo0elsepfsu65/anchovy_juvenile.kmz"
-    },
-    {
-        name: "Blue Crab",
-        url: "https://dl.dropbox.com/s/x8nx5ma4mpfbj3p/blue_crab.kmz"
-    },
-    {
-        name: "Blueback Herring",
-        url: "https://dl.dropbox.com/s/vcyj8dqejcwy5w6/blueback_herring.kmz"
-    },
-    {
-        name: "Hard Clam",
-        url: "https://dl.dropbox.com/s/nuktib8eqgbrgd7/hard_clam.kmz"
-    },
-    {
-        name: "Menhaden Adult",
-        url: "https://dl.dropbox.com/s/lwio0ntqw8xt12p/menhaden_adult.kmz"
-    },
-    {
-        name: "Menhaden Juvenile",
-        url: "https://dl.dropbox.com/s/vhdl6pl1mukciok/menhaden_juvenile.kmz"
-    },
-    {
-        name: "Oyster",
-        url: "https://dl.dropbox.com/s/ul3cxcdzmylu0sk/oyster.kmz"
-    },
-    {
-        name: "Softshell Clam",
-        url: "https://dl.dropbox.com/s/rd253d1i6p968ea/soft_shell_clam.kmz"
-    },
-    {
-        name: "Spot",
-        url: "https://dl.dropbox.com/s/dgqoqumhwhb2azp/spot.kmz"
-    },
-    {
-        name: "Striped Bass",
-        url: "https://dl.dropbox.com/s/ka0veqseefmh76z/striped_bass.kmz"
-    },
-    {
-        name: "White Perch",
-        url: "https://dl.dropbox.com/s/n7i2qza0xqdcysm/white_perch.kmz"
-    },
-    {
-        name: "Yellow Perch",
-        url: "https://dl.dropbox.com/s/v1qdawqtyya1lyl/yellow_perch.kmz"
-    }
+  {
+    name: "Alewife",
+    url: "https://dl.dropbox.com/s/dbe9rdp0vsdjats/alewife.kmz"
+  },
+  {
+    name: "American Shad",
+    url: "https://dl.dropbox.com/s/h7dch8bm769cc6s/american_shad.kmz"
+  },
+  {
+    name: "Anchovy Adult",
+    url: "https://dl.dropbox.com/s/adbcq3yjkl4b06d/anchovy_adult.kmz"
+  },
+  {
+    name: "Anchovy Juvenile",
+    url: "https://dl.dropbox.com/s/lypo0elsepfsu65/anchovy_juvenile.kmz"
+  },
+  {
+    name: "Blue Crab",
+    url: "https://dl.dropbox.com/s/x8nx5ma4mpfbj3p/blue_crab.kmz"
+  },
+  {
+    name: "Blueback Herring",
+    url: "https://dl.dropbox.com/s/vcyj8dqejcwy5w6/blueback_herring.kmz"
+  },
+  {
+    name: "Hard Clam",
+    url: "https://dl.dropbox.com/s/nuktib8eqgbrgd7/hard_clam.kmz"
+  },
+  {
+    name: "Menhaden Adult",
+    url: "https://dl.dropbox.com/s/lwio0ntqw8xt12p/menhaden_adult.kmz"
+  },
+  {
+    name: "Menhaden Juvenile",
+    url: "https://dl.dropbox.com/s/vhdl6pl1mukciok/menhaden_juvenile.kmz"
+  },
+  {
+    name: "Oyster",
+    url: "https://dl.dropbox.com/s/ul3cxcdzmylu0sk/oyster.kmz"
+  },
+  {
+    name: "Softshell Clam",
+    url: "https://dl.dropbox.com/s/rd253d1i6p968ea/soft_shell_clam.kmz"
+  },
+  {
+    name: "Spot",
+    url: "https://dl.dropbox.com/s/dgqoqumhwhb2azp/spot.kmz"
+  },
+  {
+    name: "Striped Bass",
+    url: "https://dl.dropbox.com/s/ka0veqseefmh76z/striped_bass.kmz"
+  },
+  {
+    name: "White Perch",
+    url: "https://dl.dropbox.com/s/n7i2qza0xqdcysm/white_perch.kmz"
+  },
+  {
+    name: "Yellow Perch",
+    url: "https://dl.dropbox.com/s/v1qdawqtyya1lyl/yellow_perch.kmz"
+  }
 ];
 
 function createButton(className, id, text, title){
-    var controlUI = document.createElement('div');
-    controlUI.className = className;
-    controlUI.id = id;
-    controlUI.style.backgroundColor = '#fff';
-    controlUI.style.marginLeft = '1%';
-    controlUI.style.marginRight = '1%';
-    controlUI.style.width = '10%';
-    controlUI.style.paddingLeft = '5%';
-    controlUI.style.paddingRight = '5%';
-    controlUI.style.border = '2px solid #fff';
-    controlUI.style.display = "inline-block";
-    controlUI.style.borderRadius = '3px';
-    controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
-    controlUI.style.cursor = 'pointer';
-    controlUI.style.marginBottom = '22px';
-    controlUI.style.textAlign = 'center';
-    controlUI.title = title;
-    controlUI.style.color = 'rgb(25,25,25)';
-    controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
-    controlUI.style.fontSize = '12px';
-    controlUI.style.lineHeight = '22px';
-    controlUI.style.paddingLeft = '5px';
-    controlUI.style.paddingRight = '5px';
-    controlUI.innerHTML = text;
-    // Set CSS for the control interior.
-    return controlUI;
+  var controlUI = document.createElement('div');
+  controlUI.className = className;
+  controlUI.id = id;
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.marginLeft = '1%';
+  controlUI.style.marginRight = '1%';
+  controlUI.style.width = '10vw';
+  controlUI.style.minWidth = '60px';
+  controlUI.style.paddingLeft = '5%';
+  controlUI.style.paddingRight = '5%';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.display = "inline-block";
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  controlUI.title = title;
+  controlUI.style.color = 'rgb(25,25,25)';
+  controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlUI.style.fontSize = '12px';
+  controlUI.style.lineHeight = '22px';
+  controlUI.style.paddingLeft = '5px';
+  controlUI.style.paddingRight = '5px';
+  controlUI.innerHTML = text;
+  return controlUI;
 }
 
 function createDropDownButton(className, id, text, title){
-    var controlUI = document.createElement('div');
-    controlUI.className = className;
-    controlUI.id = id;
-    controlUI.innerHTML = text;
-    //display: none;
-
-    // Set CSS for the control interior.
-    return controlUI;
+  var controlUI = document.createElement('div');
+  controlUI.className = className;
+  controlUI.id = id;
+  controlUI.innerHTML = text;
+  controlUI.style.minWidth = '60px';
+  return controlUI;
 }
 
 function createDropdown(text){
-    dropDownUI = document.getElementById("speciesSelection");
-    //dropDownUI.style.position = 'relative';
-    dropDownUI.style.display = 'inline-block';
-    //console.log(document.getElementsByClassName("dropdown-content"));
-    //.style.display = 'none';
-    return dropDownUI;
-    /*
-     .dropdown-content {
-     display: none;
-     position: absolute;
-
-     width: 100px;
-
-     }
-     */
-    /*var controlUI = document.getElementById("speciesSelection");
-     controlUI.style.backgroundColor = '#fff';
-     controlUI.style.border = '2px solid #fff';
-     controlUI.style.borderRadius = '3px';
-     controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
-     controlUI.style.cursor = 'pointer';
-     controlUI.style.marginBottom = '22px';
-     controlUI.style.textAlign = 'center';
-     //controlUI.title = 'Click to recenter the map';
-
-     controlUI.style.color = 'rgb(25,25,25)';
-     controlUI.style.fontFamily = 'Roboto,Arial,sans-serif';
-     controlUI.style.fontSize = '12px';
-     controlUI.style.lineHeight = '20px';
-     controlUI.style.paddingLeft = '5px';
-     controlUI.style.paddingRight = '5px';
-     controlUI.innerHTML = text;
-     return controlUI;
-     */
+  dropDownUI = document.getElementById("speciesSelection");
+  dropDownUI.style.display = 'inline-block';
+  return dropDownUI;
 }
 
 function Controls(buttonBarDiv, map){
-    // Set CSS for the control border.
-    //controlUI.float = 'right';
-    var recenterButton = createButton("mapButtons", "recenterButton", "Recenter", "Click to recenter to Chesapeake Bay");
+  // Set CSS for the control border.
+        //controlUI.float = 'right';
+        var recenterButton = createButton("mapButtons", "recenterButton", "Recenter", "Click to recenter to Chesapeake Bay");
 
-    for (var i = 0; i < kml.length; i++){
-        buttonBarDiv.appendChild(createButton("mapButtons", kml[i].name, kml[i].name, "Click for " + kml[i].name + " KML"));
-    }
-
-    //console.log(document.getElementById("Salinity"));
-    var dropDown = createDropdown("Species");
-
-    buttonBarDiv.style.display = 'inline';
-    buttonBarDiv.appendChild(recenterButton);
-    buttonBarDiv.appendChild(dropDown);
-
-    var dropDownMenu = document.getElementById("speciesDropDown");
-
-    for (var i = 0; i < speciesKML.length; i++){
-        dropDownMenu.appendChild(createDropDownButton("speciesItem", speciesKML[i].name, speciesKML[i].name, "Click for " + speciesKML[i].name + " KML"));
-    }
-
-    // Setup the click event listeners: simply set the map to Chicago.
-    recenterButton.addEventListener('click', function() {
-        map.setCenter(chesapeakeBay);
-    });
-
-    var tempButton;
-    var index;
-    for (var t = 0; t < kml.length; t++){
-        tempButton = document.getElementById(kml[t].name);
-        index = t;
-        if(typeof window.addEventListener === 'function'){
-            (function (_tempButton, _index) {
-                tempButton.addEventListener('click', function(){
-                    //console.log(_tempButton);
-                    //console.log("INDEX: " + _index);
-                    if (kml[_index].obj == null){
-                        kml[_index].obj = new google.maps.KmlLayer(kml[_index].url, {
-                            //suppressInfoWindows: true,
-                            //preserveViewport: false,
-                            map: map
-                        });
-                    }
-                    else {
-                        kml[_index].obj.setMap(null);
-                        delete kml[_index].obj;
-                    }
-                });
-            })(tempButton, index);
+        for (var i = 0; i < kml.length; i++){
+          buttonBarDiv.appendChild(createButton("mapButtons", kml[i].name, kml[i].name, "Click for " + kml[i].name + " KML"));
         }
-    }
 
-    for (var t = 0; t < speciesKML.length; t++){
-        tempButton = document.getElementById(speciesKML[t].name);
-        index = t;
-        if(typeof window.addEventListener === 'function'){
-            (function (_tempButton, _index) {
-                tempButton.addEventListener('click', function(){
+        //console.log(document.getElementById("Salinity"));
+        var dropDown = createDropdown("Species");
 
-                    if (speciesKML[_index].obj == null){
-                        speciesKML[_index].obj = new google.maps.KmlLayer(speciesKML[_index].url, {
-                            //suppressInfoWindows: true,
-                            //preserveViewport: false,
-                            map: map
-                        });
-                        _tempButton.style.backgroundColor = '#bbb';
-                    }
-                    else {
-                        speciesKML[_index].obj.setMap(null);
-                        delete speciesKML[_index].obj;
-                        _tempButton.style.backgroundColor = '#fff';
-                    }
-                });
+        buttonBarDiv.style.display = 'inline';
+        buttonBarDiv.appendChild(recenterButton);
+        buttonBarDiv.appendChild(dropDown);
+
+        var dropDownMenu = document.getElementById("speciesDropDown");
+
+        for (var i = 0; i < speciesKML.length; i++){
+          dropDownMenu.appendChild(createDropDownButton("speciesItem", speciesKML[i].name, speciesKML[i].name, "Click for " + speciesKML[i].name + " KML"));
+        }
+
+        // Setup the click event listeners: simply set the map to Chicago.
+        recenterButton.addEventListener('click', function() {
+          map.setCenter(chesapeakeBay);
+        });
+
+        var tempButton;
+        var index;
+        for (var t = 0; t < kml.length; t++){
+          tempButton = document.getElementById(kml[t].name);
+          index = t;
+          if(typeof window.addEventListener === 'function'){
+            (function (_tempButton, _index) {
+              tempButton.addEventListener('click', function(){
+                //console.log(_tempButton);
+                //console.log("INDEX: " + _index);
+                if (kml[_index].obj == null){
+                  kml[_index].obj = new google.maps.KmlLayer(kml[_index].url, {
+                    //suppressInfoWindows: true,
+                    preserveViewport: true,
+                    map: map
+                  });
+                  map.setCenter(chesapeakeBay);
+                  map.setZoom(10);
+                }
+
+                else {
+                  kml[_index].obj.setMap(null);
+                  delete kml[_index].obj;
+                }
+              });
             })(tempButton, index);
+          }
+        }
+
+        for (var t = 0; t < speciesKML.length; t++){
+          tempButton = document.getElementById(speciesKML[t].name);
+          index = t;
+          if(typeof window.addEventListener === 'function'){
+            (function (_tempButton, _index) {
+              tempButton.addEventListener('click', function(){
+                if (speciesKML[_index].obj == null){
+                  speciesKML[_index].obj = new google.maps.KmlLayer(speciesKML[_index].url, {
+                    //suppressInfoWindows: true,
+                    preserveViewport: true,
+                    map: map
+                  });
+                  map.setCenter(chesapeakeBay);
+                  map.setZoom(10);
+                  _tempButton.style.backgroundColor = '#bbb';
+                }
+                else {
+                  speciesKML[_index].obj.setMap(null);
+                  delete speciesKML[_index].obj;
+                  _tempButton.style.backgroundColor = '#fff';
+                }
+              });
+            })(tempButton, index);
+         }
+         if(typeof window.addEventListener === 'function'){
+           (function (_tempButton, _index) {
+             tempButton.addEventListener('mouseover', function(){
+               _tempButton.style.backgroundColor = '#999';
+             });
+           })(tempButton, index);
         }
         if(typeof window.addEventListener === 'function'){
-            (function (_tempButton, _index) {
-                tempButton.addEventListener('mouseover', function(){
-                    _tempButton.style.backgroundColor = '#999';
-                });
-            })(tempButton, index);
-        }
-        if(typeof window.addEventListener === 'function'){
-            (function (_tempButton, _index) {
-                tempButton.addEventListener('mouseout', function(){
-                    if (speciesKML[_index].obj == null){
-                        _tempButton.style.backgroundColor = '#fff';
-                    }
-                    else {
-                        _tempButton.style.backgroundColor = '#bbb';
-                    }
-                });
-            })(tempButton, index);
-        }
-    }
+          (function (_tempButton, _index) {
+            tempButton.addEventListener('mouseout', function(){
+              if (speciesKML[_index].obj == null){
+                _tempButton.style.backgroundColor = '#fff';
+              }
+              else {
+                _tempButton.style.backgroundColor = '#bbb';
+              }
+            });
+          })(tempButton, index);
+       }
+      }
 }
