@@ -194,10 +194,27 @@ function initMap() {
     var mapOptions = {
         zoom: 9,
         center: myLatlng,
-        disableDefaultUI: true
+        disableDefaultUI: true,
+		mapTypeId: 'terrain'
     }
 
     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+	
+	var mapStyle = [
+	  {
+		featureType: "all",
+		stylers: [
+		  { visibility: "off" }
+		]
+	  },{
+		featureType: "administrative",
+		stylers: [
+		  { visibility: "on" }
+		]
+	  }
+	];
+	
+	map.setOptions({styles: mapStyle});
 
     initializeCustomMapMarker();
 
