@@ -36,120 +36,46 @@
 
 <div id="wrapper">
 
-    <!-- Navigation -->
-   <!-- <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">DataViz</a>
-        </div>
-
-        &lt;!&ndash;<div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li>
-                        <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="flot.html">Flot Charts</a>
-                            </li>
-                            <li>
-                                <a href="morris.html">Morris.js Charts</a>
-                            </li>
-                        </ul>
-                        &lt;!&ndash; /.nav-second-level &ndash;&gt;
-                    </li>
-
-
-                </ul>
-            </div>
-            &lt;!&ndash; /.sidebar-collapse &ndash;&gt;
-        </div>&ndash;&gt;
-    </nav>-->
-
     <div id="page-wrapper">
-        <!--<div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    &lt;!&ndash;<div class="panel-heading">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> Sample Chart
-                        <div class="pull-right">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                    Actions
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu pull-right" role="menu">
-                                    <li><a href="#" onclick="a()">3D</a>
-                                    </li>
-                                    <li><a href="#" onclick="a()">Another action</a>
-                                    </li>
-                                    <li><a href="#">Something else here</a>
-                                    </li>
-                                    <li class="divider"></li>
-                                    <li><input class="fileInput" type="file">
-                                    </li>
-                                </ul>
-                            </div>
-
-                        </div>
-                    </div>&ndash;&gt;
-                    &lt;!&ndash; /.panel-heading &ndash;&gt;
-                    <div class="panel-body no-padding">
-                        &lt;!&ndash;<div class="row">
-                            <form role="form">
-                                <div class="col-lg-2">
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="X value">
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="Y value">
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <input class="fileInput" type="file">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>&ndash;&gt;
-                        <div class="row">
-                            <div id="container"></div>
-                            <div class="col-lg-9 no-padding" id="scatterDiv">
-                                <svg id="scatter" width="100%" height="600"></svg>
-                            </div>
-                            <div id="legendDiv" class="col-lg-3">
-                                <div id="resizeBox"></div>
-                                <svg id="legend" width="100%" height="500">
-                                </svg>
-                            </div>
-                        </div>
-
-                        &lt;!&ndash; <div id="morris-area-chart"></div> &ndash;&gt;
-                    </div>
-                    &lt;!&ndash; /.panel-body &ndash;&gt;
-                </div>
-            </div>
-        </div>-->
 
         <div class="row">
-            <div id="container"></div>
-            <div class="col-lg-10 " id="scatterDiv">
+            <div class="col-lg-12 noPadding">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Sample Chart
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="#"><i class="fa fa-cog" aria-hidden="true"></i></i> Options</a>
+                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                <span class="fa fa-caret-down" title="Toggle dropdown menu"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#"><i class="fa fa-pencil fa-fw" ></i> 2D</a></li>
+                                <li><a href="#" onclick="a()"><i class="fa fa-unlock"></i> 3D</a></li>
+                            </ul>
+                        </div>
+                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                        <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
+                        <input class="fileInput" id="fileUpload" type="file">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+			<div id="container" class="col-lg-10 "></div>
+            <div class="col-lg-10" id="scatterDiv">
                 <svg id="scatter" width="100%"></svg>
             </div>
             <div id="legendDiv" class="col-lg-2">
+                <span class="legendText">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true"></i> to resize the markers</span>
                 <div id="resizeBox"></div>
-                <svg id="legend" width="100%">
-                </svg>
+                <span class="legendText">Legend:</span>
+                <div id="legendContainer">
+                    <svg id="legend" width="100%">
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
@@ -173,6 +99,7 @@
 <!-- Custom Theme JavaScript -->
 <script src="/js/sb-admin-2.js"></script>
 <script src="/js/sb-three.js"></script>
+<script src="/js/constants.js"></script>
 <script src="/js/three.js/build/three.js"></script>
 <script src="/js/three.js/examples/js/controls/OrbitControls.js"></script>
 <script src="/js/three.js/examples/js/Detector.js"></script>

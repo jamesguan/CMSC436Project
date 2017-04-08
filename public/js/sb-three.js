@@ -4,7 +4,8 @@
 
 function create3dViz(data) {
     $("#scatterDiv").hide();
-    $("#legendDiv").hide();
+    //$("#legendDiv").hide();
+    $("#scatter").empty();
     if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
     //var stats;
@@ -13,7 +14,7 @@ function create3dViz(data) {
 
     init();
     render(); // remove when using next line for animation loop (requestAnimationFrame)
-    //animate();
+    animate();
 
     function init() {
 
@@ -24,21 +25,25 @@ function create3dViz(data) {
         //renderer.setClearColor( scene.fog.color );
         renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        //renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setSize( 1100, 610 );
         scene.background = new THREE.Color( 0xffffff );
 
         var container = document.getElementById( 'container' );
         container.appendChild( renderer.domElement );
+		
+		//height fitting
+		var fov = 2 * Math.atan( 500 / ( 2 * 250 ) ) * ( 180 / Math.PI );
 
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, .1, 2000 );
-        camera.position.z = 900;
+        camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, .1, 2000 );
+        camera.position.z = 500;
 
-        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls = new THREE.OrbitControls( camera );
         controls.addEventListener( 'change', render ); // remove when using animation loop
         // enable animation loop when using damping or autorotation
         //controls.enableDamping = true;
         //controls.dampingFactor = 0.25;
-        controls.enableZoom = false;
+        controls.enableZoom = true;
 
         /*//adding grid
         var grid = new THREE.GridHelper(500,50);
@@ -98,7 +103,7 @@ function create3dViz(data) {
 
         controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
 
-        stats.update();
+        //stats.update();
 
         render();
 

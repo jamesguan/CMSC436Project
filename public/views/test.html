@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="/js/three.js/build/three.js"></script>
+<script src="/js/three.js/examples/js/controls/OrbitControls.js"></script>
+<script>
+    // Global vars...
+    var container, camera, scene, geometry, mesh, renderer, controls, particles, colors;
+
+    // DOM element...
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    // Camera...
+	fov = 2 * Math.atan( 100 / ( 2 * 250 ) ) * ( 180 / Math.PI );
+	//var aspect = window.innerWidth / window.innerHeight;
+	//fov = 2 * Math.atan( ( 100 / aspect ) / ( 2 * 150 ) ) * ( 180 / Math.PI );
+    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.set(0, 0, 300);
+
+    // Scene...
+    scene = new THREE.Scene();
+    scene.add(camera);
+	
+	
+	//
+		geometry = new THREE.CubeGeometry(100, 100, 100);
+        var geo = new THREE.EdgesGeometry( geometry ); // or WireframeGeometry( geometry )
+
+        var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
+
+        var wireframe = new THREE.LineSegments( geo, mat );
+
+        scene.add( wireframe );
+	//
+
+    // Renderer...
+    renderer = new THREE.WebGLRenderer({
+        clearAlpha: 1
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xffffff, 1);
+    document.body.appendChild(renderer.domElement);
+
+    // Controls...
+    controls = new THREE.OrbitControls(camera);
+
+    // Scatter plot...
+    scatterPlot = new THREE.Object3D();
+    scene.add(scatterPlot);
+
+    // Make grid...
+    xzColor = 'black';
+    xyColor = 'black';
+    yzColor = 'black';
+    /*
+     var gridXZ = new THREE.GridHelper(50, 5);
+     gridXZ.setColors(new THREE.Color(xzColor), new THREE.Color(xzColor));
+     gridXZ.position.set(0, -50, 0);
+     scatterPlot.add(gridXZ);
+     */
+
+/*var gridXY = new THREE.GridHelper(50, 5);
+    gridXY.position.set(0, 0, 0);
+    //gridXY.rotation.x = Math.PI / 2;
+    gridXY.setColors(new THREE.Color(xyColor), new THREE.Color(xyColor));
+    scatterPlot.add(gridXY);*/
+
+    /*
+     var gridYZ = new THREE.GridHelper(50, 5);
+     gridYZ.position.set(-50, 0, 0);
+     gridYZ.rotation.z = Math.PI / 2;
+     gridYZ.setColors(new THREE.Color(yzColor), new THREE.Color(yzColor));
+     scatterPlot.add(gridYZ);
+     */
+    // Plot some random points...
+    geometry = new THREE.Geometry();
+    colors = [];
+
+    for (var i = 0; i < 50; i++) {
+
+        colors[i] = new THREE.Color(1, 1, 1);
+        colors[i].setHSL(1000 / 2000, 1, 0.5);
+
+        var material = new THREE.PointCloudMaterial({
+            size: 5,
+            vertexColors: THREE.VertexColors,
+            transparent: true,
+            useScreenCoordinates: false
+        });
+
+        material.color.setHSL(1.0, 0.2, 0.7);
+
+        var vertex = new THREE.Vector3();
+
+        var max = 50;
+        var min = -50;
+
+        vertex.x = Math.random() * (max - min) + min;
+        vertex.y = Math.random() * (max - min) + min;
+         vertex.z = Math.random() * (max - min) + min;
+
+        geometry.vertices.push(vertex);
+
+    }
+
+    particles = new THREE.PointCloud(geometry, material);
+    particles.sortParticles = true;
+    scatterPlot.add(particles);
+
+    geometry.colors = colors;
+
+    animate();
+
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+        controls.update();
+    }
+
+</script>
+
+</body>
+</html>

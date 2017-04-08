@@ -9,10 +9,6 @@ body {
 #wrapper {
   width: 100%;
 }
-.fileInput{
-  margin-top: 0px;
-  padding-bottom: 5px;
-}
 #page-wrapper {
   padding: 0px;
   min-height: 610px;
@@ -439,14 +435,67 @@ table.dataTable thead .sorting:after {
 }
 
 #legendDiv{
-  border-left: 1px solid #ddd;
+  border-left: 2px solid transparent;
+  border-color: #ddd;
   margin-right: 0px;
+  padding: 5px 5px 0px 5px;
+  overflow: auto;
 }
 
 .row{
   margin-left: 0px;
   margin-right: 0px;
 }
+
+.noPadding{
+  padding: 0px;
+}
+
+.panel{
+  margin: 0px;
+}
+
+#scatterDiv {
+  padding: 5px 5px 0px 5px;
+  overflow:auto;
+}
+
+#scatter{
+  background-color: #f5f5f5;
+}
+
+#resizeBox {
+  margin: auto;
+  width: 52%;
+  border: 1px solid black;
+  padding: 3px 5px 0px 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#legendContainer{
+  height:400px;
+  width:100%;
+  overflow: auto;
+}
+
+.legendText{
+  display:block;
+  padding-bottom: 2px;
+}
+
+body, html {
+  overflow: hidden;
+}
+#fileUpload{
+  display:inline-block;
+}
+.btn{
+  padding: 0px 0px 0px 0px;
+}
+/*.pull-right{
+  width:400px;
+}*/
 
 
 

@@ -44,9 +44,11 @@ $(function() {
 const prefNumberSeries = [1,2,5,10,20,50,100,200,500,1000];
 var selectedHeight = 50, selectedWidth =50;
 var dataStore={};
-var brHeight = window.innerHeight - 5;
+var brHeight = window.innerHeight - 54;
 
 function readData() {
+    $("#legendDiv").hide();
+    $("#scatter").hide();
     d3.csv("spinVSpos.csv", function(error, data) {
         if (error) throw error;
         data = selectRandom1000(data);
@@ -57,7 +59,7 @@ function readData() {
 
 function selectRandom1000(data) {
     var data1 = [];
-    for (i=0; i<100; i++) {
+    for (i=0; i<10; i++) {
         data1[i] = data[Math.round(Math.random()*500000)];
     }
     return createsampleVals(data1);
@@ -65,9 +67,11 @@ function selectRandom1000(data) {
 }
 
 function createViz(data) {
-    drawResizeBox();
-    var svg = d3.select("#scatter").attr("height", brHeight),
-        margin = {top: 20, right: selectedWidth, bottom: selectedHeight, left: 20},
+
+    var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
+        svg.attr("transform", d3.event.transform)
+    })).append("g");
+    var margin = {top: 5, right: selectedWidth, bottom: selectedHeight, left: 25},
         width = $("#scatter").width(),
         height = brHeight,
         domainwidth = width - margin.left - margin.right,
@@ -76,32 +80,37 @@ function createViz(data) {
 
 
     var g = svg.append("g")
-        .attr("transform", "translate(" + margin.top + "," + margin.left + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    g.append("rect")
+    /*g.append("rect")
         .attr("width", width - margin.left)
         .attr("height", height- margin.top)
-        .attr("fill", "#FFFFFF");
+        .attr("fill", "#f5f5f5");*/
 
         var x = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.x);
-            }), d3.max(data, function (d) {
+            }) -1, d3.max(data, function (d) {
                 return parseInt(d.x);
-            })])
+            })+1])
             .range([0, domainwidth]);
         var y = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
+                return parseInt(d.y );
+            })-1, d3.max(data, function (d) {
                 return parseInt(d.y);
-            }), d3.max(data, function (d) {
-                return parseInt(d.y);
-            })])
-            .range([domainheight, 0]);
+            })+1])
+            .range([domainheight-25, 0]);
+
+    g.append("g")
+        .call(d3.axisBottom(x)).attr("transform", "translate(0,584)");
+    g.append("g")
+        .call(d3.axisLeft(y).ticks(9));
 
         data = _.sortBy(data, function(item) {
             return item.val;
         });
-        draw(data.reverse(), g, x, y);
+       draw(data.reverse(), g, x, y);
 }
 
 function createsampleVals(data) {
@@ -131,15 +140,19 @@ function draw(data, g,x, y) {
         g./*selectAll("rect").
         data(data1).enter().*/
         append("rect").
-        attr("x", x(item.x) - dmnsn.width/2).
-        attr("y", y(item.y) - dmnsn.height/2).
+        /*attr("x", x(item.x) - dmnsn.width/2).
+        attr("y", y(item.y) - dmnsn.height/2).*/
+        attr("x", x(item.x) ).
+        attr("y", y(item.y) ).
         attr("width", dmnsn.width).
-        attr("stroke", '#FFFFFF').
-        attr("fill", '#000000').
+        attr("stroke", '#f5f5f5').
+        attr("fill", markerFillClr).
         attr("fill-opacity", 1).
         attr("stroke-width", '.1').
         attr("height", dmnsn.height)/*.attr("transform", "translate(" +x(item.x)+","+y(item.y) +") rotate(10)")*/
     })
+    $("#legendDiv").show();
+    $("#scatter").show();
 }
 
 function normalizeExtremes(num) {
@@ -209,7 +222,7 @@ function drawLegend1() {
                 attr("x", w).
                 attr("y", h+selectedHeight-height).
                 attr("width", prefNumberSeries[j]).
-                attr("fill", '#000000').
+                attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
                 w+=  prefNumberSeries[j] +10;
@@ -218,7 +231,7 @@ function drawLegend1() {
                 attr("x", w).
                 attr("y", h+selectedHeight-height).
                 attr("width", selectedWidth).
-                attr("fill", '#000000').
+                attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
                 break;
@@ -231,7 +244,10 @@ function drawLegend1() {
 }
 
 function drawLegend() {
-    var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height()).append("g");
+    drawResizeBox();
+    //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
+    var g = d3.select("#legend").attr("height", brHeight - 110 + 200).
+    attr("width", 300).append("g");
     var h=0;
     for (i=1; i<=4; i++) {
         var w=0, height=selectedHeight*i/4;
@@ -241,7 +257,7 @@ function drawLegend() {
                 attr("x", w).
                 attr("y", h+selectedHeight-height).
                 attr("width", prefNumberSeries[j]).
-                attr("fill", '#000000').
+                attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
                 w+=  prefNumberSeries[j] +10;
@@ -250,7 +266,7 @@ function drawLegend() {
                 attr("x", w).
                 attr("y", h+selectedHeight-height).
                 attr("width", selectedWidth).
-                attr("fill", '#000000').
+                attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
                 break;
@@ -265,13 +281,13 @@ function drawLegend() {
 function drawResizeBox() {
     var R = Raphael("resizeBox", 100, 100),
         c = R.rect(0, 0, selectedWidth, selectedHeight).attr({
-            fill: "#000000",
+            fill: markerFillClr,
             stroke: "none",
             opacity: 1,
             cursor: "move"
         }),
-        s = R.rect(selectedWidth -20 , selectedHeight-20, 20, 20).attr({
-            fill: "#000000",
+        s = R.rect(selectedWidth -40 , selectedHeight-40, 40, 40).attr({
+            fill: markerFillClr,
             stroke: "none",
             opacity: 1
         }),
@@ -290,6 +306,13 @@ function drawResizeBox() {
 
         },
         rend= function() {
+            if (this.box.attr("height") > 100) {
+                this.box.attr("height", 100);
+            }
+
+            if (this.box.attr("width") > 100) {
+                this.box.attr("width", 100);
+            }
             selectedHeight = this.box.attr("height");
             selectedWidth = this.box.attr("width");
             $("#scatter").empty();
@@ -308,4 +331,8 @@ function drawResizeBox() {
 
 function a() {
     create3dViz(dataStore);
+}
+
+function zoom(svg) {
+    svg.attr("transform", d3.event.transform);
 }
