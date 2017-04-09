@@ -474,7 +474,7 @@ table.dataTable thead .sorting:after {
 }
 
 #legendContainer{
-  height:400px;
+  height:420px;
   width:100%;
   overflow: auto;
 }
@@ -482,6 +482,7 @@ table.dataTable thead .sorting:after {
 .legendText{
   display:block;
   padding-bottom: 2px;
+  padding-left:2px;
 }
 
 body, html {

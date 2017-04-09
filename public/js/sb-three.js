@@ -21,7 +21,9 @@ function create3dViz(data) {
         scene = new THREE.Scene();
         //scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
-        renderer = new THREE.WebGLRenderer();
+        renderer = new THREE.WebGLRenderer({
+            clearAlpha: 1
+        });
         //renderer.setClearColor( scene.fog.color );
         renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
@@ -36,7 +38,7 @@ function create3dViz(data) {
 		var fov = 2 * Math.atan( 500 / ( 2 * 250 ) ) * ( 180 / Math.PI );
 
         camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, .1, 2000 );
-        camera.position.z = 500;
+        camera.position.set(0, 0, 500);
 
         controls = new THREE.OrbitControls( camera );
         controls.addEventListener( 'change', render ); // remove when using animation loop
@@ -73,7 +75,7 @@ function create3dViz(data) {
 
         // lights
 
-        light = new THREE.DirectionalLight( 0xffffff );
+       /* light = new THREE.DirectionalLight( 0xffffff );
         light.position.set( 1, 1, 1 );
         //scene.add( light );
 
@@ -82,7 +84,7 @@ function create3dViz(data) {
         //scene.add( light );
 
         light = new THREE.AmbientLight( 0x222222 );
-       // scene.add( light );
+       // scene.add( light );*/
 
         window.addEventListener( 'resize', onWindowResize, false );
 
@@ -119,23 +121,23 @@ function create3dViz(data) {
         var x = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.x);
-            }), d3.max(data, function (d) {
+            })-1, d3.max(data, function (d) {
                 return parseInt(d.x);
-            })])
+            })+1])
             .range([-250, 250]);
         var y = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.y);
-            }), d3.max(data, function (d) {
+            })-1, d3.max(data, function (d) {
                 return parseInt(d.y);
-            })])
+            })+1])
             .range([-250, 250]);
         var z = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.z);
-            }), d3.max(data, function (d) {
+            })-1, d3.max(data, function (d) {
                 return parseInt(d.z);
-            })])
+            })+1])
             .range([-250, 250]);
 
         var max = d3.max(data, function (d) {
@@ -150,7 +152,7 @@ function create3dViz(data) {
         for (i=0; i<data.length; i++) {
             var item = data[i];
             var dmnsn = getDimensions(item.val, groups, ratio);
-            var geometry = new THREE.PlaneGeometry(dmnsn.width, dmnsn.height);
+            var geometry = new THREE.CubeGeometry(dmnsn.width, dmnsn.height, 1);
             var material = new THREE.MeshBasicMaterial({color: 0x000000});
 
             var mesh = new THREE.Mesh( geometry, material );
@@ -159,11 +161,13 @@ function create3dViz(data) {
             }
 
 
-            mesh.setColor("black")  //change color using hex value or
+            mesh.setColor("grey")  //change color using hex value or
             //mesh.setColor("blue")    //set material color by using color name
-            mesh.position.x = x(item.x) - dmnsn.width/2;
-            mesh.position.y = y(item.y) - dmnsn.height/2;
+            mesh.position.x = x(item.x);
+            mesh.position.y = y(item.y);
             mesh.position.z = z(item.z);
+            mesh.flipSided = false;
+            mesh.doubleSided = true;
             //mesh.position.z = ( Math.random() - 0.5 ) * 1000;
             //mesh.updateMatrix();
             //mesh.matrixAutoUpdate = false;

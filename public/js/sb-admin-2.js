@@ -45,6 +45,7 @@ const prefNumberSeries = [1,2,5,10,20,50,100,200,500,1000];
 var selectedHeight = 50, selectedWidth =50;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
+var scalingRatio = 0;
 
 function readData() {
     $("#legendDiv").hide();
@@ -59,7 +60,7 @@ function readData() {
 
 function selectRandom1000(data) {
     var data1 = [];
-    for (i=0; i<10; i++) {
+    for (i=0; i<50; i++) {
         data1[i] = data[Math.round(Math.random()*500000)];
     }
     return createsampleVals(data1);
@@ -174,7 +175,8 @@ function normalizeExtremes(num) {
 }
 
 function calculateScalingRatio(num) {
-    return (num/(selectedHeight*selectedWidth));
+    scalingRatio = num/(selectedHeight*selectedWidth)
+    return scalingRatio;
 }
 
 function legendGroup() {
@@ -246,35 +248,46 @@ function drawLegend1() {
 function drawLegend() {
     drawResizeBox();
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
-    var g = d3.select("#legend").attr("height", brHeight - 110 + 200).
-    attr("width", 300).append("g");
+    var g = d3.select("#legend").attr("height", brHeight - 80).
+    attr("width", 370).append("g");
     var h=0;
-    for (i=1; i<=4; i++) {
-        var w=0, height=selectedHeight*i/4;
+    for (i=1; i<=5; i++) {
+        var w=5, height=selectedHeight*i/5;
+        var y = h+selectedHeight-height;
         for (j=0; j<prefNumberSeries.length; j++) {
             if (prefNumberSeries[j] <=selectedWidth) {
                 g.append("rect").
                 attr("x", w).
-                attr("y", h+selectedHeight-height).
+                attr("y", y).
                 attr("width", prefNumberSeries[j]).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
-                w+=  prefNumberSeries[j] +10;
+                g.append("text")
+                    .attr("x", w-3)
+                    .attr("y", h+selectedHeight +10)
+                    .attr("dy", ".35em")
+                    .text(parseInt(prefNumberSeries[j]*height*(scalingRatio)));
+                w+=  prefNumberSeries[j] +26;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
-                attr("y", h+selectedHeight-height).
+                attr("y", y).
                 attr("width", selectedWidth).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
+                g.append("text")
+                    .attr("x", w)
+                    .attr("y", h+selectedHeight +10)
+                    .attr("dy", ".35em")
+                    .text(parseInt(selectedWidth*height*(scalingRatio)));
                 break;
             } else {
                 break;
             }
         }
-        h+= height+ 40;
+        h+= height+ 50;
     }
 }
 
@@ -336,3 +349,24 @@ function a() {
 function zoom(svg) {
     svg.attr("transform", d3.event.transform);
 }
+
+/*d3.select("#fileUpload").on("click", function(){
+    document.getElementById("hidden-file-upload").click();
+});*/
+
+d3.select("#fileUpload").on("change", function(){
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        //Files vars
+        var uploadFile = this.files[0];
+        var filereader = new window.FileReader();
+
+        filereader.onload = function () {
+            //Txt file output
+            var txtRes = filereader.result;
+            try {
+                //TODO Read CSV
+                var data = d3.csv.parse(txtRes);
+            }
+        }
+    }
+});
