@@ -46,6 +46,7 @@ var selectedHeight = 50, selectedWidth =50;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
 var scalingRatio = 0;
+var firstClickMap = true;
 
 function readData() {
     $("#legendDiv").hide();
@@ -73,7 +74,7 @@ function createViz(data) {
         svg.attr("transform", d3.event.transform)
     })).append("g");
     var margin = {top: 5, right: selectedWidth, bottom: selectedHeight, left: 25},
-        width = $("#scatter").width(),
+        width = $("#scatterDiv").width(),
         height = brHeight,
         domainwidth = width - margin.left - margin.right,
         domainheight = height - margin.top - margin.bottom;
@@ -342,8 +343,32 @@ function drawResizeBox() {
 
 }
 
-function a() {
+function threeD() {
+    $("#container").empty();
     create3dViz(dataStore);
+    $("#map").hide();
+    $("#scatterDiv").hide();
+    $("#container").show();
+}
+
+function twoD() {
+    $("#scatter").empty();
+    $("#legend").empty();
+    $("#resizeBox").empty();
+    readData();
+    $("#scatterDiv").show();
+    $("#map").hide();
+    $("#container").hide();
+}
+
+function mapViz() {
+    $("#map").show();
+    if(firstClickMap) {
+        initMap();
+        firstClickMap = false;
+    }
+    $("#scatterDiv").hide();
+    $("#container").hide();
 }
 
 function zoom(svg) {
@@ -367,6 +392,25 @@ d3.select("#fileUpload").on("change", function(){
                 //TODO Read CSV
                 var data = d3.csv.parse(txtRes);
             }
+            catch(e) {
+
+            }
         }
     }
 });
+
+function createCCGlyphs(markerId, data, station) {
+
+    var vis = d3.select($("#"+markerId).get(0))
+        .append("svg")
+        .attr("width", selectedWidth)
+        .attr("height", selectedHeight);
+
+    vis.append("rect").
+    attr("x", 0).
+    attr("y", 0).
+    attr("width", Math.random() * selectedWidth).
+    attr("opacity", 1).
+    attr("height", Math.random() * selectedHeight).attr("fill", markerFillClr);
+
+}

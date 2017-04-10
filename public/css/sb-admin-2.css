@@ -5,14 +5,18 @@
  */
 body {
   background-color: #f8f8f8;
+  height: 100%;
+  width: 100%;
 }
 #wrapper {
   width: 100%;
+  height: 100%;
 }
 #page-wrapper {
   padding: 0px;
   min-height: 610px;
   background-color: white;
+  height: 100%; width: 100%;
 }
 @media (min-width: 768px) {
   #page-wrapper {
@@ -21,6 +25,7 @@ body {
     padding: 0px;
     min-height: 610px;
     border-left: 1px solid #e7e7e7;
+    height: 100%; width: 100%;
   }
 }
 .navbar-top-links {
@@ -445,6 +450,8 @@ table.dataTable thead .sorting:after {
 .row{
   margin-left: 0px;
   margin-right: 0px;
+  height: 100%;
+  width: 100%;
 }
 
 .noPadding{
@@ -487,12 +494,34 @@ table.dataTable thead .sorting:after {
 
 body, html {
   overflow: hidden;
+  height: 100%; width: 100%;
 }
 #fileUpload{
   display:inline-block;
 }
 .btn{
   padding: 0px 0px 0px 0px;
+}
+.marker{
+  z-index: 3;
+}
+
+#overlay {
+  height: 100%;
+  width: 30%;
+  filter: alpha(opacity = 0);
+  position: absolute;
+  /*top:0; bottom:0; left:0; right:0;*/
+  display:block;
+  z-index:1;
+  background:transparent;
+}
+#map {
+  height: 95%;
+  /* width: 100%;*/
+  /* margin-left: 0px;*/
+  z-index: 2;
+  position: relative;
 }
 /*.pull-right{
   width:400px;

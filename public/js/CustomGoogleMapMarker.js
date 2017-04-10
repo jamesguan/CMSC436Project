@@ -35,7 +35,7 @@ function initializeCustomMapMarker() {
 
 			google.maps.event.addDomListener(div, "click", function(event) {
 				//alert('You clicked on a custom marker!' + self.args.marker_id);
-                createViz(self.args.marker_id.replaceAll("-","."));
+                //createViz1(self.args.marker_id.replaceAll("-","."));
 				//google.maps.event.trigger(self, "click");
 			});
 

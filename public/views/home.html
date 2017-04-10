@@ -50,8 +50,9 @@
                                 <span class="fa fa-caret-down" title="Toggle dropdown menu"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#"><i class="fa fa-pencil fa-fw" ></i> 2D</a></li>
-                                <li><a href="#" onclick="a()"><i class="fa fa-unlock"></i> 3D</a></li>
+                                <li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
+                                <li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>
+                                <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>
                             </ul>
                         </div>
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
@@ -68,6 +69,8 @@
             <div class="col-lg-10" id="scatterDiv">
                 <svg id="scatter" width="100%"></svg>
             </div>
+            <div id="map" class="col-lg-10 "></div>
+            <div id ="overlay" class="overlay"></div>
             <div id="legendDiv" class="col-lg-2">
                 <span class="legendText">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true"></i> to resize the markers</span>
                 <div id="resizeBox"></div>
@@ -99,12 +102,18 @@
 <!-- Custom Theme JavaScript -->
 <script src="/js/sb-admin-2.js"></script>
 <script src="/js/sb-three.js"></script>
+<script src="/js/chesapeakeBay.js"></script>
+<script src="/js/map.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBt0_95IHvldkB24j0wUj6OX82WWyZUbzg&callback=initMap1"
+        async defer ></script>
+<script type="text/javascript" src="/js/CustomGoogleMapMarker.js"></script>
 <script src="/js/constants.js"></script>
 <script src="/js/three.js/build/three.js"></script>
 <script src="/js/three.js/examples/js/controls/OrbitControls.js"></script>
 <script src="/js/three.js/examples/js/Detector.js"></script>
 <script>
-    readData();
+    //$("#map").hide();
+    twoD();
 </script>
 </body>
 

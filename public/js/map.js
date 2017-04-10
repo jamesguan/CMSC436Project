@@ -170,8 +170,11 @@ function plotStations(map, data){
     }
 }
 
-function initMap() {
+function initMap1() {
+    
+}
 
+function initMap() {
     String.prototype.replaceAll = function(target, replacement) {
         return this.split(target).join(replacement);
     };
@@ -233,9 +236,10 @@ function initMap() {
 
     google.maps.event.addListenerOnce(map, 'idle', function(){
         mapData.stationData.forEach( function(d, index) {
-            createGlyph(d.id.replaceAll(".", "-"), mapData, d);
+            //createGlyph(d.id.replaceAll(".", "-"), mapData, d);
+            createCCGlyphs(d.id.replaceAll(".", "-"), mapData, d);
         });
-        loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
+        //loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
     });
 
     /*var buttonBarDiv = document.getElementById("bar");
@@ -247,56 +251,8 @@ function initMap() {
 
 }
 
-function initMap2() {
-    var myLatlng = new google.maps.LatLng(38.014390,-76.177689);
-    var mapOptions = {
-        zoom: 9,
-        center: myLatlng,
-        disableDefaultUI: true
-    }
-    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-}
 
 
-// This is called to initialize the map
-function initMap1(){
-
-    // Latitude coordinates are set to center or chesapeake bay
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 38.014390, lng: -76.177689},
-        zoom: 8
-    });
-
-    image = {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8.5,
-        fillColor: "#0000FF",
-        fillOpacity: 0.6,
-        strokeWeight: 0.4
-    };
-
-    shape = {
-        coords: [1, 1, 1, 20, 18, 20, 18, 1],
-        type: 'poly'
-    };
-
-    // Read in the data to grab the longitude and latitude for the map
-    d3.csv("cedr.csv", function(error, raw_data){
-        if(error) throw error;
-
-        // Sort the data for easier use
-        var sortedData = raw_data.sort(compareStation);
-
-        // Call function to plot the stations using the data
-        plotStations(map, sortedData);
-
-        //sortedData = null;
-        //raw_data = null;
-        drawScale();
-    });
-
-    //loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
-}
 
 //James changes
 var chesapeakeBay = {lat: 38.014390, lng: -76.177689}

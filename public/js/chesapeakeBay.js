@@ -40,7 +40,7 @@ function fetchMonthData(month) {
     fetchData(parameters);
 }
 
-function createViz(stationId) {
+function createViz1(stationId) {
     $('#myModal').modal('show');
     //d3.selectAll("svg:g > *").remove();
     $("#stationId").text(stationId);
@@ -131,7 +131,7 @@ function updateViz(dateRange) {
     //alert(params.to + " : " + params.from);
 }
 
-$(function() {
+/*$(function() {
 
     $('input[name="datefilter"]').daterangepicker({
         autoUpdateInput: false,
@@ -149,7 +149,7 @@ $(function() {
         $(this).val('');
     });
 
-});
+});*/
 
 function createChart(data, update, chartType) {
     //var data = JSON.parse(data.responseText);
@@ -170,12 +170,12 @@ function createGlyph(markerId, data, station) {
         .attr("height", 64);
     var WIDTH = 80,
         HEIGHT = 80;
-    var wTempSScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempS]);
-    var wTempBScale = d3.scale.linear().range([0, 20]).domain([0,data.maxWTempB]);
-    var salinitySScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSalinityS]);
-    var salinityBScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSalinityB]);
-    var secchiScale = d3.scale.linear().range([0, 20]).domain([0,data.maxSecchi]);
-    var chlaScale = d3.scale.linear().range([0, 20]).domain([0,data.maxCHLA]);
+    var wTempSScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxWTempS]);
+    var wTempBScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxWTempB]);
+    var salinitySScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxSalinityS]);
+    var salinityBScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxSalinityB]);
+    var secchiScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxSecchi]);
+    var chlaScale = d3.scaleLinear().range([0, 20]).domain([0,data.maxCHLA]);
     vis.append("rect").
     attr("x", 22).
     attr("y", 22).
