@@ -72,7 +72,7 @@
             <div id="map" class="col-lg-10 "></div>
             <div id ="overlay" class="overlay"></div>
             <div id="legendDiv" class="col-lg-2">
-                <span class="legendText">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true"></i> to resize the markers</span>
+                <span id="resizeBoxText" class="legendText">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true"></i> to resize the markers</span>
                 <div id="resizeBox"></div>
                 <span class="legendText">Legend:</span>
                 <div id="legendContainer">
@@ -113,6 +113,7 @@
 <script src="/js/three.js/examples/js/Detector.js"></script>
 <script>
     vizRouter("2D", true);
+    $("#overlay").hide();
 </script>
 </body>
 

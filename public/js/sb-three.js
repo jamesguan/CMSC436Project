@@ -213,12 +213,12 @@ function addShape( scene, shape, extrudeSettings, color, x, y, z, rx, ry, rz, s 
         transparent : true,
         side: THREE.DoubleSide } ) );
     mesh.position.set( x, y, z );
-   // mesh.rotation.set( rx, ry, rz );
+    mesh.rotation.set( rx, ry, rz );
     mesh.scale.set( s, s, s );
     scene.add( mesh );
 }
 
-function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
+/*function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
 
     //var numOfRect = Math.ceil(dmnsn.width/10);
 
@@ -230,63 +230,115 @@ function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
             var shape = drawRectangle(barWidth, selectedHeight);
             shape.autoClose = true;
             var points = shape.createPointsGeometry();
-            //var spacedPoints = shape.createSpacedPointsGeometry( 50 );
-            // solid line
+
             var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             line.position.set( x + i*barWidth, y, z);
             //line.rotation.set( item.directionX, item.directionY, item.directionZ );
             line.scale.set( s, s, s );
             scene.add( line );
         }
-    } /*else {
-        console.log("in < 1");
-        var shape = drawRectangle(0, selectedHeight);
-        shape.autoClose = true;
-        var points = shape.createPointsGeometry();
-        //var spacedPoints = shape.createSpacedPointsGeometry( 50 );
-        // solid line
-        var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
-        line.position.set( x, y, z);
-       // line.rotation.set( item.directionX, item.directionY, item.directionZ );
-        line.scale.set( s, s, s );
-        scene.add( line );
     }
-*/
+}*/
 
+function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
 
+    //var numOfRect = Math.ceil(dmnsn.width/10);
+
+    var numOfRect = dmnsn.width/10;
+    var barWidth = 5;
+
+    if (numOfRect>=1) {
+        //for (var i=0; i<numOfRect; i++) {
+            var shape = drawRectangle1(barWidth, selectedHeight, numOfRect);
+            shape.autoClose = true;
+            var points = shape.createPointsGeometry();
+
+            var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
+            line.position.set( x , y, z);
+            line.rotation.set( item.directionX, item.directionY, item.directionZ );
+            line.scale.set( s, s, s );
+            scene.add( line );
+        //}
+    }
+}
+
+function drawRectangle1(rectLength, rectWidth, n) {
+    var rectShape = new THREE.Shape();
+    rectShape.moveTo( 0,0 );
+    rectShape.lineTo( 0, rectWidth );
+    rectShape.lineTo( rectLength*n, rectWidth );
+    rectShape.lineTo( rectLength*n, 0 );
+    rectShape.lineTo( 0, 0 );
+    for (var i=1; i<n; i++) {
+        rectShape.moveTo( rectLength*i,rectWidth );
+        rectShape.lineTo( rectLength*i, 0 );
+    }
+    return rectShape;
+
+}
+
+function mergeMeshes (meshes) {
+    var combined = new THREE.Geometry();
+
+    for (var i = 0; i < meshes.length; i++) {
+        meshes[i].updateMatrix();
+        combined.merge(meshes[i].geometry, meshes[i].matrix);
+    }
+
+    return combined;
 }
 
 function draw3DLegend() {
     $("#legend").empty();
     var g = d3.select("#legend").attr("height", 300).
-    attr("width", 300).append("g");
+    attr("width", 200).append("g");
     var w=10, h=10;
     var height=selectedHeight;
     for (var i=0; i<prefNumberSeries.length; i++) {
         if (prefNumberSeries[i] > selectedWidth) {
             return;
         }
-        if (w+prefNumberSeries > 300) {
+        if (w+prefNumberSeries > 200) {
             w=10; h+=140;
         }
-        g.append("rect").
-        attr("x", w).
-        attr("y", h).
-        attr("width", prefNumberSeries[i]).
-        attr("fill", "#ffffff").
-        attr("fill-opacity", 1).
-        attr("stroke", '#073f99').
-        attr("stroke-width", '1').
-        attr("height", height);
-        g.append("text")
-            .attr("x", w-3)
-            .attr("y", h+ height +10)
-            .attr("dy", ".35em")
-            .text(parseInt(prefNumberSeries[i]*height*(scalingRatio)));
+        drawLegendRects(g, w, h, prefNumberSeries[i], height, scalingRatio)
         w+=  prefNumberSeries[i] +26;
     }
 }
 
-function drawLBs(g) {
+function drawLBs(g, w, h, width, height, scalingRatio) {
+    var fillClr = "#ffffff";
+    var strkClr = "#073f99";
+    var strokeWidth = '.2';
+    if (width > 1) {
+        strokeWidth = '.5';
+    }
+    g.append("rect").
+    attr("x", w).
+    attr("y", h).
+    attr("width", width).
+    attr("fill", fillClr).
+    attr("fill-opacity", 1).
+    attr("stroke", strkClr).
+    attr("stroke-width", strokeWidth).
+    attr("height", height);
+}
 
+function drawLegendRects(g, w, h, width, height, scalingRatio) {
+    var numOfRect = width/10;
+    var barWidth = 5;
+
+    if (numOfRect>=1) {
+        for (var i=0; i<numOfRect; i++) {
+            drawLBs(g, w+ i*barWidth, h, barWidth, height, scalingRatio);
+        }
+    } else {
+        drawLBs(g, w, h, 1, height, scalingRatio);
+    }
+
+    g.append("text")
+        .attr("x", w-3)
+        .attr("y", h+ height +10)
+        .attr("dy", ".35em")
+        .text(parseInt(width*height*(scalingRatio)));
 }
