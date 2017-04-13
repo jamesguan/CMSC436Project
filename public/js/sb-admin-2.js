@@ -41,7 +41,8 @@ $(function() {
     }
 });
 
-const prefNumberSeries = [1,2,5,10,20,50,100,200,500,1000];
+var prefNumberSeries = [];
+const twoDseries = [1,2,5,10,20,50,100,200,500,1000];
 var selectedHeight = 50, selectedWidth =50;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
@@ -344,6 +345,9 @@ function drawResizeBox() {
 }
 
 function threeD() {
+    selectedHeight= 100;
+    selectedWidth = 50;
+    prefNumberSeries = threeDSeries;
     $("#container").empty();
     create3dViz(dataStore);
     $("#map").hide();
@@ -352,16 +356,22 @@ function threeD() {
 }
 
 function twoD() {
+    selectedHeight= 50;
+    selectedWidth = 50;
+    prefNumberSeries = twoDseries;
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
-    readData();
-    $("#scatterDiv").show();
     $("#map").hide();
     $("#container").hide();
+    createViz(dataStore);
+    $("#scatterDiv").show();
 }
 
 function mapViz() {
+    selectedHeight= 50;
+    selectedWidth = 50;
+    prefNumberSeries = twoDseries;
     $("#map").show();
     if(firstClickMap) {
         initMap();
@@ -375,9 +385,31 @@ function zoom(svg) {
     svg.attr("transform", d3.event.transform);
 }
 
-/*d3.select("#fileUpload").on("click", function(){
-    document.getElementById("hidden-file-upload").click();
-});*/
+function vizRouter(type, pageLoad, data) {
+    if (pageLoad) {
+        $("#map").hide();
+        prefNumberSeries = twoDseries;
+        readData();
+        return;
+    }
+    data = data || dataStore;
+    if(type == "2D") {
+        selectedHeight= 50;
+        selectedWidth = 50;
+        prefNumberSeries = twoDseries;
+        createVizFromFile(data);
+    } else if (type == "3D") {
+        selectedHeight= 100;
+        selectedWidth = 50;
+        prefNumberSeries = threeDSeries;
+        threeD();
+    } else if(type == "Maps") {
+        selectedHeight= 50;
+        selectedWidth = 50;
+        prefNumberSeries = twoDseries;
+        mapViz();
+    }
+}
 
 d3.select("#fileUpload").on("change", function(){
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -390,14 +422,28 @@ d3.select("#fileUpload").on("change", function(){
             var txtRes = filereader.result;
             try {
                 //TODO Read CSV
-                var data = d3.csv.parse(txtRes);
+                var data = d3.csvParse(txtRes);
+                vizRouter("2D", false, data);
             }
             catch(e) {
 
             }
         }
+        filereader.readAsBinaryString(uploadFile);
     }
 });
+
+function createVizFromFile(data) {
+    data = selectRandom1000(data);
+    dataStore = data;
+    $("#scatter").empty();
+    $("#legend").empty();
+    $("#resizeBox").empty();
+    $("#map").hide();
+    $("#container").hide();
+    createViz(data);
+    $("#scatterDiv").show();
+}
 
 function createCCGlyphs(markerId, data, station) {
 
