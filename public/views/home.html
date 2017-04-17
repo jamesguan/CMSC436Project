@@ -42,12 +42,24 @@
             <div class="col-lg-12 noPadding">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> Sample Chart
+                    <i class="fa fa-bar-chart-o fa-fw"></i> GeoViz
                     <div class="pull-right">
+                        <label class="qlabel">Select quantities</label>
+                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <select id="quantities" onchange="getQuantity(this);">
+                            <option value="-1" label="Select"></option>
+                        </select>
+                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <i class="fa fa-upload clickable" onclick="uploadTexture()" title="Click to upload texture" aria-hidden="true"></i>
+                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
+                        <input class="fileInput clickable" id="fileUpload" type="file">
+                        <input type="file" id="textureFile" style="display:none">
+                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
                         <div class="btn-group">
-                            <a class="btn btn-primary" href="#"><i class="fa fa-cog" aria-hidden="true"></i></i> Options</a>
+                            <!--<a class="btn btn-primary" href="#"><i class="fa fa-cog" aria-hidden="true"></i></i> </a>-->
                             <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-                                <span class="fa fa-caret-down" title="Toggle dropdown menu"></span>
+                                <span class="fa fa-cog fa-lg" title="Toggle options"></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
@@ -55,10 +67,6 @@
                                 <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>
                             </ul>
                         </div>
-                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                        <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
-                        <input class="fileInput" id="fileUpload" type="file">
-
                     </div>
                 </div>
             </div>
@@ -103,6 +111,7 @@
 <script src="/js/sb-admin-2.js"></script>
 <script src="/js/sb-three.js"></script>
 <script src="/js/chesapeakeBay.js"></script>
+<script src="/js/underscore.js"></script>
 <script src="/js/map.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBt0_95IHvldkB24j0wUj6OX82WWyZUbzg&callback=initMap1"
         async defer ></script>

@@ -42,18 +42,22 @@ $(function() {
 });
 
 var prefNumberSeries = [];
-const twoDseries = [1,2,5,10,20,50,100,200,500,1000];
-var selectedHeight = 50, selectedWidth =50;
+const twoDseries = [1,5,10,50,100,200,500,1000];
+var selectedHeight = 50, selectedWidth = 50;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
 var scalingRatio = 0;
 var firstClickMap = true;
+var orientedViz = false;
+var is3D = false;
+var quantitySelected;
 
 function readData() {
     $("#legendDiv").hide();
     $("#scatter").hide();
     d3.csv("spinVSpos.csv", function(error, data) {
         if (error) throw error;
+        populateDropdown(data.columns);
         data = selectRandom1000(data);
         dataStore = data;
         createViz(data);
@@ -151,7 +155,8 @@ function draw(data, g,x, y) {
         attr("stroke", '#f5f5f5').
         attr("fill", markerFillClr).
         attr("fill-opacity", 1).
-        attr("stroke-width", '.1').
+        attr("stroke-width", '.4').
+        attr("stroke-opacity", '.5').
         attr("height", dmnsn.height)/*.attr("transform", "translate(" +x(item.x)+","+y(item.y) +") rotate(10)")*/
     })
     $("#legendDiv").show();
@@ -228,6 +233,9 @@ function drawLegend1() {
                 attr("width", prefNumberSeries[j]).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
+                attr("stroke", '#ffffff').
+                attr("stroke-width", '.4').
+                attr("stroke-opacity", '.5').
                 attr("height", height);
                 w+=  prefNumberSeries[j] +10;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
@@ -235,6 +243,9 @@ function drawLegend1() {
                 attr("x", w).
                 attr("y", h+selectedHeight-height).
                 attr("width", selectedWidth).
+                attr("stroke", '#ffffff').
+                attr("stroke-width", '.4').
+                attr("stroke-opacity", '.5').
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
@@ -253,8 +264,8 @@ function drawLegend() {
     var g = d3.select("#legend").attr("height", brHeight - 80).
     attr("width", 370).append("g");
     var h=0;
-    for (i=1; i<=5; i++) {
-        var w=5, height=selectedHeight*i/5;
+    for (i=1; i<=4; i++) {
+        var w=5, height=selectedHeight*i/4;
         var y = h+selectedHeight-height;
         for (j=0; j<prefNumberSeries.length; j++) {
             if (prefNumberSeries[j] <=selectedWidth) {
@@ -264,19 +275,25 @@ function drawLegend() {
                 attr("width", prefNumberSeries[j]).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
+                attr("stroke", '#ffffff').
+                attr("stroke-width", '.4').
+                attr("stroke-opacity", '.5').
                 attr("height", height);
                 g.append("text")
                     .attr("x", w-3)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
                     .text(parseInt(prefNumberSeries[j]*height*(scalingRatio)));
-                w+=  prefNumberSeries[j] +26;
+                w+=  prefNumberSeries[j] +30;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
                 attr("y", y).
                 attr("width", selectedWidth).
                 attr("fill", markerFillClr).
+                attr("stroke", '#ffffff').
+                attr("stroke-width", '.4').
+                attr("stroke-opacity", '.5').
                 attr("fill-opacity", 1).
                 attr("height", height);
                 g.append("text")
@@ -352,6 +369,9 @@ function threeD() {
     create3dViz(dataStore);
     $("#map").hide();
     $("#scatterDiv").hide();
+    $("#resizeBox").hide();
+    $("#resizeBoxText").hide();
+    $("#legendContainer").height("590");
     $("#container").show();
 }
 
@@ -366,6 +386,9 @@ function twoD() {
     $("#container").hide();
     createViz(dataStore);
     $("#scatterDiv").show();
+    $("#resizeBox").show();
+    $("#resizeBoxText").show();
+
 }
 
 function mapViz() {
@@ -423,6 +446,8 @@ d3.select("#fileUpload").on("change", function(){
             try {
                 //TODO Read CSV
                 var data = d3.csvParse(txtRes);
+                populateDropdown(data.columns);
+                determmineVizType(data.columns);
                 vizRouter("2D", false, data);
             }
             catch(e) {
@@ -460,3 +485,46 @@ function createCCGlyphs(markerId, data, station) {
     attr("height", Math.random() * selectedHeight).attr("fill", markerFillClr);
 
 }
+
+function uploadTexture() {
+    $('#textureFile').trigger('click');
+}
+
+d3.select("#textureFile").on("change", function(){
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        //Files vars
+        var uploadFile = this.files[0];
+        var filereader = new window.FileReader();
+
+        filereader.onload = function () {
+            $("#scatter").css("background-image", "url(" +filereader.result + ")");
+        }
+        filereader.readAsDataURL(uploadFile);
+    }
+});
+
+function populateDropdown(columns) {
+    var quants = _.filter(columns, function(c) {
+       return c.includes("q_");
+    });
+    $.each(quants, function(key, value) {
+        var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
+        $('#quantities')
+            .append(option);
+    });
+}
+
+function determmineVizType(columns) {
+    if (_.indexOf(columns, "z")!=-1) {
+        is3D = true;
+    }
+    if (_.indexOf(columns, "directionZ")!=-1) {
+        orientedViz = true;
+    }
+
+}
+
+function getQuantity(quant) {
+    quantitySelected = quant.value;
+}
+

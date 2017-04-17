@@ -27,7 +27,7 @@ function create3dViz(data) {
         renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
         //renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.setSize( 1100, 610 );
+		renderer.setSize( 1100, 610, false );
         scene.background = new THREE.Color( 0xffffff );
 
         var container = document.getElementById( 'container' );
@@ -37,26 +37,28 @@ function create3dViz(data) {
 		var fov = 2 * Math.atan( 500 / ( 2 * 250 ) ) * ( 180 / Math.PI );
 
         camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, .1, 2000 );
-        camera.position.set(0, 0, 500);
+        camera.position.set(0, 0, 530);
 
         var light = new THREE.PointLight( 0xffffff, 0.8 );
         camera.add( light );
 
-        controls = new THREE.OrbitControls( camera );
+        controls = new THREE.OrbitControls( camera, container );
         controls.addEventListener( 'change', render ); // remove when using animation loop
 
         controls.enableZoom = true;
 
 
         //Adding the geometry
-        var geometry = new THREE.CubeGeometry(500, 500, 500);
+        var geometry = new THREE.CubeGeometry(800, 500, 500);
         var geo = new THREE.EdgesGeometry( geometry ); // or WireframeGeometry( geometry )
 
-        var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
+        var mat = new THREE.LineBasicMaterial( { color: 0x767776, linewidth: 2 } );
 
         var wireframe = new THREE.LineSegments( geo, mat );
 
         scene.add( wireframe );
+
+        scene.add( new THREE.AxisHelper( 500 ) );
 
         draw3DViz(data, scene);
 
@@ -96,7 +98,7 @@ function create3dViz(data) {
             })-1, d3.max(data, function (d) {
                 return parseInt(d.x);
             })+1])
-            .range([-250, 250]);
+            .range([-400, 400]);
         var y = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.y);
@@ -253,7 +255,10 @@ function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
             shape.autoClose = true;
             var points = shape.createPointsGeometry();
 
+            //var geo = new THREE.EdgesGeometry( points ); // or WireframeGeometry( geometry )
+
             var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
+            //var line = new THREE.Line( geo, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             line.position.set( x , y, z);
             line.rotation.set( item.directionX, item.directionY, item.directionZ );
             line.scale.set( s, s, s );
@@ -264,14 +269,19 @@ function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
 
 function drawRectangle1(rectLength, rectWidth, n) {
     var rectShape = new THREE.Shape();
-    rectShape.moveTo( 0,0 );
-    rectShape.lineTo( 0, rectWidth );
-    rectShape.lineTo( rectLength*n, rectWidth );
-    rectShape.lineTo( rectLength*n, 0 );
-    rectShape.lineTo( 0, 0 );
-    for (var i=1; i<n; i++) {
-        rectShape.moveTo( rectLength*i,rectWidth );
-        rectShape.lineTo( rectLength*i, 0 );
+    //rectShape.lineTo( rectLength*n, 0 );
+    //rectShape.lineTo( 0, 0 );
+    rectShape.moveTo(0,0);
+    for (var i=1; i<=n; i++) {
+        rectShape.lineTo( (i-1)*rectLength,rectWidth);
+        rectShape.moveTo(i*rectLength, rectWidth);
+        rectShape.lineTo( i*rectLength, 0 );
+        //rectShape.lineTo( rectLength*n, rectWidth );
+        //rectShape.moveTo( rectLength*i, 0 );
+        //rectShape.lineTo( rectLength*i,rectWidth );
+        //rectShape.moveTo( rectLength*i, 0 );
+        //rectShape.moveTo( rectLength*i, 0 );
+
     }
     return rectShape;
 
@@ -308,7 +318,8 @@ function draw3DLegend() {
 
 function drawLBs(g, w, h, width, height, scalingRatio) {
     var fillClr = "#ffffff";
-    var strkClr = "#073f99";
+   // var strkClr = "#073f99";
+    var strkClr = "#000000";
     var strokeWidth = '.2';
     if (width > 1) {
         strokeWidth = '.5';
@@ -320,6 +331,7 @@ function drawLBs(g, w, h, width, height, scalingRatio) {
     attr("fill", fillClr).
     attr("fill-opacity", 1).
     attr("stroke", strkClr).
+    attr("stroke-opacity", 1).
     attr("stroke-width", strokeWidth).
     attr("height", height);
 }

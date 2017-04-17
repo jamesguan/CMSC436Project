@@ -237,7 +237,7 @@ function initMap() {
     google.maps.event.addListenerOnce(map, 'idle', function(){
         mapData.stationData.forEach( function(d, index) {
             //createGlyph(d.id.replaceAll(".", "-"), mapData, d);
-            createCCGlyphs(d.id.replaceAll(".", "-"), mapData, d);
+            //createCCGlyphs(d.id.replaceAll(".", "-"), mapData, d);
         });
         //loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
     });
