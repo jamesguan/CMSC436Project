@@ -7,10 +7,19 @@ d3.csv("brainRegions.csv", function(error, d) {
     brainRegions = d;
 });
 d3.csv("brainIndexes.csv", function(error, d) {
-    brainIndexes = d;
+    var obj = [];
+    d.forEach(function (i) {
+        brainIndexes[i.index] = i.region;
+    })
+
 });
 
-function brainViz(data, patientId) {
+function brainViz(data, columns,  patientId) {
+    $("#scatter").empty();
+    $("#legend").empty();
+    $("#resizeBox").empty();
+    $("#map").hide();
+    $("#container").hide();
     var patientdata;
     if (!patientId) {
         patientdata = data[0];
@@ -21,7 +30,43 @@ function brainViz(data, patientId) {
         })
         .entries(brainRegions);
 
-    groupByBrainSlice[5];
+    var slice = groupByBrainSlice[5];
+
+    var patientRecords = {};
+    var pids = []
+    data[columns[0]].forEach(function (obj) {
+       // patientRecords[obj.Subject] = {};
+        pids.push(obj.Subject);
+    })
+    for(i=0; i< pids.length; i++){
+        var record = [];
+
+        for (br=0; br<brainRegions.length; br++) {
+            var obj = {};
+            obj.x = brainRegions[br].x;
+            obj.y = brainRegions[br].y;
+            obj.z = brainRegions[br].z;
+            columns.forEach(function (c) {
+                var val = parseInt(data[c][i][brainIndexes[brainRegions[br].index].replace("_", " ")]);
+                if (val) {
+                    obj[c] = val;
+                } else {
+                    obj[c] = 0;
+                }
+            })
+            obj.region = brainIndexes[brainRegions[br].index].replace("_", " ");
+            record.push(obj);
+        }
+
+        patientRecords[pids[i]] = record;
+
+    }
+    createViz(patientRecords[pids[0]], 'Choline');
+
+    $("#scatterDiv").show();
+
+
+
 
 
 }

@@ -535,12 +535,12 @@ d3.select("#fileUpload").on("change", function(){
                         }
                         // Here is your object
                         var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        var json_object = JSON.stringify(XL_row_object);
-                        brainData[sheetName] = json_object;
+                        //var json_object = JSON.stringify(XL_row_object);
+                        brainData[sheetName] = XL_row_object;
                         columns.push(sheetName);
                     })
                     populateDropdown(columns, true);
-                    brainViz(brainData[columns[0]]);
+                    brainViz(brainData, columns);
                 }
             }
             catch(e) {
