@@ -1,11 +1,11 @@
-$(function() {
+/*$(function() {
     $('#side-menu').metisMenu();
-});
+});*/
 
 //Loads the correct sidebar on window load,
 //collapses the sidebar on window resize.
 // Sets the min-height of #page-wrapper to window size
-$(function() {
+/*$(function() {
     $(window).bind("load resize", function() {
         var topOffset = 50;
         var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
@@ -39,41 +39,47 @@ $(function() {
             break;
         }
     }
-});
+});*/
 
 var prefNumberSeries = [];
 const twoDseries = [1,5,10,50,100,200,500,1000];
-var selectedHeight = 50, selectedWidth = 50;
+var selectedHeight = 40, selectedWidth = 50;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
-var scalingRatio = 0;
+var scalingRatio = 1;
+var scaleFactor = 1;
 var firstClickMap = true;
 var orientedViz = false;
 var is3D = false;
-var quantitySelected;
+var quantitySelected = 'val';
+var brainRegions = {};
+var brainIndexes = {};
+var brainData = {};
+var isBrain = false;
 
 function readData() {
     $("#legendDiv").hide();
     $("#scatter").hide();
     d3.csv("spinVSpos.csv", function(error, data) {
         if (error) throw error;
-        populateDropdown(data.columns);
+        var columns = filterQuantities(data.columns);
+        populateDropdown(columns);
         data = selectRandom1000(data);
         dataStore = data;
-        createViz(data);
+        createViz(data, quantitySelected);
     });
 }
 
 function selectRandom1000(data) {
     var data1 = [];
-    for (i=0; i<50; i++) {
+    for (i=0; i<100; i++) {
         data1[i] = data[Math.round(Math.random()*500000)];
     }
     return createsampleVals(data1);
 
 }
 
-function createViz(data) {
+function createViz(data, val) {
 
     var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
         svg.attr("transform", d3.event.transform)
@@ -115,9 +121,9 @@ function createViz(data) {
         .call(d3.axisLeft(y).ticks(9));
 
         data = _.sortBy(data, function(item) {
-            return item.val;
+            return parseFloat(item[val]);
         });
-       draw(data.reverse(), g, x, y);
+       draw(data.reverse(), g, x, y, val);
 }
 
 function createsampleVals(data) {
@@ -127,13 +133,30 @@ function createsampleVals(data) {
     return data;
 }
 
-function draw(data, g,x, y) {
+function scaleValues(min) {
+    min = min.toExponential();
+    var exponent= String(min).split(/[eE]/)[1];
+    scaleFactorCalc(Math.abs(exponent));
+}
+
+function scaleFactorCalc(num) {
+    scaleFactor = 1;
+    for(i=0; i<num; i++){
+        scaleFactor*=10;
+    }
+}
+
+function draw(data, g,x, y, val) {
     var min = d3.min(data, function (d) {
-        return parseInt(d.val);
+        return parseFloat(d[val]);
     });
 
+    if (min < 1) {
+        scaleValues(min);
+    }
+
     var max = d3.max(data, function (d) {
-        return parseInt(d.val);
+        return parseFloat(d[val] * scaleFactor) ;
     });
 
     var normMax = normalizeExtremes(max);
@@ -143,7 +166,7 @@ function draw(data, g,x, y) {
     drawLegend();
 
     data.forEach(function (item) {
-        var dmnsn = getDimensions(item.val, groups, ratio);
+        var dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
         g./*selectAll("rect").
         data(data1).enter().*/
         append("rect").
@@ -219,17 +242,27 @@ function getDimensions(num, groups, ratio) {
     
 }
 
+function legendHeightForGroup(num) {
+    var maxVal = num*selectedHeight*scalingRatio;
+    return parseInt(normalizeExtremes(maxVal)/(num*scalingRatio));
+}
+
 function drawLegend1() {
-    var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height()).append("g");
+    drawResizeBox();
+    //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
+    var g = d3.select("#legend").attr("height", brHeight - 80).
+    attr("width", 370).append("g");
     var h=0;
-    for (j=0; j<prefNumberSeries.length; j++) {
-        var w=0;
-        for (i=1; i<=4; i++) {
-            var height=selectedHeight*i/4;
+    for (i=1; i<=4; i++) {
+        var w=5, height=0;
+        for (j=0; j<prefNumberSeries.length; j++) {
+            var selectedHeight = legendHeightForGroup(prefNumberSeries[j]);
+            height = selectedHeight*i/4;
+            var y = h+selectedHeight-height;
             if (prefNumberSeries[j] <=selectedWidth) {
                 g.append("rect").
                 attr("x", w).
-                attr("y", h+selectedHeight-height).
+                attr("y", y).
                 attr("width", prefNumberSeries[j]).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
@@ -237,31 +270,41 @@ function drawLegend1() {
                 attr("stroke-width", '.4').
                 attr("stroke-opacity", '.5').
                 attr("height", height);
-                w+=  prefNumberSeries[j] +10;
+                g.append("text")
+                    .attr("x", w-3)
+                    .attr("y", h+selectedHeight +10)
+                    .attr("dy", ".35em")
+                    .text(convertLabel(parseInt(prefNumberSeries[j]*height*(scalingRatio))));
+                w+=  prefNumberSeries[j] +30;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
-                attr("y", h+selectedHeight-height).
+                attr("y", y).
                 attr("width", selectedWidth).
+                attr("fill", markerFillClr).
                 attr("stroke", '#ffffff').
                 attr("stroke-width", '.4').
                 attr("stroke-opacity", '.5').
-                attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("height", height);
+                g.append("text")
+                    .attr("x", w)
+                    .attr("y", h+selectedHeight +10)
+                    .attr("dy", ".35em")
+                    .text(convertLabel(parseInt(selectedWidth*height*(scalingRatio))));
                 break;
             } else {
                 break;
             }
         }
-        h+= selectedHeight+ 40;
+        h+= height+ 50;
     }
 }
 
 function drawLegend() {
     drawResizeBox();
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
-    var g = d3.select("#legend").attr("height", brHeight - 80).
+    var g = d3.select("#legend").attr("height", brHeight - 180).
     attr("width", 370).append("g");
     var h=0;
     for (i=1; i<=4; i++) {
@@ -283,8 +326,8 @@ function drawLegend() {
                     .attr("x", w-3)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
-                    .text(parseInt(prefNumberSeries[j]*height*(scalingRatio)));
-                w+=  prefNumberSeries[j] +30;
+                    .text(convertLabel(parseInt(prefNumberSeries[j]*height*(scalingRatio))));
+                w+=  prefNumberSeries[j] +40;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
@@ -300,7 +343,7 @@ function drawLegend() {
                     .attr("x", w)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
-                    .text(parseInt(selectedWidth*height*(scalingRatio)));
+                    .text(convertLabel(parseInt(selectedWidth*height*(scalingRatio))));
                 break;
             } else {
                 break;
@@ -308,6 +351,28 @@ function drawLegend() {
         }
         h+= height+ 50;
     }
+}
+
+function convertLabel(num) {
+    if (num >= 1000) {
+        if (isInt(num/1000)) {
+            return (num/1000) + "K";
+        } else {
+            return (num/1000).toFixed(1) + "K";
+        }
+    } else if (num >= 1000000) {
+        if (isInt(num/1000000)) {
+            return (num/1000000) + "M";
+        } else {
+            return (num/1000).toFixed(1) + "M";
+        }
+    } else {
+        return num;
+    }
+}
+
+function isInt(n) {
+    return n % 1 === 0;
 }
 
 function drawResizeBox() {
@@ -350,7 +415,7 @@ function drawResizeBox() {
             $("#scatter").empty();
             $("#legend").empty();
             $("#resizeBox").empty();
-            createViz(dataStore);
+            createViz(dataStore, quantitySelected);
             //alert(+ "," + );
         };
     // rstart and rmove are the resize functions;
@@ -384,7 +449,7 @@ function twoD() {
     $("#resizeBox").empty();
     $("#map").hide();
     $("#container").hide();
-    createViz(dataStore);
+    createViz(dataStore, quantitySelected);
     $("#scatterDiv").show();
     $("#resizeBox").show();
     $("#resizeBoxText").show();
@@ -408,7 +473,7 @@ function zoom(svg) {
     svg.attr("transform", d3.event.transform);
 }
 
-function vizRouter(type, pageLoad, data) {
+function vizRouter(type, pageLoad, data, quantity) {
     if (pageLoad) {
         $("#map").hide();
         prefNumberSeries = twoDseries;
@@ -420,7 +485,8 @@ function vizRouter(type, pageLoad, data) {
         selectedHeight= 50;
         selectedWidth = 50;
         prefNumberSeries = twoDseries;
-        createVizFromFile(data);
+        quantitySelected = quantity;
+        createVizFromFile(data, quantitySelected);
     } else if (type == "3D") {
         selectedHeight= 100;
         selectedWidth = 50;
@@ -434,39 +500,73 @@ function vizRouter(type, pageLoad, data) {
     }
 }
 
+function filterQuantities(columns) {
+    var quants = _.filter(columns, function(c) {
+        return c.includes("q_");
+    });
+    return quants;
+}
+
 d3.select("#fileUpload").on("change", function(){
     if (window.File && window.FileReader && window.FileList && window.Blob) {
         //Files vars
         var uploadFile = this.files[0];
-        var filereader = new window.FileReader();
+        var name = uploadFile.name;
+        var filereader = new FileReader();
 
-        filereader.onload = function () {
+        filereader.onload = function (e) {
             //Txt file output
             var txtRes = filereader.result;
             try {
-                //TODO Read CSV
-                var data = d3.csvParse(txtRes);
-                populateDropdown(data.columns);
-                determmineVizType(data.columns);
-                vizRouter("2D", false, data);
+                if (name.split(".")[1] == "csv") {
+                    var data = d3.csvParse(txtRes);
+                    var columns = filterQuantities(data.columns);
+                    populateDropdown(columns);
+                    determmineVizType(data.columns);
+                    vizRouter("2D", false, data, columns[0]);
+                } else {
+                    var data = e.target.result;
+                    var workbook = XLSX.read(data, {type : 'binary'});
+                    brainData = {};
+                    var columns = [];
+                    workbook.SheetNames.forEach(function(sheetName){
+                        if (sheetName == "Age") {
+                            return;
+                        }
+                        // Here is your object
+                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        var json_object = JSON.stringify(XL_row_object);
+                        brainData[sheetName] = json_object;
+                        columns.push(sheetName);
+                    })
+                    populateDropdown(columns, true);
+                    brainViz(brainData[columns[0]]);
+                }
             }
             catch(e) {
-
+                console.log(e);
             }
         }
         filereader.readAsBinaryString(uploadFile);
     }
 });
 
-function createVizFromFile(data) {
-    data = selectRandom1000(data);
-    dataStore = data;
+function createVizFromFile(data, q) {
+    var dataGroupByZ = d3.nest()
+        .key(function (d) {
+            return d.z;
+        })
+        .entries(data);
+    //data = selectRandom1000(data);
+    dataStore = dataGroupByZ[0].values;
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
     $("#map").hide();
     $("#container").hide();
-    createViz(data);
+    //quantitySelected = 'q_magnitude';
+    //quantitySelected = $("#quantities").val()[0];
+    createViz(dataStore, q);
     $("#scatterDiv").show();
 }
 
@@ -503,10 +603,11 @@ d3.select("#textureFile").on("change", function(){
     }
 });
 
-function populateDropdown(columns) {
-    var quants = _.filter(columns, function(c) {
-       return c.includes("q_");
-    });
+function populateDropdown(columns, flag) {
+    var quants = columns;
+    isBrain = flag;
+    $('#quantities').find('option')
+        .remove();
     $.each(quants, function(key, value) {
         var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
         $('#quantities')
@@ -525,6 +626,7 @@ function determmineVizType(columns) {
 }
 
 function getQuantity(quant) {
-    quantitySelected = quant.value;
+    var q = $("#quantities").val()
+    quantitySelected = q.join(",");
+    alert(quantitySelected);
 }
-
