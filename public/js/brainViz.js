@@ -51,7 +51,7 @@ function brainViz(data, columns,  patientId) {
                 if (val) {
                     obj[c] = val;
                 } else {
-                    obj[c] = 0;
+                    obj[c] = 10;
                 }
             })
             obj.region = brainIndexes[brainRegions[br].index].replace("_", " ");
@@ -61,6 +61,8 @@ function brainViz(data, columns,  patientId) {
         patientRecords[pids[i]] = record;
 
     }
+    dataStore = patientRecords[pids[0]];
+    quantitySelected = 'Choline';
     createViz(patientRecords[pids[0]], 'Choline');
 
     $("#scatterDiv").show();

@@ -22,6 +22,7 @@
 
     <!-- Custom Fonts -->
     <link href="/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -46,8 +47,7 @@
                     <div class="pull-right">
                         <label class="qlabel">Select quantities</label>
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
-                        <select id="quantities" multiple="multiple" onchange="getQuantity(this);">
-                            <option value="-1" label="Select"></option>
+                        <select id="quantities" class="selectpicker" multiple onchange="getQuantity(this);">
                         </select>
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
                         <i class="fa fa-upload clickable" onclick="uploadTexture()" title="Click to upload texture" aria-hidden="true"></i>
@@ -61,7 +61,7 @@
                             <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
                                 <span class="fa fa-cog fa-lg" title="Toggle options"></span>
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class=" actionButtons dropdown-menu">
                                 <li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
                                 <li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>
                                 <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>
@@ -106,7 +106,7 @@
 <!-- Morris Charts JavaScript -->
 <script src="/js/raphael/raphael.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 <!-- Custom Theme JavaScript -->
 <script src="/js/sb-admin-2.js"></script>
 <script src="/js/sb-three.js"></script>
@@ -124,8 +124,13 @@
 <script src="/js/jszip.js"></script>
 <script src="/js/xlsx.js"></script>
 <script>
-    vizRouter("2D", true);
-    $("#overlay").hide();
+
+    $( document ).ready(function() {
+        vizRouter("2D", true);
+        $("#overlay").hide();
+
+    });
+
 </script>
 </body>
 

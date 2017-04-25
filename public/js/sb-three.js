@@ -7,7 +7,7 @@ const threeDSeries = [1, 10, 20, 50, 100];
 var extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
 
-function create3dViz(data) {
+function create3dViz(data, q) {
     if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
     var camera, controls, scene, renderer;
@@ -60,9 +60,42 @@ function create3dViz(data) {
 
         scene.add( new THREE.AxisHelper( 500 ) );
 
-        draw3DViz(data, scene);
+        draw3DViz(data, scene, q);
 
         window.addEventListener( 'resize', onWindowResize, false );
+
+        addLegendLabels(scene);
+
+    }
+
+    function addLegendLabels(scene) {
+        var loader = new THREE.FontLoader();
+        loader.load( '../fonts/helvetiker_regular.typeface.json', function ( font ) {
+            var xMid, text;
+            var textShape = new THREE.BufferGeometry();
+            var color = 0x006699;
+            var matDark = new THREE.LineBasicMaterial( {
+                color: color,
+                side: THREE.DoubleSide
+            } );
+            var matLite = new THREE.MeshBasicMaterial( {
+                color: color,
+                transparent: true,
+                opacity: 0.4,
+                side: THREE.DoubleSide
+            } );
+            var message = "(10,10,10)";
+            var shapes = font.generateShapes( message, 15, 2 );
+            var geometry = new THREE.ShapeGeometry( shapes );
+            geometry.computeBoundingBox();
+            xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+            geometry.translate( xMid, 0, 0 );
+            // make shape ( N.B. edge view not visible )
+            textShape.fromGeometry( geometry );
+            text = new THREE.Mesh( textShape, matLite );
+            text.position.set( -420, -250, 250 );
+            scene.add( text );
+        } ); //end load function
 
     }
 
@@ -91,7 +124,7 @@ function create3dViz(data) {
 
     }
 
-    function draw3DViz(data, scene) {
+    function draw3DViz(data, scene, q) {
         var x = d3.scaleLinear()
             .domain([d3.min(data, function (d) {
                 return parseInt(d.x);
@@ -115,7 +148,7 @@ function create3dViz(data) {
             .range([-250, 250]);
 
         var max = d3.max(data, function (d) {
-            return parseInt(d.val);
+            return parseInt(d[q]);
         });
 
 
@@ -125,7 +158,7 @@ function create3dViz(data) {
 
         for (i=0; i<data.length; i++) {
             var item = data[i];
-            var dmnsn = getDimensions(item.val, groups, ratio);
+            var dmnsn = getDimensions(item[q], groups, ratio);
 
             var x1 = x(item.x);
             var y1 = y(item.y);
@@ -139,9 +172,9 @@ function create3dViz(data) {
 
 }
 
-function draw3DMarkers(data) {
+function draw3DMarkers(data, q) {
     var max = d3.max(data, function (d) {
-        return parseInt(d.val);
+        return parseInt(d[q]);
     });
 
     var normMax = normalizeExtremes(max);
@@ -149,7 +182,7 @@ function draw3DMarkers(data) {
     var groups = legendGroup();
 
     data.forEach(function (item) {
-        var dmnsn = getDimensions(item.val, groups, ratio);
+        var dmnsn = getDimensions(item[q], groups, ratio);
     });
 }
 
@@ -215,7 +248,7 @@ function addShape( scene, shape, extrudeSettings, color, x, y, z, rx, ry, rz, s 
         transparent : true,
         side: THREE.DoubleSide } ) );
     mesh.position.set( x, y, z );
-    mesh.rotation.set( rx, ry, rz );
+    //mesh.rotation.set( rx, ry, rz );
     mesh.scale.set( s, s, s );
     scene.add( mesh );
 }
@@ -260,7 +293,7 @@ function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
             var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             //var line = new THREE.Line( geo, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             line.position.set( x , y, z);
-            line.rotation.set( item.directionX, item.directionY, item.directionZ );
+            //line.rotation.set( item.directionX, item.directionY, item.directionZ );
             line.scale.set( s, s, s );
             scene.add( line );
         //}

@@ -63,10 +63,12 @@ function readData() {
     d3.csv("spinVSpos.csv", function(error, data) {
         if (error) throw error;
         var columns = filterQuantities(data.columns);
-        populateDropdown(columns);
+        populateDropdown(columns, false, true);
         data = selectRandom1000(data);
         dataStore = data;
         createViz(data, quantitySelected);
+        $("#quantities").selectpicker('val', quantitySelected);
+        $("#quantities").selectpicker("refresh");
     });
 }
 
@@ -431,7 +433,7 @@ function threeD() {
     selectedWidth = 50;
     prefNumberSeries = threeDSeries;
     $("#container").empty();
-    create3dViz(dataStore);
+    create3dViz(dataStore, quantitySelected);
     $("#map").hide();
     $("#scatterDiv").hide();
     $("#resizeBox").hide();
@@ -603,15 +605,25 @@ d3.select("#textureFile").on("change", function(){
     }
 });
 
-function populateDropdown(columns, flag) {
+function populateDropdown(columns, flag, f) {
     var quants = columns;
     isBrain = flag;
     $('#quantities').find('option')
         .remove();
+    if (f) {
+
+        $('.selectpicker').selectpicker({
+            style: 'btn-info',
+            size: 4
+        });
+
+    }
     $.each(quants, function(key, value) {
-        var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
+        //var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
+        var option = '<option value="'+value+'">'+value.replace("q_", "")+'</option>';
         $('#quantities')
             .append(option);
+        $("#quantities").selectpicker("refresh");
     });
 }
 
@@ -628,5 +640,4 @@ function determmineVizType(columns) {
 function getQuantity(quant) {
     var q = $("#quantities").val()
     quantitySelected = q.join(",");
-    alert(quantitySelected);
 }
