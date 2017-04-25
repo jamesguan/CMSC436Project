@@ -37,7 +37,7 @@ function create3dViz(data, q) {
 		var fov = 2 * Math.atan( 500 / ( 2 * 250 ) ) * ( 180 / Math.PI );
 
         camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, .1, 2000 );
-        camera.position.set(0, 0, 530);
+        camera.position.set(0, 0, 700);
 
         var light = new THREE.PointLight( 0xffffff, 0.8 );
         camera.add( light );

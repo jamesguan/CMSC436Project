@@ -56,6 +56,7 @@ var brainRegions = {};
 var brainIndexes = {};
 var brainData = {};
 var isBrain = false;
+var g_patientId = 0;
 
 function readData() {
     $("#legendDiv").hide();
@@ -67,7 +68,7 @@ function readData() {
         data = selectRandom1000(data);
         dataStore = data;
         createViz(data, quantitySelected);
-        $("#quantities").selectpicker('val', quantitySelected);
+        $("#quantities").selectpicker('val', 'q_magnitude');
         $("#quantities").selectpicker("refresh");
     });
 }
@@ -81,12 +82,18 @@ function selectRandom1000(data) {
 
 }
 
-function createViz(data, val) {
+function createViz(data, val, multi) {
 
     var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
         svg.attr("transform", d3.event.transform)
     })).append("g");
-    var margin = {top: 5, right: selectedWidth, bottom: selectedHeight, left: 25},
+    var mR = selectedWidth;
+    var mB = selectedHeight;
+    if (multi) {
+        mR = val.marginRight;
+        mB = val.marginBottom;
+    }
+    var margin = {top: 5, right: mR, bottom: mB, left: 25},
         width = $("#scatterDiv").width(),
         height = brHeight,
         domainwidth = width - margin.left - margin.right,
@@ -122,10 +129,14 @@ function createViz(data, val) {
     g.append("g")
         .call(d3.axisLeft(y).ticks(9));
 
+    if (multi) {
+        drawMVCC(data, g, x, y, val)
+    } else {
         data = _.sortBy(data, function(item) {
             return parseFloat(item[val]);
         });
-       draw(data.reverse(), g, x, y, val);
+        draw(data.reverse(), g, x, y, val);
+    }
 }
 
 function createsampleVals(data) {
@@ -637,7 +648,4 @@ function determmineVizType(columns) {
 
 }
 
-function getQuantity(quant) {
-    var q = $("#quantities").val()
-    quantitySelected = q.join(",");
-}
+
