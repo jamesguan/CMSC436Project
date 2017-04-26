@@ -34,10 +34,13 @@ function create3dViz(data, q) {
         container.appendChild( renderer.domElement );
 		
 		//height fitting
-		var fov = 2 * Math.atan( 500 / ( 2 * 250 ) ) * ( 180 / Math.PI );
+		var fov = 2 * Math.atan( 500 / ( 2 * 650 ) ) * ( 180 / Math.PI );
+
+        //width fitting
+        //var fov = 2 * Math.atan( ( 600 / (1100/610) ) / ( 2 * 350 ) ) * ( 180 / Math.PI );
 
         camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, .1, 2000 );
-        camera.position.set(0, 0, 700);
+        camera.position.set(0, 0, 1000);
 
         var light = new THREE.PointLight( 0xffffff, 0.8 );
         camera.add( light );
@@ -49,7 +52,7 @@ function create3dViz(data, q) {
 
 
         //Adding the geometry
-        var geometry = new THREE.CubeGeometry(800, 500, 500);
+        var geometry = new THREE.CubeGeometry(600, 500, 500);
         var geo = new THREE.EdgesGeometry( geometry ); // or WireframeGeometry( geometry )
 
         var mat = new THREE.LineBasicMaterial( { color: 0x767776, linewidth: 2 } );
@@ -58,22 +61,21 @@ function create3dViz(data, q) {
 
         scene.add( wireframe );
 
-        scene.add( new THREE.AxisHelper( 500 ) );
+        //scene.add( new THREE.AxisHelper( 500 ) );
 
         draw3DViz(data, scene, q);
 
         window.addEventListener( 'resize', onWindowResize, false );
 
-        addLegendLabels(scene);
 
     }
 
-    function addLegendLabels(scene) {
+    function addLegendLabels(scene, msg, x, y ,z) {
         var loader = new THREE.FontLoader();
         loader.load( '../fonts/helvetiker_regular.typeface.json', function ( font ) {
             var xMid, text;
             var textShape = new THREE.BufferGeometry();
-            var color = 0x006699;
+            var color = 0x767776;
             var matDark = new THREE.LineBasicMaterial( {
                 color: color,
                 side: THREE.DoubleSide
@@ -81,11 +83,10 @@ function create3dViz(data, q) {
             var matLite = new THREE.MeshBasicMaterial( {
                 color: color,
                 transparent: true,
-                opacity: 0.4,
+                opacity: 0.8,
                 side: THREE.DoubleSide
             } );
-            var message = "(10,10,10)";
-            var shapes = font.generateShapes( message, 15, 2 );
+            var shapes = font.generateShapes( msg, 10, 2 );
             var geometry = new THREE.ShapeGeometry( shapes );
             geometry.computeBoundingBox();
             xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
@@ -93,7 +94,7 @@ function create3dViz(data, q) {
             // make shape ( N.B. edge view not visible )
             textShape.fromGeometry( geometry );
             text = new THREE.Mesh( textShape, matLite );
-            text.position.set( -420, -250, 250 );
+            text.position.set( x, y, z);
             scene.add( text );
         } ); //end load function
 
@@ -125,32 +126,52 @@ function create3dViz(data, q) {
     }
 
     function draw3DViz(data, scene, q) {
+        var xmin = d3.min(data, function (d) {
+            return parseInt(d.x);
+        })-1;
+        var xmax = d3.max(data, function (d) {
+                return parseInt(d.x);
+            })+1;
+        var ymin = d3.min(data, function (d) {
+                return parseInt(d.y);
+            })-1;
+        var ymax = d3.max(data, function (d) {
+                return parseInt(d.y);
+            })+1;
+        var zmin = d3.min(data, function (d) {
+                return parseInt(d.z);
+            })-1;
+        var zmax = d3.max(data, function (d) {
+                return parseInt(d.z);
+            })+1;
+        if (isBrain) {
+            xmin=0;
+            ymin=0;
+            zmin=0;
+        }
         var x = d3.scaleLinear()
-            .domain([d3.min(data, function (d) {
-                return parseInt(d.x);
-            })-1, d3.max(data, function (d) {
-                return parseInt(d.x);
-            })+1])
-            .range([-400, 400]);
+            .domain([xmin, xmax])
+            .range([-300, 300]);
         var y = d3.scaleLinear()
-            .domain([d3.min(data, function (d) {
-                return parseInt(d.y);
-            })-1, d3.max(data, function (d) {
-                return parseInt(d.y);
-            })+1])
+            .domain([ymin, ymax])
             .range([-250, 250]);
         var z = d3.scaleLinear()
-            .domain([d3.min(data, function (d) {
-                return parseInt(d.z);
-            })-1, d3.max(data, function (d) {
-                return parseInt(d.z);
-            })+1])
+            .domain([zmin, zmax])
             .range([-250, 250]);
 
         var max = d3.max(data, function (d) {
             return parseInt(d[q]);
         });
 
+        var mX = 350;
+        addLegendLabels(scene, '('+xmin+','+ymin+','+zmax+')', -mX, -250, 250 );
+        addLegendLabels(scene, '('+xmax+','+ymin+','+zmax+')', mX, -250, 250 );
+        addLegendLabels(scene, '('+xmin+','+ymax+','+zmax+')', -mX, 250, 250 );
+        addLegendLabels(scene, '('+xmax+','+ymax+','+zmax+')', mX, 250, 250 );
+        addLegendLabels(scene, '('+xmax+','+ymax+','+zmin+')', mX, 250, -250 );
+        addLegendLabels(scene, '('+xmax+','+ymin+','+zmin+')', mX, -250, -250 );
+        addLegendLabels(scene, '('+xmin+','+ymin+','+zmin+')', -mX, -250, -250 );
+        addLegendLabels(scene, '('+xmin+','+ymax+','+zmin+')', -mX, 250, -250 );
 
         var normMax = normalizeExtremes(max);
         var ratio = calculateScalingRatio(normMax);

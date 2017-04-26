@@ -109,7 +109,7 @@ function drawMVCCPoints(pointData, g, x, y, cols) {
         var point = pointData.points[i].dmnsn; var h1 = point.height;
         drawMVRects(point.width, point.height, g, x+ maxLW-point.width, y + maxH-point.height, i);
         point = pointData.points[i+1].dmnsn; var h2 = point.height;
-        drawMVRects(point.width, point.height, g, x+ maxLW + 5, y + maxH-point.height, i+1);
+        drawMVRects(point.width, point.height, g, x+ maxLW + 6, y + maxH-point.height, i+1);
         if (i > 0) {
             drawMVLine(g, x, y-2, x + 2*maxW + 5, y-2)
         }
@@ -119,7 +119,7 @@ function drawMVCCPoints(pointData, g, x, y, cols) {
             y += h2 + 5;
         }
     }
-    drawMVLine(g, x + maxLW +2, startY, x + maxLW +2, y -5);
+    drawMVLine(g, x + maxLW +3, startY, x + maxLW +3, y -5);
 }
 
 function maxLeftWidth(points) {
@@ -152,7 +152,7 @@ function drawMVRects(w, h, g, x, y, i) {
 
 function drawMVLine(g, x1, y1, x2, y2) {
     g.append("line")
-        .style("stroke", "red")
+        .style("stroke", "blue")
         .attr("x1", x1)
         .attr("y1", y1)
         .attr("x2", x2)

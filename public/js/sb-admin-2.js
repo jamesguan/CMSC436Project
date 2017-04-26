@@ -57,6 +57,7 @@ var brainIndexes = {};
 var brainData = {};
 var isBrain = false;
 var g_patientId = 0;
+var isMV = false;
 
 function readData() {
     $("#legendDiv").hide();
@@ -75,15 +76,15 @@ function readData() {
 
 function selectRandom1000(data) {
     var data1 = [];
-    for (i=0; i<100; i++) {
+    for (i=0; i<50; i++) {
         data1[i] = data[Math.round(Math.random()*500000)];
     }
     return createsampleVals(data1);
-
 }
 
 function createViz(data, val, multi) {
 
+    isMV = multi;
     var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
         svg.attr("transform", d3.event.transform)
     })).append("g");
@@ -428,8 +429,11 @@ function drawResizeBox() {
             $("#scatter").empty();
             $("#legend").empty();
             $("#resizeBox").empty();
-            createViz(dataStore, quantitySelected);
-            //alert(+ "," + );
+            if (isMV) {
+                getQuantity();
+            } else{
+                createViz(dataStore, quantitySelected);
+            }
         };
     // rstart and rmove are the resize functions;
     //c.drag(move, start, up);
