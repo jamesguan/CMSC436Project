@@ -104,11 +104,12 @@ function drawMVCCPoints(pointData, g, x, y, cols) {
     var startX = x; var startY = y;
     var maxW = pointData.maxW;
     var maxH = pointData.maxH;
+    var maxLW = maxLeftWidth(pointData);
     for (i=0; i < cols.length; i = i+2) {
         var point = pointData.points[i].dmnsn; var h1 = point.height;
-        drawMVRects(point.width, point.height, g, x+ maxW-point.width, y + maxH-point.height);
+        drawMVRects(point.width, point.height, g, x+ maxLW-point.width, y + maxH-point.height, i);
         point = pointData.points[i+1].dmnsn; var h2 = point.height;
-        drawMVRects(point.width, point.height, g, x+ maxW + 5, y + maxH-point.height);
+        drawMVRects(point.width, point.height, g, x+ maxLW + 5, y + maxH-point.height, i+1);
         if (i > 0) {
             drawMVLine(g, x, y-2, x + 2*maxW + 5, y-2)
         }
@@ -118,16 +119,31 @@ function drawMVCCPoints(pointData, g, x, y, cols) {
             y += h2 + 5;
         }
     }
-    drawMVLine(g, x + maxW +2, startY, x + maxW +2, y -5);
+    drawMVLine(g, x + maxLW +2, startY, x + maxLW +2, y -5);
 }
 
-function drawMVRects(w, h, g, x, y) {
-    g.append("rect").
+function maxLeftWidth(points) {
+    var max=0;
+    for (i=0; i< points.length; i=i+2) {
+        if (points[i].dmnsn.height > max) {
+            max = points[i].dmnsn.height;
+        }
+    }
+    return max;
+}
+
+function drawMVRects(w, h, g, x, y, i) {
+    var s = g.append("svg");
+    var t = texture[i];
+    //var t = textures.lines().thicker();
+    s.call(t);
+    s.append("rect").
     attr("x", x ).
     attr("y", y ).
     attr("width", w).
     attr("stroke", '#f5f5f5').
-    attr("fill", markerFillClr).
+    attr("fill", t.url()).
+    /*attr("fill", markerFillClr).*/
     attr("fill-opacity", 1).
     attr("stroke-width", '.4').
     attr("stroke-opacity", '.5').
