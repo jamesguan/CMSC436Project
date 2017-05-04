@@ -58,6 +58,8 @@ var brainData = {};
 var isBrain = false;
 var g_patientId = 0;
 var isMV = false;
+var dsYoungMetas = {};
+var dsAdultMetas = {}
 
 function readData() {
     $("#legendDiv").hide();
@@ -372,13 +374,13 @@ function convertLabel(num) {
         if (isInt(num/1000)) {
             return (num/1000) + "K";
         } else {
-            return (num/1000).toFixed(1) + "K";
+            return (num/1000).toFixed(2) + "K";
         }
     } else if (num >= 1000000) {
         if (isInt(num/1000000)) {
             return (num/1000000) + "M";
         } else {
-            return (num/1000).toFixed(1) + "M";
+            return (num/1000).toFixed(2) + "M";
         }
     } else {
         return num;
@@ -424,8 +426,13 @@ function drawResizeBox() {
             if (this.box.attr("width") > 100) {
                 this.box.attr("width", 100);
             }
-            selectedHeight = this.box.attr("height");
-            selectedWidth = this.box.attr("width");
+            if (this.box.attr("height") > this.box.attr("width")) {
+                selectedHeight = selectedWidth =  this.box.attr("height")
+            } else {
+                selectedHeight = selectedWidth =  this.box.attr("width");
+            }
+            /*selectedHeight = this.box.attr("height");
+            selectedWidth = this.box.attr("width");*/
             $("#scatter").empty();
             $("#legend").empty();
             $("#resizeBox").empty();
@@ -547,9 +554,9 @@ d3.select("#fileUpload").on("change", function(){
                     brainData = {};
                     var columns = [];
                     workbook.SheetNames.forEach(function(sheetName){
-                        if (sheetName == "Age") {
+                        /*if (sheetName == "Age") {
                             return;
-                        }
+                        }*/
                         // Here is your object
                         var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                         //var json_object = JSON.stringify(XL_row_object);
@@ -635,7 +642,7 @@ function populateDropdown(columns, flag, f) {
     }
     $.each(quants, function(key, value) {
         //var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
-        var option = '<option value="'+value+'">'+value.replace("q_", "")+'</option>';
+        var option = '<option style="color:black" value="'+value+'">'+value.replace("q_", "")+'</option>';
         $('#quantities')
             .append(option);
         $("#quantities").selectpicker("refresh");

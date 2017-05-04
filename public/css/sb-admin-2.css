@@ -28,6 +28,7 @@ body {
     height: 100%; width: 100%;
   }
 }
+/*
 .navbar-top-links {
   margin-right: 0;
 }
@@ -136,7 +137,7 @@ body {
   color: #5cb85c;
 }
 .btn-info.btn-outline {
-  /*color: #5bc0de;*/
+  !*color: #5bc0de;*!
 }
 .btn-warning.btn-outline {
   color: #f0ad4e;
@@ -444,6 +445,7 @@ table.dataTable thead .sorting:after {
     border-left-width: 0;
   }
 }
+*/
 
 #legendDiv{
   border-left: 2px solid transparent;
@@ -515,11 +517,12 @@ body, html {
 }
 .btn{
   padding: 0px 0px 0px 0px;
-  /*background-color: white;*/
+  background-color: white;
+  border-color: aliceblue;
 }
 
 .btn:hover{
-  /*background-color: white;*/
+  background-color: white;
 }
 .marker{
   z-index: 3;
@@ -566,5 +569,13 @@ body, html {
 .open>.actionButtons {
   display: block;
   left: -125px;
+}
+
+.filter-option{
+  color: black;
+}
+
+.caret{
+  color: black;
 }
 

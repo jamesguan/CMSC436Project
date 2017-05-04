@@ -45,6 +45,79 @@ function createMultiViz(q) {
     createViz(data, obj, true);
 }
 
+function drawMeanMVCC(data, g, x, y, obj) {
+    var bDYoung= {};var bDAdult={};
+    bDYoung["Choline"] = [];
+    bDAdult["Choline"] = [];
+    bDYoung["Creatine"] = [];
+    bDAdult["Creatine"] = [];
+    bDYoung["Glx"] = [];
+    bDAdult["Glx"] = [];
+    bDYoung["Inositol"] = [];
+    bDAdult["Inositol"] = [];
+    bDYoung["NAA"] = [];
+    bDAdult["NAA"] = [];
+    data["Age"].forEach(function (item, i) {
+        if (parseInt(item.Age) <=18) {
+            bDYoung["Choline"].push(data["Choline"][i]);
+            bDYoung["Creatine"].push(data["Choline"][i]);
+            bDYoung["Glx"].push(data["Choline"][i]);
+            bDYoung["Inositol"].push(data["Choline"][i]);
+            bDYoung["NAA"].push(data["Choline"][i]);
+
+        } else {
+            bDAdult["Choline"].push(data["Choline"][i]);
+            bDAdult["Creatine"].push(data["Choline"][i]);
+            bDAdult["Glx"].push(data["Choline"][i]);
+            bDAdult["Inositol"].push(data["Choline"][i]);
+            bDAdult["NAA"].push(data["Choline"][i]);
+        }
+    });
+    dsYoungMetas = calculateMeanForBrainData(bDYoung);
+    dsAdultMetas = calculateMeanForBrainData(bDAdult);
+}
+
+function calculateMeanForBrainData(data) {
+    var regionMetas = [];
+    for (br=0; br<brainRegions.length; br++) {
+        var region = brainIndexes[brainRegions[br].index].replace("_", " ");
+        var obj = {};
+        obj.index = brainRegions[br].index;
+        obj.region = region;
+        var metaDetails = {};
+        Object.keys(data).forEach(function (item, i) {
+            metaDetails[item] = minMaxMean(_.pluck(data[item], region));
+        });
+        obj.metaDetails = metaDetails;
+        regionMetas.push(obj);
+    }
+    return regionMetas;
+}
+
+function minMaxMean(arr) {
+    var obj = {}; var c=0;
+    var min = Number.MAX_VALUE;
+    var max = 0;
+    var sum = 0;
+    arr.forEach(function (item, i) {
+        var val = parseFloat(item);
+        if (val) {
+            if (val < min) {
+                min = val
+            }
+            if (val > max) {
+                max = val;
+            }
+            sum += val;
+            c++;
+        }
+    });
+    obj.min = min;
+    obj.max = max;
+    obj.mean = sum/c;
+    return obj;
+}
+
 function drawMVCC(data, g, x, y, obj) {
     if (obj.min < 1) {
         scaleValues(min);
@@ -78,24 +151,6 @@ function drawMVCC(data, g, x, y, obj) {
         var posY = y(item.y);
         drawMVCCPoints(pointData, g, posX, posY, obj.qs, item)
     });
-
-   /* data.forEach(function (item) {
-        var dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
-        g./!*selectAll("rect").
-         data(data1).enter().*!/
-        append("rect").
-        /!*attr("x", x(item.x) - dmnsn.width/2).
-         attr("y", y(item.y) - dmnsn.height/2).*!/
-        attr("x", x(item.x) ).
-        attr("y", y(item.y) ).
-        attr("width", dmnsn.width).
-        attr("stroke", '#f5f5f5').
-        attr("fill", markerFillClr).
-        attr("fill-opacity", 1).
-        attr("stroke-width", '.4').
-        attr("stroke-opacity", '.5').
-        attr("height", dmnsn.height)/!*.attr("transform", "translate(" +x(item.x)+","+y(item.y) +") rotate(10)")*!/
-    })*/
     $("#legendDiv").show();
     $("#scatter").show();
 }
