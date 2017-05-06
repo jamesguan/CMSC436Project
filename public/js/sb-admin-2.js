@@ -59,7 +59,8 @@ var isBrain = false;
 var g_patientId = 0;
 var isMV = false;
 var dsYoungMetas = {};
-var dsAdultMetas = {}
+var dsAdultMetas = {};
+var maxMagnitudeBD = 0;
 
 function readData() {
     $("#legendDiv").hide();
@@ -554,13 +555,13 @@ d3.select("#fileUpload").on("change", function(){
                     brainData = {};
                     var columns = [];
                     workbook.SheetNames.forEach(function(sheetName){
-                        /*if (sheetName == "Age") {
-                            return;
-                        }*/
                         // Here is your object
                         var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                         //var json_object = JSON.stringify(XL_row_object);
                         brainData[sheetName] = XL_row_object;
+                        if (sheetName == "Age") {
+                            return;
+                        }
                         columns.push(sheetName);
                     })
                     populateDropdown(columns, true);
@@ -636,7 +637,7 @@ function populateDropdown(columns, flag, f) {
 
         $('.selectpicker').selectpicker({
             style: 'btn-info',
-            size: 4
+            size: 5
         });
 
     }

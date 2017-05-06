@@ -382,7 +382,7 @@ function drawLBs(g, w, h, width, height, scalingRatio) {
     attr("x", w).
     attr("y", h).
     attr("width", width).
-    attr("fill", fillClr).
+    attr("fill", "none").
     attr("fill-opacity", 1).
     attr("stroke", strkClr).
     attr("stroke-opacity", 1).

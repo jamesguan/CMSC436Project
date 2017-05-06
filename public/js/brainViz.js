@@ -18,9 +18,12 @@ function brainViz(data, columns,  patientId) {
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
+    $("#resizeBox").hide();
+    $("#resizeBoxText").hide();
     $("#map").hide();
     $("#container").hide();
-    var patientdata;
+    $("#legendContainer").height("590");
+    /*var patientdata;
     if (!patientId) {
         patientdata = data[0];
     }
@@ -64,7 +67,9 @@ function brainViz(data, columns,  patientId) {
     g_patientId = pids[0];
     dataStore = patientRecords[pids[0]];
     quantitySelected = 'Choline';
-    createViz(patientRecords[pids[0]], 'Choline');
+    createViz(patientRecords[pids[0]], 'Choline');*/
+    drawMeanMVCC(data, columns);
+    $('.selectpicker').selectpicker('val', ['Choline','Glx', 'NAA', 'Inositol', 'Creatine']);
 
     $("#scatterDiv").show();
 

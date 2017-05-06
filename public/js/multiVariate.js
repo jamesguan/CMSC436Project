@@ -6,13 +6,15 @@ function getQuantity(quant) {
         $("#resizeBox").empty();
         $("#map").hide();
         $("#container").hide();
-        if (q.length > 1) {
+       /* if (q.length > 1) {
             quantitySelected = q.join(",");
             createMultiViz(q);
         } else {
             quantitySelected = q[0];
             createViz(dataStore, quantitySelected);
-        }
+        }*/
+       maxMagnitudeBD = 0;
+        drawMeanMVCC(brainData, q);
         $("#scatterDiv").show();
     }
 
@@ -45,9 +47,24 @@ function createMultiViz(q) {
     createViz(data, obj, true);
 }
 
-function drawMeanMVCC(data, g, x, y, obj) {
-    var bDYoung= {};var bDAdult={};
-    bDYoung["Choline"] = [];
+function drawMeanMVCC(data, cols) {
+    var bDYoung= {};var bDAdult={};var maxChemicalValues = {};
+    cols.forEach(function (col, c) {
+        var obj = {};
+        obj.ymax =0;
+        obj.amax =0;
+        maxChemicalValues[col] = obj;
+        bDYoung[col] = [];
+        bDAdult[col] = [];
+        data["Age"].forEach(function (item, i) {
+            if (parseInt(item.Age) <=18) {
+                bDYoung[col].push(data[col][i]);
+            } else {
+                bDAdult[col].push(data[col][i]);
+            }
+        });
+    })
+   /* bDYoung["Choline"] = [];
     bDAdult["Choline"] = [];
     bDYoung["Creatine"] = [];
     bDAdult["Creatine"] = [];
@@ -60,21 +77,179 @@ function drawMeanMVCC(data, g, x, y, obj) {
     data["Age"].forEach(function (item, i) {
         if (parseInt(item.Age) <=18) {
             bDYoung["Choline"].push(data["Choline"][i]);
-            bDYoung["Creatine"].push(data["Choline"][i]);
-            bDYoung["Glx"].push(data["Choline"][i]);
-            bDYoung["Inositol"].push(data["Choline"][i]);
-            bDYoung["NAA"].push(data["Choline"][i]);
+            bDYoung["Creatine"].push(data["Creatine"][i]);
+            bDYoung["Glx"].push(data["Glx"][i]);
+            bDYoung["Inositol"].push(data["Inositol"][i]);
+            bDYoung["NAA"].push(data["NAA"][i]);
 
         } else {
             bDAdult["Choline"].push(data["Choline"][i]);
-            bDAdult["Creatine"].push(data["Choline"][i]);
-            bDAdult["Glx"].push(data["Choline"][i]);
-            bDAdult["Inositol"].push(data["Choline"][i]);
-            bDAdult["NAA"].push(data["Choline"][i]);
+            bDAdult["Creatine"].push(data["Creatine"][i]);
+            bDAdult["Glx"].push(data["Glx"][i]);
+            bDAdult["Inositol"].push(data["Inositol"][i]);
+            bDAdult["NAA"].push(data["NAA"][i]);
         }
-    });
+    });*/
     dsYoungMetas = calculateMeanForBrainData(bDYoung);
     dsAdultMetas = calculateMeanForBrainData(bDAdult);
+    drawBrainMeta(cols, maxChemicalValues);
+}
+
+function drawBrainMeta(cols, maxChemicalValues) {
+
+    var svg = d3.select("#scatter").attr("height", brHeight)/*.call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
+        svg.attr("transform", d3.event.transform)
+    }))*/.append("g");
+
+    var margin = {top: 5, right: 5, bottom: 0, left: 25},
+        width = $("#scatterDiv").width(),
+        height = brHeight,
+        domainwidth = width - margin.left - margin.right,
+        domainheight = height - margin.top - margin.bottom;
+
+
+
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var x = d3.scaleLinear()
+        .domain([0, d3.max(brainRegions, function (d) {
+            return parseInt(d.x);
+        })+5])
+        .range([0, domainwidth]);
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(brainRegions, function (d) {
+            return parseInt(d.y);
+        })+10])
+        .range([domainheight-25, 0]);
+
+    g.append("g")
+        .call(d3.axisBottom(x)).attr("transform", "translate(0,584)");
+    g.append("g")
+        .call(d3.axisLeft(y).ticks(9));
+
+    var valScale = d3.scaleLinear()
+        .domain([0, maxMagnitudeBD])
+        .range([0, mvBarWidth]);
+
+    for (br=0; br<brainRegions.length; br++) {
+        var posX = x(brainRegions[br].x);
+        var posY = y(brainRegions[br].y);
+        var dsY = dsYoungMetas[br];
+        var dsA = dsAdultMetas[br];
+
+        drawBMRegionGlyphs(g, cols, dsY, dsA, posX, posY, valScale, maxChemicalValues);
+
+    }
+
+    drawMVBDLegend(maxChemicalValues, valScale, cols);
+
+
+}
+
+function addBDText(g, x, y, text) {
+    g.append("text")
+        .attr("x", x)
+        .attr("y", y + 5)
+        .attr("dy", ".35em")
+        .text(text);
+}
+
+function drawMVBDLegend(maxChemicalValues, valScale, cols) {
+    $("#legend").empty();
+    var g = d3.select("#legend").attr("height", 300).
+    attr("width", 200).append("g");
+
+    addBDText(g, 5, 20, "0");
+    addBDText(g, 20 + mvBarWidth, 20, parseInt(maxMagnitudeBD));
+    drawMVRects(valScale(maxMagnitudeBD), mvBarHeight, g, 15, 20, 0);
+
+    addBDText(g, 10, 70, "Young");
+    addBDText(g, 20 + mvBarWidth, 70, "Adults");
+    addBDText(g, 2 + mvBarWidth, 70, "|");
+
+    var h = 90;var w=2 + mvBarWidth;
+
+    cols.forEach(function (col, i) {
+        var width = maxChemicalValues[col].ymax;
+        drawMVRects(width, mvBarHeight, g, w - width , h + i*mvBarHeight, 0);
+        width = maxChemicalValues[col].amax;
+        drawMVRects(width, mvBarHeight, g, w , h + i*mvBarHeight, 0);
+
+        addBDText(g, 2*w, h + i*mvBarHeight, col);
+    })
+    $("#legend").show();
+
+}
+
+var mvBarHeight = 14;
+var mvBarWidth = 70;
+
+function dragmove(d) {
+    var x = d3.event.x;
+    var y = d3.event.y;
+    d3.select(this).attr("transform", "translate(" + (x-d.x) + "," + (y-d.y) + ")");
+}
+
+var drag = d3.drag()
+    .on("drag", dragmove)
+
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+function drawBMRegionGlyphs(g, cols, youngData, adultData, x, y, valScale, maxChemicalValues) {
+    var startY = y - cols.length * (mvBarHeight/2) ;
+    var endY = startY + cols.length * (mvBarHeight);
+    g = g.append("g").attr("class", "draggable").data([ {"x":parseInt(x), "y":parseInt(y)} ]).on("mouseover", function(d) {
+        div.transition()
+            .duration(200)
+            .style("opacity", .9);
+        div	.html(youngData.region)
+            .style("left", (d3.event.pageX-20) + "px")
+            .style("top", (d3.event.pageY - 58) + "px");
+    })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+        }).call(drag);
+    cols.forEach(function (item, i) {
+        yMax = valScale(youngData.metaDetails[item].max);
+        if (yMax > maxChemicalValues[item].ymax) {
+            maxChemicalValues[item].ymax = yMax;
+        }
+        yMean = valScale(youngData.metaDetails[item].mean);
+        aMax = valScale(adultData.metaDetails[item].max);
+        if (aMax > maxChemicalValues[item].amax) {
+            maxChemicalValues[item].amax = aMax;
+    }
+        aMean = valScale(adultData.metaDetails[item].mean);
+        if (yMax && yMean && aMax && aMean) {
+            drawRangeBar(yMax, mvBarHeight, g, x-yMax, startY + i*mvBarHeight);
+            drawMVRects(yMean, mvBarHeight, g, x-yMean, startY + i*mvBarHeight, 0);
+            drawRangeBar(aMax, mvBarHeight, g, x, startY + i*mvBarHeight);
+            drawMVRects(aMean, mvBarHeight, g, x, startY + i*mvBarHeight, 0);
+        }
+
+    })
+}
+
+function drawRangeBar(w, h, g, x, y) {
+    var s = g.append("svg");
+    //var t = texture[i];
+    //var t = textures.lines().thicker();
+   // s.call(t);
+    s.append("rect").
+    attr("x", x ).
+    attr("y", y ).
+    attr("width", w).
+    attr("stroke", 'black').
+    attr("fill", "none").
+    /*attr("fill", markerFillClr).*/
+    attr("fill-opacity", 1).
+    attr("stroke-width", '.4').
+    attr("stroke-opacity", '.5').
+    attr("height", h)
 }
 
 function calculateMeanForBrainData(data) {
@@ -108,8 +283,13 @@ function minMaxMean(arr) {
             if (val > max) {
                 max = val;
             }
+            if (val > maxMagnitudeBD) {
+                maxMagnitudeBD = val;
+            }
             sum += val;
             c++;
+        } else {
+            console.log();
         }
     });
     obj.min = min;
@@ -207,7 +387,7 @@ function drawMVRects(w, h, g, x, y, i) {
 
 function drawMVLine(g, x1, y1, x2, y2) {
     g.append("line")
-        .style("stroke", "blue")
+        .style("stroke", "black")
         .attr("x1", x1)
         .attr("y1", y1)
         .attr("x2", x2)
