@@ -43,7 +43,7 @@
 
 var prefNumberSeries = [];
 const twoDseries = [1,5,10,50,100,200,500,1000];
-var selectedHeight = 40, selectedWidth = 50;
+var selectedHeight = 20, selectedWidth = 20;
 var dataStore={};
 var brHeight = window.innerHeight - 54;
 var scalingRatio = 1;
@@ -97,7 +97,7 @@ function createViz(data, val, multi) {
         mR = val.marginRight;
         mB = val.marginBottom;
     }
-    var margin = {top: 5, right: mR, bottom: mB, left: 25},
+    var margin = {top: 5 + mB, right: mR, bottom: 0, left: 25},
         width = $("#scatterDiv").width(),
         height = brHeight,
         domainwidth = width - margin.left - margin.right,
@@ -127,9 +127,10 @@ function createViz(data, val, multi) {
                 return parseInt(d.y);
             })+1])
             .range([domainheight-25, 0]);
+    var tr = 584 - mB;
 
     g.append("g")
-        .call(d3.axisBottom(x)).attr("transform", "translate(0,584)");
+        .call(d3.axisBottom(x)).attr("transform", "translate(0,"+tr+")");
     g.append("g")
         .call(d3.axisLeft(y).ticks(9));
 
@@ -182,13 +183,13 @@ function draw(data, g,x, y, val) {
 
     drawLegend();
 
-    data.forEach(function (item) {
+    /*data.forEach(function (item) {
+        var degree = Math.atan2(item.directionY,item.directionX)* (180 / Math.PI);
         var dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
-        g./*selectAll("rect").
-        data(data1).enter().*/
-        append("rect").
-        /*attr("x", x(item.x) - dmnsn.width/2).
-        attr("y", y(item.y) - dmnsn.height/2).*/
+        var s = g.append("svg");
+        s.append("rect").
+        /!*attr("x", x(item.x) - dmnsn.width/2).
+        attr("y", y(item.y) - dmnsn.height/2).*!/
         attr("x", x(item.x) ).
         attr("y", y(item.y) ).
         attr("width", dmnsn.width).
@@ -197,7 +198,39 @@ function draw(data, g,x, y, val) {
         attr("fill-opacity", 1).
         attr("stroke-width", '.4').
         attr("stroke-opacity", '.5').
-        attr("height", dmnsn.height)/*.attr("transform", "translate(" +x(item.x)+","+y(item.y) +") rotate(10)")*/
+        attr("height", dmnsn.height);
+    })*/
+
+    data.forEach(function (item) {
+        var degree = Math.atan2(item.directionY,item.directionX)* (180 / Math.PI);
+        var dmnsn = {};
+        if (min < 1) {
+            dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
+        } else {
+            dmnsn = getDimensions(item[val], groups, ratio);
+        }
+        var h = dmnsn.height;
+        var w = dmnsn.width;
+        var posX = x(item.x);
+        var posY = y(item.y) - h;
+        var s = g.append("svg");
+        s.append("svg:path")
+            .attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
+            .style("stroke-width", .4)
+            .style("stroke", '#f5f5f5')
+            .style("stroke-opacity", '.5')
+            .style("fill", markerFillClr);
+        /*attr("x", x(item.x) - dmnsn.width/2).
+         attr("y", y(item.y) - dmnsn.height/2).*/
+        /*attr("x", x(-20) ).
+        attr("y", y(-20) ).
+        attr("width", 50).
+        attr("stroke", '#f5f5f5').
+        attr("fill", markerFillClr).
+        attr("fill-opacity", 1).
+        attr("stroke-width", '.4').
+        attr("stroke-opacity", '.5').
+        attr("height", 50);*/
     })
     $("#legendDiv").show();
     $("#scatter").show();
@@ -343,7 +376,7 @@ function drawLegend() {
                     .attr("x", w-3)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
-                    .text(convertLabel(parseInt(prefNumberSeries[j]*height*(scalingRatio))));
+                    .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
                 w+=  prefNumberSeries[j] +40;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
@@ -360,7 +393,7 @@ function drawLegend() {
                     .attr("x", w)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
-                    .text(convertLabel(parseInt(selectedWidth*height*(scalingRatio))));
+                    .text(convertLabel(Math.ceil(selectedWidth*height*(scalingRatio))));
                 break;
             } else {
                 break;
@@ -466,8 +499,8 @@ function threeD() {
 }
 
 function twoD() {
-    selectedHeight= 50;
-    selectedWidth = 50;
+    selectedHeight= 20;
+    selectedWidth = 20;
     prefNumberSeries = twoDseries;
     $("#scatter").empty();
     $("#legend").empty();
@@ -507,8 +540,8 @@ function vizRouter(type, pageLoad, data, quantity) {
     }
     data = data || dataStore;
     if(type == "2D") {
-        selectedHeight= 50;
-        selectedWidth = 50;
+        selectedHeight= 20;
+        selectedWidth = 20;
         prefNumberSeries = twoDseries;
         quantitySelected = quantity;
         createVizFromFile(data, quantitySelected);

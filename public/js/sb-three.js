@@ -159,8 +159,16 @@ function create3dViz(data, q) {
             .domain([zmin, zmax])
             .range([-250, 250]);
 
+        var min = d3.min(data, function (d) {
+            return parseFloat(d[q]);
+        });
+
+        if (min < 1) {
+            scaleValues(min);
+        }
+
         var max = d3.max(data, function (d) {
-            return parseInt(d[q]);
+            return parseFloat(d[q] * scaleFactor) ;
         });
 
         var mX = 350;
@@ -179,15 +187,21 @@ function create3dViz(data, q) {
 
         for (i=0; i<data.length; i++) {
             var item = data[i];
-            var dmnsn = getDimensions(item[q], groups, ratio);
-
-            var x1 = x(item.x);
-            var y1 = y(item.y);
-            var z1= z(item.z);
-            draw3DLegend();
-            plotLegendBar(scene, 0xa6bfed, x1, y1, z1, 1, item, dmnsn);
-            drawMagnitude(scene, x1, y1, z1, dmnsn, item);
-            drawPosition( scene, x1, y1, z1, item);
+            var dmnsn ={};
+            if (min < 1) {
+                dmnsn = getDimensions(item[q]* scaleFactor, groups, ratio);
+            } else {
+                dmnsn = getDimensions(item[q], groups, ratio);
+            }
+            if (dmnsn.width >0 && dmnsn.height>0) {
+                var x1 = x(item.x);
+                var y1 = y(item.y);
+                var z1= z(item.z);
+                draw3DLegend();
+                plotLegendBar(scene, 0xa6bfed, x1, y1, z1, 1, item, dmnsn);
+                drawMagnitude(scene, x1, y1, z1, dmnsn, item);
+                drawPosition( scene, x1, y1, z1, item);
+            }
         }
     }
 
