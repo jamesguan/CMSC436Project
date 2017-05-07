@@ -45,6 +45,10 @@
                     <div class="panel-heading">
                     <i class="fa fa-bar-chart-o fa-fw"></i> VizQ
                     <div class="pull-right">
+                        <label class="qlabel">Select Cutting Planes</label>
+                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <select id="cutPlanes" class="selectpicker" onchange="getCutPlane(this);">
+                        </select>
                         <label class="qlabel">Select quantities</label>
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
                         <select id="quantities" class="selectpicker" multiple onchange="getQuantity(this);">

@@ -283,7 +283,7 @@ function addShape( scene, shape, extrudeSettings, color, x, y, z, rx, ry, rz, s 
         transparent : true,
         side: THREE.DoubleSide } ) );
     mesh.position.set( x, y, z );
-    //mesh.rotation.set( rx, ry, rz );
+    mesh.rotation.set( rx, ry, rz );
     mesh.scale.set( s, s, s );
     scene.add( mesh );
 }
@@ -328,7 +328,7 @@ function plotLegendBar(scene, color, x, y, z, s, item, dmnsn) {
             var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             //var line = new THREE.Line( geo, new THREE.LineBasicMaterial( { color: color, linewidth: .1 } ) );
             line.position.set( x , y, z);
-            //line.rotation.set( item.directionX, item.directionY, item.directionZ );
+            line.rotation.set( item.directionX, item.directionY, item.directionZ );
             line.scale.set( s, s, s );
             scene.add( line );
         //}

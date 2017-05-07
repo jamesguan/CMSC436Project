@@ -436,7 +436,8 @@ function drawResizeBox() {
         s = R.rect(selectedWidth -40 , selectedHeight-40, 40, 40).attr({
             fill: markerFillClr,
             stroke: "none",
-            opacity: 1
+            opacity: 1,
+            cursor: "move"
         }),
         rstart = function () {
             // storing original coordinates
@@ -473,7 +474,8 @@ function drawResizeBox() {
             if (isMV) {
                 getQuantity();
             } else{
-                createViz(dataStore, quantitySelected);
+                getCutPlane();
+                //createViz(dataStore, quantitySelected);
             }
         };
     // rstart and rmove are the resize functions;
@@ -616,7 +618,10 @@ function createVizFromFile(data, q) {
         })
         .entries(data);
     //data = selectRandom1000(data);
-    dataStore = dataGroupByZ[0].values;
+    var planes = _.pluck(dataGroupByZ, "key");
+    populateCuttingPlanes(planes)
+    dataStore = data;
+    //dataStore = dataGroupByZ[0].values;
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
@@ -624,7 +629,7 @@ function createVizFromFile(data, q) {
     $("#container").hide();
     //quantitySelected = 'q_magnitude';
     //quantitySelected = $("#quantities").val()[0];
-    createViz(dataStore, q);
+    createViz(dataGroupByZ[0].values, q);
     $("#scatterDiv").show();
 }
 
@@ -681,8 +686,45 @@ function populateDropdown(columns, flag, f) {
             .append(option);
         $("#quantities").selectpicker("refresh");
     });
+    $("#quantities").selectpicker('val', quants[0]);
+    $("#quantities").selectpicker("refresh");
 }
 
+function populateCuttingPlanes(planes) {
+
+    $('#cutPlanes').find('option')
+        .remove();
+        $('.selectpicker').selectpicker({
+            style: 'btn-info',
+            size: 5
+        });
+    $.each(planes, function(key, value) {
+        //var option = '<option value='+value+ ' label='+value.replace("q_", "")+'></option>';
+        var option = '<option style="color:black" value="'+value+'">'+value+'</option>';
+        $('#cutPlanes')
+            .append(option);
+        $("#cutPlanes").selectpicker("refresh");
+    });
+    $("#cutPlanes").selectpicker('val', planes[0]);
+    $("#cutPlanes").selectpicker("refresh");
+
+}
+
+function getCutPlane(cp) {
+    $("#scatter").empty();
+    $("#legend").empty();
+    $("#resizeBox").empty();
+    var q = $("#cutPlanes").val();
+    var dataGroupByZ = d3.nest()
+        .key(function (d) {
+            return d.z;
+        })
+        .entries(dataStore);
+    var slice = _.find(dataGroupByZ, function (d) {
+        return d.key == q;
+    })
+    createViz(slice.values, quantitySelected);
+}
 function determmineVizType(columns) {
     if (_.indexOf(columns, "z")!=-1) {
         is3D = true;
