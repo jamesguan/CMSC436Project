@@ -111,7 +111,7 @@ function drawBrainMeta(cols, maxChemicalValues) {
 
     var g = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    var x = d3.scaleLinear()
+    /*var x = d3.scaleLinear()
         .domain([0, d3.max(brainRegions, function (d) {
             return parseInt(d.x);
         })+5])
@@ -120,12 +120,27 @@ function drawBrainMeta(cols, maxChemicalValues) {
         .domain([0, d3.max(brainRegions, function (d) {
             return parseInt(d.y);
         })+10])
-        .range([domainheight-25, 0]);
+        .range([domainheight-25, 0]);*/
 
-    g.append("g")
+    var x = d3.scaleLinear()
+        .domain([170,10])
+        .range([0, domainwidth]);
+    var y = d3.scaleLinear()
+        .domain([20, 200])
+        .range([0, domainheight-25]);
+    var separatorPos = x(90);
+
+    var s = g.append("svg");
+    s.append("svg:path")
+        .attr("d","M " + separatorPos+ " 0 L " + separatorPos + " " + domainheight)
+        .style("stroke-width", 1)
+        .style("stroke", 'red')
+        .style("stroke-opacity", '1');
+
+    /*g.append("g")
         .call(d3.axisBottom(x)).attr("transform", "translate(0,584)");
     g.append("g")
-        .call(d3.axisLeft(y).ticks(9));
+        .call(d3.axisLeft(y).ticks(9));*/
 
     var valScale = d3.scaleLinear()
         .domain([0, maxMagnitudeBD])
@@ -150,7 +165,8 @@ function addBDText(g, x, y, text) {
     g.append("text")
         .attr("x", x)
         .attr("y", y + 5)
-        .attr("dy", ".35em")
+        .attr("dy", ".10em")
+        .attr("font-size", "10px")
         .text(text);
 }
 
@@ -171,9 +187,9 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
 
     cols.forEach(function (col, i) {
         var width = maxChemicalValues[col].ymax;
-        drawMVRects(width, mvBarHeight, g, w - width , h + i*mvBarHeight, 0);
+        drawMVRectsLegends(width, mvBarHeight, g, w - width , h + i*mvBarHeight, 0);
         width = maxChemicalValues[col].amax;
-        drawMVRects(width, mvBarHeight, g, w , h + i*mvBarHeight, 0);
+        drawMVRectsLegends(width, mvBarHeight, g, w , h + i*mvBarHeight, 0);
 
         addBDText(g, 2*w, h + i*mvBarHeight, col);
     })
@@ -181,8 +197,8 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
 
 }
 
-var mvBarHeight = 14;
-var mvBarWidth = 70;
+var mvBarHeight = 8;
+var mvBarWidth = 40;
 
 function dragmove(d) {
     var x = d3.event.x;
@@ -204,7 +220,7 @@ function drawBMRegionGlyphs(g, cols, youngData, adultData, x, y, valScale, maxCh
         div.transition()
             .duration(200)
             .style("opacity", .9);
-        div	.html(youngData.region)
+        div	.html(youngData.index)
             .style("left", (d3.event.pageX-20) + "px")
             .style("top", (d3.event.pageY - 58) + "px");
     })
@@ -232,6 +248,7 @@ function drawBMRegionGlyphs(g, cols, youngData, adultData, x, y, valScale, maxCh
         }
 
     })
+    addBDText(g,x-mvBarWidth/5, startY + (i+1)*mvBarHeight -5 , youngData.region);
 }
 
 function drawRangeBar(w, h, g, x, y) {
@@ -247,8 +264,8 @@ function drawRangeBar(w, h, g, x, y) {
     attr("fill", "none").
     /*attr("fill", markerFillClr).*/
     attr("fill-opacity", 1).
-    attr("stroke-width", '.4').
-    attr("stroke-opacity", '.5').
+    attr("stroke-width", 1).
+    attr("stroke-opacity", 1).
     attr("height", h)
 }
 
@@ -369,17 +386,35 @@ function maxLeftWidth(points) {
 
 function drawMVRects(w, h, g, x, y, i) {
     var s = g.append("svg");
-    var t = texture[i];
+   // var t = texture[i];
     //var t = textures.lines().thicker();
-    s.call(t);
+   // s.call(t);
     s.append("rect").
     attr("x", x ).
     attr("y", y ).
     attr("width", w).
-    attr("stroke", '#f5f5f5').
-    attr("fill", t.url()).
+   // attr("stroke", '#f5f5f5').
+    attr("fill", '#321f91').
     /*attr("fill", markerFillClr).*/
-    attr("fill-opacity", 1).
+    attr("fill-opacity", .8).
+    attr("stroke-width", '.4').
+    attr("stroke-opacity", '.5').
+    attr("height", h)
+}
+
+function drawMVRectsLegends(w, h, g, x, y, i) {
+    var s = g.append("svg");
+    // var t = texture[i];
+    //var t = textures.lines().thicker();
+    // s.call(t);
+    s.append("rect").
+    attr("x", x ).
+    attr("y", y ).
+    attr("width", w).
+    attr("stroke", 'black').
+    attr("fill", '#321f91').
+    /*attr("fill", markerFillClr).*/
+    attr("fill-opacity", .8).
     attr("stroke-width", '.4').
     attr("stroke-opacity", '.5').
     attr("height", h)
