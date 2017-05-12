@@ -42,8 +42,8 @@
 });*/
 
 var prefNumberSeries = [];
-const twoDseries = [1,5,10,50,100,200,500,1000];
 var selectedHeight = 20, selectedWidth = 20;
+const twoDseries = [1,selectedWidth/4, selectedWidth/2, selectedWidth];
 var dataStore={};
 var brHeight = window.innerHeight - 54;
 var scalingRatio = 1;
@@ -85,7 +85,7 @@ function selectRandom1000(data) {
     return createsampleVals(data1);
 }
 
-function createViz(data, val, multi) {
+function createViz(data, val, multi, orient) {
 
     isMV = multi;
     var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
@@ -129,10 +129,14 @@ function createViz(data, val, multi) {
             .range([domainheight-25, 0]);
     var tr = 584 - mB;
 
-    g.append("g")
-        .call(d3.axisBottom(x)).attr("transform", "translate(0,"+tr+")");
-    g.append("g")
-        .call(d3.axisLeft(y).ticks(9));
+    if (val != 'val') {
+        g.append("g")
+            .call(d3.axisBottom(x)).attr("transform", "translate(0,"+tr+")");
+        g.append("g")
+            .call(d3.axisLeft(y).ticks(9));
+    }
+
+
 
     if (multi) {
         drawMVCC(data, g, x, y, val)
@@ -140,7 +144,7 @@ function createViz(data, val, multi) {
         data = _.sortBy(data, function(item) {
             return parseFloat(item[val]);
         });
-        draw(data.reverse(), g, x, y, val);
+        draw(data.reverse(), g, x, y, val, orient);
     }
 }
 
@@ -164,7 +168,7 @@ function scaleFactorCalc(num) {
     }
 }
 
-function draw(data, g,x, y, val) {
+function draw(data, g,x, y, val, orient) {
     var min = d3.min(data, function (d) {
         return parseFloat(d[val]);
     });
@@ -213,9 +217,20 @@ function draw(data, g,x, y, val) {
         var w = dmnsn.width;
         var posX = x(item.x);
         var posY = y(item.y) - h;
+        var x2 = posX +h*(item.directionX);
+        var y2 = posY +h*(item.directionY);
+        var x3 = posX +w*(-item.directionY);
+        var y3 = posY +w*(item.directionX);
+        var x4 = x2 +w*(-item.directionY);
+        var y4 = y2 +w*(item.directionX);
+        var posstr = "M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z";
+        if (orient) {
+            posstr = "M "+posX+" "+posY+" "+ "L "+ (x2)+" " + y2+" " + "L " + (x4)+" " + (y4)+" " + "L " + x3+" " + (y3)+" " + "Z"
+        }
         var s = g.append("svg");
         s.append("svg:path")
-            .attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
+            //.attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
+            .attr("d",posstr)
             .style("stroke-width", .4)
             .style("stroke", '#f5f5f5')
             .style("stroke-opacity", '.5')
@@ -377,7 +392,7 @@ function drawLegend() {
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
                     .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
-                w+=  prefNumberSeries[j] +40;
+                w+=  prefNumberSeries[j] +50;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
@@ -404,19 +419,20 @@ function drawLegend() {
 }
 
 function convertLabel(num) {
-    if (num >= 1000) {
-        if (isInt(num/1000)) {
-            return (num/1000) + "K";
-        } else {
-            return (num/1000).toFixed(2) + "K";
-        }
-    } else if (num >= 1000000) {
+    if (num >= 1000000) {
         if (isInt(num/1000000)) {
             return (num/1000000) + "M";
         } else {
             return (num/1000).toFixed(2) + "M";
         }
-    } else {
+    }
+    else if (num >= 1000) {
+        if (isInt(num/1000)) {
+            return (num/1000) + "K";
+        } else {
+            return (num/1000).toFixed(2) + "K";
+        }
+    }  else {
         return num;
     }
 }
@@ -466,6 +482,7 @@ function drawResizeBox() {
             } else {
                 selectedHeight = selectedWidth =  this.box.attr("width");
             }
+            prefNumberSeries = [1, selectedWidth/4, selectedWidth/2, selectedWidth];
             /*selectedHeight = this.box.attr("height");
             selectedWidth = this.box.attr("width");*/
             $("#scatter").empty();
@@ -710,11 +727,19 @@ function populateCuttingPlanes(planes) {
 
 }
 
-function getCutPlane(cp) {
+function orient() {
+    getCutPlane(undefined, true);
+}
+
+function getCutPlane(cp, orient) {
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
     var q = $("#cutPlanes").val();
+    if (!q) {
+        createViz(dataStore, quantitySelected);
+        return;
+    }
     var dataGroupByZ = d3.nest()
         .key(function (d) {
             return d.z;
@@ -723,7 +748,7 @@ function getCutPlane(cp) {
     var slice = _.find(dataGroupByZ, function (d) {
         return d.key == q;
     })
-    createViz(slice.values, quantitySelected);
+    createViz(slice.values, quantitySelected, false, orient);
 }
 function determmineVizType(columns) {
     if (_.indexOf(columns, "z")!=-1) {
