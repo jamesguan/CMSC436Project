@@ -27,7 +27,7 @@ function create3dViz(data, q) {
         renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
         //renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.setSize( 1100, 610, false );
+		renderer.setSize( 1100, brHeight, false );
         scene.background = new THREE.Color( 0xffffff );
 
         var container = document.getElementById( 'container' );

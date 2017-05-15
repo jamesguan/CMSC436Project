@@ -88,9 +88,9 @@ function selectRandom1000(data) {
 function createViz(data, val, multi, orient) {
 
     isMV = multi;
-    var svg = d3.select("#scatter").attr("height", brHeight).call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
+    var svg = d3.select("#scatter").attr("height", brHeight)/*.call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
         svg.attr("transform", d3.event.transform)
-    })).append("g");
+    }))*/.append("g");
     var mR = selectedWidth;
     var mB = selectedHeight;
     if (multi) {
@@ -127,7 +127,7 @@ function createViz(data, val, multi, orient) {
                 return parseInt(d.y);
             })+1])
             .range([domainheight-25, 0]);
-    var tr = 584 - mB;
+    var tr = domainheight - mB;
 
     if (val != 'val') {
         g.append("g")
@@ -231,9 +231,9 @@ function draw(data, g,x, y, val, orient) {
         s.append("svg:path")
             //.attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
             .attr("d",posstr)
-            .style("stroke-width", .4)
+            .style("stroke-width", .5)
             .style("stroke", '#f5f5f5')
-            .style("stroke-opacity", '.5')
+            .style("stroke-opacity", '1')
             .style("fill", markerFillClr);
         /*attr("x", x(item.x) - dmnsn.width/2).
          attr("y", y(item.y) - dmnsn.height/2).*/
@@ -248,6 +248,8 @@ function draw(data, g,x, y, val, orient) {
         attr("height", 50);*/
     })
     $("#legendDiv").show();
+    $("#resizeBox").show();
+    $("#resizeBoxText").show();
     $("#scatter").show();
 }
 
@@ -369,8 +371,9 @@ function drawLegend1() {
 function drawLegend() {
     drawResizeBox();
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
-    var g = d3.select("#legend").attr("height", brHeight - 180).
-    attr("width", 370).append("g");
+    var g = d3.select("#legend").attr("height", 400).
+    attr("width", 350).append("g");
+    $("#legendContainer").height(brHeight - 190);
     var h=0;
     for (i=1; i<=4; i++) {
         var w=5, height=selectedHeight*i/4;
