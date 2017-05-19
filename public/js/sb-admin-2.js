@@ -43,9 +43,11 @@
 
 var prefNumberSeries = [];
 var selectedHeight = 20, selectedWidth = 20;
+var prevWidth = 20;
 const twoDseries = [1,selectedWidth/4, selectedWidth/2, selectedWidth];
 var dataStore={};
 var brHeight = window.innerHeight - 54;
+var brWidth = (window.innerWidth*10/12) -10;
 var scalingRatio = 1;
 var scaleFactor = 1;
 var firstClickMap = true;
@@ -56,11 +58,21 @@ var brainRegions = {};
 var brainIndexes = {};
 var brainData = {};
 var isBrain = false;
-var g_patientId = 0;
 var isMV = false;
 var dsYoungMetas = {};
 var dsAdultMetas = {};
 var maxMagnitudeBD = 0;
+var mvBarHeight = 8 * (brHeight/600);
+var mvBarWidth = 40 * (brWidth/1128);
+var fiveMetaMax = {};
+var fiveCols = [];
+
+function initialConfig() {
+    brHeight = window.innerHeight - 54;
+    mvBarHeight = 8 * (brHeight/600);
+    mvBarWidth = 40 * (brWidth/1128);
+    brWidth = (window.innerWidth*10/12) -10;
+}
 
 function readData() {
     $("#legendDiv").hide();
@@ -98,7 +110,7 @@ function createViz(data, val, multi, orient) {
         mB = val.marginBottom;
     }
     var margin = {top: 5 + mB, right: mR, bottom: 0, left: 25},
-        width = $("#scatterDiv").width(),
+        width = brWidth,
         height = brHeight,
         domainwidth = width - margin.left - margin.right,
         domainheight = height - margin.top - margin.bottom;
@@ -127,7 +139,7 @@ function createViz(data, val, multi, orient) {
                 return parseInt(d.y);
             })+1])
             .range([domainheight-25, 0]);
-    var tr = domainheight - mB;
+    var tr = brHeight - 24 - mB;
 
     if (val != 'val') {
         g.append("g")
@@ -186,24 +198,6 @@ function draw(data, g,x, y, val, orient) {
     var groups = legendGroup();
 
     drawLegend();
-
-    /*data.forEach(function (item) {
-        var degree = Math.atan2(item.directionY,item.directionX)* (180 / Math.PI);
-        var dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
-        var s = g.append("svg");
-        s.append("rect").
-        /!*attr("x", x(item.x) - dmnsn.width/2).
-        attr("y", y(item.y) - dmnsn.height/2).*!/
-        attr("x", x(item.x) ).
-        attr("y", y(item.y) ).
-        attr("width", dmnsn.width).
-        attr("stroke", '#f5f5f5').
-        attr("fill", markerFillClr).
-        attr("fill-opacity", 1).
-        attr("stroke-width", '.4').
-        attr("stroke-opacity", '.5').
-        attr("height", dmnsn.height);
-    })*/
 
     data.forEach(function (item) {
         var degree = Math.atan2(item.directionY,item.directionX)* (180 / Math.PI);
@@ -390,11 +384,19 @@ function drawLegend() {
                 attr("stroke-width", '.4').
                 attr("stroke-opacity", '.5').
                 attr("height", height);
-                g.append("text")
-                    .attr("x", w-3)
-                    .attr("y", h+selectedHeight +10)
-                    .attr("dy", ".35em")
-                    .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
+                if (prefNumberSeries[j] == 1) {
+                    g.append("text")
+                        .attr("x", w-3)
+                        .attr("y", h+selectedHeight +10)
+                        .attr("dy", ".35em")
+                        .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio) * selectedWidth/prevWidth)));
+                } else{
+                    g.append("text")
+                        .attr("x", w-3)
+                        .attr("y", h+selectedHeight +10)
+                        .attr("dy", ".35em")
+                        .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
+                }
                 w+=  prefNumberSeries[j] +50;
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
@@ -473,6 +475,7 @@ function drawResizeBox() {
 
         },
         rend= function() {
+            //prevWidth = selectedWidth;
             if (this.box.attr("height") > 100) {
                 this.box.attr("height", 100);
             }
@@ -529,7 +532,8 @@ function twoD() {
     $("#resizeBox").empty();
     $("#map").hide();
     $("#container").hide();
-    createViz(dataStore, quantitySelected);
+    //createViz(dataStore, quantitySelected);
+    getCutPlane();
     $("#scatterDiv").show();
     $("#resizeBox").show();
     $("#resizeBoxText").show();
