@@ -26,12 +26,19 @@ var fiveCols = [];
 var cutPlaneSelected = 0;
 var ageSelected= 18;
 var selectedVizType = "2D";
+var legendDivRatio = 1;
+var scatterDivRatio = 1;
+var heightRatio = 1;
+var ThreeDDataStore = {};
 
 function initialConfig() {
     brHeight = window.innerHeight - 54;
     mvBarHeight = 8 * (brHeight/600);
-    mvBarWidth = 40 * (brWidth/1128);
     brWidth = (window.innerWidth*10/12) -10;
+    mvBarWidth = 40 * (brWidth/1128);
+    heightRatio = brHeight/608;
+    legendDivRatio = (window.innerWidth*2/12)/228;
+    scatterDivRatio = brWidth/1128
 }
 
 function readData() {
@@ -226,13 +233,13 @@ function normalizeExtremes(num) {
 
     }
 
-    if (num >=2 && num<5) {
+    /*/!*if (num >=2 && num<5) {
         norm = 5 * Math.pow(10, tens);
     } else if (num >=0 && num<2) {
-        norm = 2 * Math.pow(10, tens);
-    } else {
+        norm*!/ = 2 * Math.pow(10, tens);
+    } else {*/
         norm = 10 * Math.pow(10, tens);
-    }
+    /*}*/
     return norm;
 }
 
@@ -335,13 +342,16 @@ function drawLegend1() {
 
 function drawLegend() {
     drawResizeBox();
+    var calcHeight = 2.3*selectedHeight + 130;
+    var calcWidth = 1 + 1.75*(selectedWidth) + 110
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
-    var g = d3.select("#legend").attr("height", 400).
-    attr("width", 350).append("g");
-    $("#legendContainer").height(brHeight - 146);
+    var g = d3.select("#legend").attr("height", calcHeight).
+    attr("width", calcWidth).append("g");
+    $("#legendContainer").height(brHeight - 46 - (heightRatio*100));
     var h=0;
-    for (i=1; i<=4; i++) {
-        var w=5, height=selectedHeight*i/4;
+    var heightArr = [0,.5, .8, 1]
+    for (i=1; i<=3; i++) {
+        var w=5, height=selectedHeight*heightArr[i]; // changed from i/4
         var y = h+selectedHeight-height;
         for (j=0; j<prefNumberSeries.length; j++) {
             if (prefNumberSeries[j] <=selectedWidth) {
@@ -358,17 +368,21 @@ function drawLegend() {
                 if (prefNumberSeries[j] == 1) {
                     g.append("text")
                         .attr("x", w-3)
-                        .attr("y", h+selectedHeight +10)
+                        .attr("y", h+selectedHeight +10) // changed from 10
                         .attr("dy", ".35em")
+                        .attr("font-size", "9px")
                         .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio) * selectedWidth/prevWidth)));
+                    w+=  prefNumberSeries[j] +35; // changed from 50
                 } else{
                     g.append("text")
                         .attr("x", w-3)
                         .attr("y", h+selectedHeight +10)
                         .attr("dy", ".35em")
+                        .attr("font-size", "9px")
                         .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
+                    w+=  prefNumberSeries[j] +25; // changed from 50
                 }
-                w+=  prefNumberSeries[j] +50;
+
             } else if(prefNumberSeries.indexOf(selectedWidth) == -1){
                 g.append("rect").
                 attr("x", w).
@@ -384,13 +398,14 @@ function drawLegend() {
                     .attr("x", w)
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
+                    .attr("font-size", "9px")
                     .text(convertLabel(Math.ceil(selectedWidth*height*(scalingRatio))));
                 break;
             } else {
                 break;
             }
         }
-        h+= height+ 50;
+        h+= height+ 50; // changed from 50
     }
 }
 
@@ -399,14 +414,14 @@ function convertLabel(num) {
         if (isInt(num/1000000)) {
             return (num/1000000) + "M";
         } else {
-            return (num/1000).toFixed(2) + "M";
+            return parseInt(num/1000000) + "M";
         }
     }
     else if (num >= 1000) {
         if (isInt(num/1000)) {
             return (num/1000) + "K";
         } else {
-            return (num/1000).toFixed(2) + "K";
+            return parseInt(num/1000) + "K";
         }
     }  else {
         return num;
@@ -418,8 +433,7 @@ function isInt(n) {
 }
 
 function drawResizeBox() {
-    var legendWidth = $("#legendDiv").width();
-    var R = Raphael("resizeBox", 100, 100),
+    var R = Raphael("resizeBox", 100*legendDivRatio, 100*legendDivRatio),
         c = R.rect(0, 0, selectedWidth, selectedHeight).attr({
             fill: markerFillClr,
             stroke: "none",
@@ -460,7 +474,7 @@ function drawResizeBox() {
             } else {
                 selectedHeight = selectedWidth =  this.box.attr("width");
             }
-            prefNumberSeries = [1, selectedWidth/4, selectedWidth/2, selectedWidth];
+            prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
             /*selectedHeight = this.box.attr("height");
             selectedWidth = this.box.attr("width");*/
             $("#scatter").empty();
@@ -486,12 +500,12 @@ function threeD() {
     selectedWidth = 50;
     prefNumberSeries = threeDSeries;
     $("#container").empty();
-    create3dViz(dataStore, quantitySelected);
+    create3dViz(ThreeDDataStore, quantitySelected);
     $("#map").hide();
     $("#scatterDiv").hide();
     $("#resizeBox").hide();
     $("#resizeBoxText").hide();
-    $("#legendContainer").height("590");
+    $("#legendContainer").height(heightRatio*590);
     $("#container").show();
 }
 
@@ -614,6 +628,7 @@ function createVizFromFile(data, q) {
         })
         .entries(data);
     //data = selectRandom1000(data);
+    ThreeDDataStore = data;
     var planes = _.pluck(dataGroupByZ, "key");
 
     //populateCuttingPlanes(planes)
