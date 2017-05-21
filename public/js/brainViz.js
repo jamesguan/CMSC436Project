@@ -68,6 +68,8 @@ function brainViz(data, columns,  patientId) {
     dataStore = patientRecords[pids[0]];
     quantitySelected = 'Choline';
     createViz(patientRecords[pids[0]], 'Choline');*/
+    cutPlaneSelected = 90;
+    selectedVizType = "mv"
     drawMeanMVCC(data, columns);
     $('.selectpicker').selectpicker('val', ['Choline','Glx', 'NAA', 'Inositol', 'Creatine']);
 
@@ -76,5 +78,66 @@ function brainViz(data, columns,  patientId) {
 
 
 
+
+}
+
+function initiateAgeSlider(min, max) {
+    $( "#ageSlider" ).slider({
+        max: parseInt(max),
+        min: parseInt(min),
+        slide: function( event, ui ) {
+            $("#ageValue").text(ui.value)
+        },
+        stop: function (event, ui) {
+            ageSelected = ui.value;
+            getQuantity();
+        }
+    });
+    $( "#ageSlider" ).slider( "value", ageSelected );
+    $("#ageValue").text(ageSelected)
+}
+
+function initiatePlaneSlider(min, max) {
+    $( "#planeSlider" ).slider({
+        max: parseInt(max),
+        min: parseInt(min),
+        slide: function( event, ui ) {
+            $("#planeValue").text(ui.value)
+        },
+        stop: function (event, ui) {
+            cutPlaneSelected = ui.value;
+            getCutPlane();
+        }
+    });
+    $( "#planeSlider" ).slider( "value", cutPlaneSelected );
+    $("#planeValue").text(cutPlaneSelected)
+}
+
+function initialHide() {
+    $("#ageSlider").hide();
+    
+}
+
+function finalShow(vizType) {
+    if (vizType == "mv") {
+        $("#ageSlider").show();
+    }
+}
+
+function gridFill(r, c, grid) {
+    var pr = parseInt(r);
+    var pc = parseInt(c);
+    if(r - pr > .85 ) {
+        grid[(pr+1)*10 + pc] = false
+    }
+    if(c - pc > .85) {
+        grid[(pr)*10 + pc+1] = false;
+    }
+    if(r - pr < .15 ) {
+        grid[(pr-1)*10 + pc] = false
+    }
+    if(c - pc < .15) {
+        grid[(pr)*10 + pc-1] = false;
+    }
 
 }

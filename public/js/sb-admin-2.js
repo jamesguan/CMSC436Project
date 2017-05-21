@@ -1,46 +1,3 @@
-/*$(function() {
-    $('#side-menu').metisMenu();
-});*/
-
-//Loads the correct sidebar on window load,
-//collapses the sidebar on window resize.
-// Sets the min-height of #page-wrapper to window size
-/*$(function() {
-    $(window).bind("load resize", function() {
-        var topOffset = 50;
-        var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
-        if (width < 768) {
-            $('div.navbar-collapse').addClass('collapse');
-            topOffset = 100; // 2-row-menu
-        } else {
-            $('div.navbar-collapse').removeClass('collapse');
-        }
-
-        var height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
-        height = height - topOffset;
-        if (height < 1) height = 1;
-        if (height > topOffset) {
-            $("#page-wrapper").css("min-height", (height) + "px");
-        }
-    });
-
-    var url = window.location;
-    // var element = $('ul.nav a').filter(function() {
-    //     return this.href == url;
-    // }).addClass('active').parent().parent().addClass('in').parent();
-    var element = $('ul.nav a').filter(function() {
-        return this.href == url;
-    }).addClass('active').parent();
-
-    while (true) {
-        if (element.is('li')) {
-            element = element.parent().addClass('in').parent();
-        } else {
-            break;
-        }
-    }
-});*/
-
 var prefNumberSeries = [];
 var selectedHeight = 20, selectedWidth = 20;
 var prevWidth = 20;
@@ -66,6 +23,9 @@ var mvBarHeight = 8 * (brHeight/600);
 var mvBarWidth = 40 * (brWidth/1128);
 var fiveMetaMax = {};
 var fiveCols = [];
+var cutPlaneSelected = 0;
+var ageSelected= 18;
+var selectedVizType = "2D";
 
 function initialConfig() {
     brHeight = window.innerHeight - 54;
@@ -81,11 +41,11 @@ function readData() {
         if (error) throw error;
         var columns = filterQuantities(data.columns);
         populateDropdown(columns, false, true);
-        data = selectRandom1000(data);
-        dataStore = data;
+        vizRouter("2D", false, data, 'q_magnitude');
+        /*dataStore = data;
         createViz(data, quantitySelected);
         $("#quantities").selectpicker('val', 'q_magnitude');
-        $("#quantities").selectpicker("refresh");
+        $("#quantities").selectpicker("refresh");*/
     });
 }
 
@@ -158,6 +118,14 @@ function createViz(data, val, multi, orient) {
         });
         draw(data.reverse(), g, x, y, val, orient);
     }
+    var planes = _.pluck(dataStore, "key");
+    _.sortBy(planes, function (num) {
+        return parseFloat(num);
+    })
+    if (cutPlaneSelected == 0) {
+        cutPlaneSelected = planes[0];
+    }
+    initiatePlaneSlider(planes[0], planes[planes.length -1]);
 }
 
 function createsampleVals(data) {
@@ -182,7 +150,10 @@ function scaleFactorCalc(num) {
 
 function draw(data, g,x, y, val, orient) {
     var min = d3.min(data, function (d) {
-        return parseFloat(d[val]);
+        if (parseFloat(d[val])) {
+            return parseFloat(d[val]);
+        }
+        //return parseFloat(d[val]);
     });
 
     if (min < 1) {
@@ -367,7 +338,7 @@ function drawLegend() {
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
     var g = d3.select("#legend").attr("height", 400).
     attr("width", 350).append("g");
-    $("#legendContainer").height(brHeight - 190);
+    $("#legendContainer").height(brHeight - 146);
     var h=0;
     for (i=1; i<=4; i++) {
         var w=5, height=selectedHeight*i/4;
@@ -447,6 +418,7 @@ function isInt(n) {
 }
 
 function drawResizeBox() {
+    var legendWidth = $("#legendDiv").width();
     var R = Raphael("resizeBox", 100, 100),
         c = R.rect(0, 0, selectedWidth, selectedHeight).attr({
             fill: markerFillClr,
@@ -643,8 +615,9 @@ function createVizFromFile(data, q) {
         .entries(data);
     //data = selectRandom1000(data);
     var planes = _.pluck(dataGroupByZ, "key");
-    populateCuttingPlanes(planes)
-    dataStore = data;
+
+    //populateCuttingPlanes(planes)
+    dataStore = dataGroupByZ;
     //dataStore = dataGroupByZ[0].values;
     $("#scatter").empty();
     $("#legend").empty();
@@ -653,6 +626,7 @@ function createVizFromFile(data, q) {
     $("#container").hide();
     //quantitySelected = 'q_magnitude';
     //quantitySelected = $("#quantities").val()[0];
+    //cutPlaneSelected = dataGroupByZ[0].key;
     createViz(dataGroupByZ[0].values, q);
     $("#scatterDiv").show();
 }
@@ -675,6 +649,10 @@ function createCCGlyphs(markerId, data, station) {
 
 function uploadTexture() {
     $('#textureFile').trigger('click');
+}
+
+function uploadFile() {
+    $('#fileUpload').trigger('click');
 }
 
 d3.select("#textureFile").on("change", function(){
@@ -742,20 +720,25 @@ function getCutPlane(cp, orient) {
     $("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
-    var q = $("#cutPlanes").val();
-    if (!q) {
+    var q = cutPlaneSelected;
+    /*if (!q) {
         createViz(dataStore, quantitySelected);
         return;
-    }
-    var dataGroupByZ = d3.nest()
+    }*/
+   /* var dataGroupByZ = d3.nest()
         .key(function (d) {
             return d.z;
         })
-        .entries(dataStore);
-    var slice = _.find(dataGroupByZ, function (d) {
-        return d.key == q;
-    })
-    createViz(slice.values, quantitySelected, false, orient);
+        .entries(dataStore);*/
+   if (selectedVizType == "2D") {
+       var slice = _.find(dataStore, function (d) {
+           return d.key == q;
+       })
+       createViz(slice.values, quantitySelected, false, orient);
+   } else {
+       getQuantity();
+   }
+
 }
 function determmineVizType(columns) {
     if (_.indexOf(columns, "z")!=-1) {

@@ -473,13 +473,13 @@ table.dataTable thead .sorting:after {
 #scatterDiv {
   padding: 5px 5px 0px 5px;
   overflow:auto;
-  resize: both;
+  /*resize: both;*/
 }
 
 #scatter{
   background-color: #f5f5f5;
   /*background-image: url("../images/Chesapeake1.JPG");*/
-  resize: both;
+  /*resize: both;*/
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -508,7 +508,7 @@ table.dataTable thead .sorting:after {
 }
 
 body, html {
-  overflow: hidden;
+  /*overflow: hidden;*/
   height: 100%; width: 100%;
 }
 #fileUpload{
@@ -571,7 +571,7 @@ body, html {
 
 .open>.actionButtons {
   display: block;
-  left: -125px;
+  left: -130px;
 }
 
 .filter-option{
@@ -590,7 +590,7 @@ body, html {
    border-color: #fff;
 }
 
-div.tooltip {
+/*div.tooltip {
   position: absolute;
   text-align: center;
   width: 60px;
@@ -601,4 +601,37 @@ div.tooltip {
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
+}*/
+
+
+/*range Slider*/
+
+#ageSlider{
+  width: 80%;
+  margin-left: 5px;
+  background: #f2f4f7;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#ageValue{
+  padding-left: 105%;
+  position: relative;
+  top: -5px;
+}
+
+#planeSlider{
+  width: 80%;
+  margin-left: 5px;
+  background: #f2f4f7;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#planeValue{
+  padding-left: 105%;
+  position: relative;
+  top: -5px;
 }

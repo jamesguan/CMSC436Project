@@ -13,16 +13,17 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" >-->
 
     <!-- MetisMenu CSS -->
     <link href="/js/metisMenu/metisMenu.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <!-- Custom CSS -->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -45,19 +46,22 @@
                     <div class="panel-heading">
                     <i class="fa fa-bar-chart-o fa-fw"></i> VizQ
                     <div class="pull-right">
-                        <label class="qlabel">Select Cutting Planes</label>
-                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
-                        <select id="cutPlanes" class="selectpicker" onchange="getCutPlane(this);">
+                        <!--<label class="qlabel">Select Cutting Planes</label>-->
+                        <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
+                        <!--<select id="cutPlanes" class="selectpicker" onchange="getCutPlane(this);">-->
                         </select>
-                        <label class="qlabel">Select quantities</label>
-                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <!--<label class="qlabel">Select quantities</label>-->
+                        <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
                         <select id="quantities" class="selectpicker" multiple onchange="getQuantity(this);">
                         </select>
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
                         <i class="fa fa-upload clickable" onclick="uploadTexture()" title="Click to upload texture" aria-hidden="true"></i>
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                        <!--<i class="fa fa-upload clickable" onclick="uploadFile()" title="Click to upload Data File" aria-hidden="true"></i>-->
+                        <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
                         <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
                         <input class="fileInput clickable" id="fileUpload" type="file">
+                        <!--<input type="file" id="fileUpload" style="display:none">-->
                         <input type="file" id="textureFile" style="display:none">
                         <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
                         <div class="btn-group">
@@ -79,17 +83,20 @@
 
         <div class="row">
 			<div id="container" class="col-lg-10 "></div>
-            <div class="col-lg-10 col-md-10" id="scatterDiv">
+            <div class="col-lg-10 col-md-10 col-sm-10" id="scatterDiv">
                 <svg id="scatter" width="100%"></svg>
             </div>
-            <div id="map" class="col-lg-10 "></div>
-            <div id ="overlay" class="overlay"></div>
-            <div id="legendDiv" class="col-lg-2 col-md-2">
-                <span id="resizeBoxText" class="legendText">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true"></i> to resize the markers</span>
-                <div id="resizeBox"></div>
-                <span class="legendText">Legend:</span>
+            <!--<div id="map" class="col-lg-10 "></div>
+            <div id ="overlay" class="overlay"></div>-->
+            <div id="legendDiv" class="col-lg-2 col-md-2 col-sm-2">
+                <!--<span id="resizeBoxText" class="legendText ">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true">
+                </i> to resize the markers</span>-->
+                <div id="planeSlider" title=" Slide to select cutting plane"><span id="planeValue"></span></div>
+                <div  title = "Drag the rectangle to resize the markers" id="resizeBox"></div>
+                <div id="ageSlider" title=" select age group"><span id="ageValue"></span></div>
+                <!--<span class="legendText">Legend:</span>-->
                 <div id="legendContainer">
-                    <svg id="legend" <!--width="100%"-->>
+                    <svg id="legend" >
                     </svg>
                 </div>
             </div>
@@ -100,6 +107,7 @@
 
 <!-- jQuery -->
 <script src="/js/jquery/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="/js/underscore.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
@@ -112,6 +120,7 @@
 <script src="/js/raphael/raphael.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>-->
 <!-- Custom Theme JavaScript -->
 <script src="/js/sb-admin-2.js"></script>
 <script src="/js/utils.js"></script>
@@ -136,6 +145,7 @@
         vizRouter("2D", true);
         $("#overlay").hide();
         initialConfig();
+        initialHide();
 
     });
 
