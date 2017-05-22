@@ -29,7 +29,7 @@ var selectedVizType = "2D";
 var legendDivRatio = 1;
 var scatterDivRatio = 1;
 var heightRatio = 1;
-var ThreeDDataStore = {};
+var threeDStore = {};
 
 function initialConfig() {
     brHeight = window.innerHeight - 54;
@@ -39,7 +39,6 @@ function initialConfig() {
     heightRatio = brHeight/608;
     legendDivRatio = (window.innerWidth*2/12)/228;
     scatterDivRatio = brWidth/1128;
-    drawResizeBox();
 }
 
 function readData() {
@@ -502,6 +501,7 @@ function threeD(data) {
     selectedHeight= 100;
     selectedWidth = 100;
     prefNumberSeries = threeDSeries;
+    threeDStore = data;
     create3dViz(data, quantitySelected);
     $("#legendContainer").height(heightRatio*610);
     finalShow("3D");
@@ -594,7 +594,7 @@ d3.select("#fileUpload").on("change", function(){
             var txtRes = filereader.result;
             try {
                 if (name.split(".")[1] == "csv") {
-                    cutPlaneSelected == 0;
+                    cutPlaneSelected = 0;
                     var data = d3.csvParse(txtRes);
                     var columns = filterQuantities(data.columns);
                     populateDropdown(columns);

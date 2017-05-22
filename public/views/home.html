@@ -82,7 +82,7 @@
         </div>
 
         <div class="row">
-			<div id="container" class="col-lg-10 "></div>
+			<div id="container" class="col-lg-10 col-md-10 col-sm-10"></div>
             <div class="col-lg-10 col-md-10 col-sm-10" id="scatterDiv">
                 <svg id="scatter" width="100%"></svg>
             </div>
@@ -146,6 +146,19 @@
         initialConfig();
         vizRouter("2D", true);
         $("#overlay").hide();
+        $(window).resize(function() {
+            initialHide();
+            initialConfig()
+            if (selectedVizType == "2D") {
+                getCutPlane();
+            } else if (selectedVizType == "3D") {
+                vizRouter("3D", false, threeDStore, quantitySelected);
+            } else if (selectedVizType == "mv") {
+                getQuantity();
+            }
+        });
+        drawResizeBox();
+
     });
 
 </script>

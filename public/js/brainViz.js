@@ -154,6 +154,8 @@ function finalShow(vizType) {
         $("#legend").show();
         $("#legendContainer").show();
     }
+
+    $("#legendDiv").height(heightRatio*616);
 }
 
 function gridFill(r, c, grid) {

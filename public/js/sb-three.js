@@ -368,8 +368,9 @@ function mergeMeshes (meshes) {
 
 function draw3DLegend() {
     $("#legend").empty();
-    var g = d3.select("#legend").attr("height", 400*heightRatio).
+    var g = d3.select("#legend").attr("height", 450*heightRatio).
     attr("width", 200*legendDivRatio).append("g");
+    $("#legendContainer").height(610*heightRatio);
     var w=10, h=10;
     var height=selectedHeight;
     for (var i=0; i<prefNumberSeries.length; i++) {

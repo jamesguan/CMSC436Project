@@ -508,7 +508,7 @@ table.dataTable thead .sorting:after {
 }
 
 body, html {
-  /*overflow: hidden;*/
+  overflow: hidden;
   height: 100%; width: 100%;
 }
 #fileUpload{

@@ -311,6 +311,7 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
     $("#legend").empty();
     var g = d3.select("#legend").attr("height", 150).
     attr("width", 200).append("g");
+    $("#legendContainer").height(558*heightRatio);
 
     addBDText(g, 5, 22, "0", "10");
     addBDText(g, 20 + mvBarWidth, 22, parseInt(maxMagnitudeBD), "10");
