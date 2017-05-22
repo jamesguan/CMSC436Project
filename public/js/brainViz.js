@@ -3,9 +3,9 @@
  */
 
 
-d3.csv("brainRegions.csv", function(error, d) {
+/*d3.csv("brainRegions.csv", function(error, d) {
     brainRegions = d;
-});
+});*/
 d3.csv("brainIndexes.csv", function(error, d) {
     var obj = [];
     d.forEach(function (i) {
@@ -15,14 +15,14 @@ d3.csv("brainIndexes.csv", function(error, d) {
 });
 
 function brainViz(data, columns,  patientId) {
-    $("#scatter").empty();
+    /*$("#scatter").empty();
     $("#legend").empty();
     $("#resizeBox").empty();
     $("#resizeBox").hide();
     $("#resizeBoxText").hide();
     $("#map").hide();
-    $("#container").hide();
-    $("#legendContainer").height("590");
+    $("#container").hide();*/
+    $("#legendContainer").height(558*heightRatio);
     /*var patientdata;
     if (!patientId) {
         patientdata = data[0];
@@ -73,7 +73,7 @@ function brainViz(data, columns,  patientId) {
     drawMeanMVCC(data, columns);
     $('.selectpicker').selectpicker('val', ['Choline','Glx', 'NAA', 'Inositol', 'Creatine']);
 
-    $("#scatterDiv").show();
+    /*$("#scatterDiv").show();*/
 
 
 
@@ -115,12 +115,44 @@ function initiatePlaneSlider(min, max) {
 
 function initialHide() {
     $("#ageSlider").hide();
+    $("#planeSlider").hide();
+    $("#scatter").hide();
+    $("#scatterDiv").hide()
+    $("#legendDiv").hide();
+    $("#resizeBox").hide();
+    $("#legendContainer").hide();
+    $("#scatter").empty();
+    $("#legend").empty();
+    $("#legend").hide();
+    $("#container").empty();
+    //$("#resizeBox").empty();
+    $("#map").hide();
+    $("#container").hide();
     
 }
 
 function finalShow(vizType) {
-    if (vizType == "mv") {
+    if (vizType == "2D") {
+        $("#planeSlider").show();
+        $("#scatter").show();
+        $("#legendDiv").show();
+        $("#resizeBox").show();
+        $("#legend").show();
+        $("#scatterDiv").show()
+        $("#legendContainer").show();
+    } else if (vizType == "mv") {
         $("#ageSlider").show();
+        $("#planeSlider").show();
+        $("#scatter").show();
+        $("#legendDiv").show();
+        $("#legend").show();
+        $("#scatterDiv").show()
+        $("#legendContainer").show();
+    } else if(vizType == "3D") {
+        $("#container").show();
+        $("#legendDiv").show();
+        $("#legend").show();
+        $("#legendContainer").show();
     }
 }
 

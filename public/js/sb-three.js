@@ -2,7 +2,7 @@
  * Created by Abhishek on 3/18/2017.
  */
 
-const threeDSeries = [1, 10, 20, 50, 100];
+const threeDSeries = [10, 20, 50, 100];
 
 var extrudeSettings = { amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
@@ -27,7 +27,7 @@ function create3dViz(data, q) {
         renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
         //renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.setSize( 1100, brHeight, false );
+		renderer.setSize( brWidth, brHeight, false );
         scene.background = new THREE.Color( 0xffffff );
 
         var container = document.getElementById( 'container' );
@@ -185,6 +185,7 @@ function create3dViz(data, q) {
         var ratio = calculateScalingRatio(normMax);
         var groups = legendGroup();
 
+        draw3DLegend();
         for (i=0; i<data.length; i++) {
             var item = data[i];
             var dmnsn ={};
@@ -197,7 +198,6 @@ function create3dViz(data, q) {
                 var x1 = x(item.x);
                 var y1 = y(item.y);
                 var z1= z(item.z);
-                draw3DLegend();
                 plotLegendBar(scene, 0xa6bfed, x1, y1, z1, 1, item, dmnsn);
                 drawMagnitude(scene, x1, y1, z1, dmnsn, item);
                 drawPosition( scene, x1, y1, z1, item);
@@ -368,15 +368,15 @@ function mergeMeshes (meshes) {
 
 function draw3DLegend() {
     $("#legend").empty();
-    var g = d3.select("#legend").attr("height", 300).
-    attr("width", 200).append("g");
+    var g = d3.select("#legend").attr("height", 400*heightRatio).
+    attr("width", 200*legendDivRatio).append("g");
     var w=10, h=10;
     var height=selectedHeight;
     for (var i=0; i<prefNumberSeries.length; i++) {
         if (prefNumberSeries[i] > selectedWidth) {
             return;
         }
-        if (w+prefNumberSeries > 200) {
+        if (w+prefNumberSeries[i] > 200) {
             w=10; h+=140;
         }
         drawLegendRects(g, w, h, prefNumberSeries[i], height, scalingRatio)
@@ -387,7 +387,7 @@ function draw3DLegend() {
 function drawLBs(g, w, h, width, height, scalingRatio) {
     var fillClr = "#ffffff";
    // var strkClr = "#073f99";
-    var strkClr = "#000000";
+    var strkClr = "#073f99";
     var strokeWidth = '.2';
     if (width > 1) {
         strokeWidth = '.5';
@@ -419,6 +419,7 @@ function drawLegendRects(g, w, h, width, height, scalingRatio) {
     g.append("text")
         .attr("x", w-3)
         .attr("y", h+ height +10)
-        .attr("dy", ".35em")
+        .attr("dy", ".35em").
+        attr("fill", "#073f99")
         .text(parseInt(width*height*(scalingRatio)));
 }

@@ -1,6 +1,6 @@
 var prefNumberSeries = [];
-var selectedHeight = 20, selectedWidth = 20;
-var prevWidth = 20;
+var selectedHeight = 30, selectedWidth = 30;
+var prevWidth = 40;
 const twoDseries = [1,selectedWidth/4, selectedWidth/2, selectedWidth];
 var dataStore={};
 var brHeight = window.innerHeight - 54;
@@ -38,7 +38,8 @@ function initialConfig() {
     mvBarWidth = 40 * (brWidth/1128);
     heightRatio = brHeight/608;
     legendDivRatio = (window.innerWidth*2/12)/228;
-    scatterDivRatio = brWidth/1128
+    scatterDivRatio = brWidth/1128;
+    drawResizeBox();
 }
 
 function readData() {
@@ -219,10 +220,11 @@ function draw(data, g,x, y, val, orient) {
         attr("stroke-opacity", '.5').
         attr("height", 50);*/
     })
-    $("#legendDiv").show();
+    /*$("#legendDiv").show();
     $("#resizeBox").show();
     $("#resizeBoxText").show();
-    $("#scatter").show();
+    $("#scatter").show();*/
+    finalShow("2D");
 }
 
 function normalizeExtremes(num) {
@@ -341,13 +343,13 @@ function drawLegend1() {
 }
 
 function drawLegend() {
-    drawResizeBox();
+    //drawResizeBox();
     var calcHeight = 2.3*selectedHeight + 130;
     var calcWidth = 1 + 1.75*(selectedWidth) + 110
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
     var g = d3.select("#legend").attr("height", calcHeight).
     attr("width", calcWidth).append("g");
-    $("#legendContainer").height(brHeight - 46 - (heightRatio*100));
+    $("#legendContainer").height(brHeight - 46 - (legendDivRatio*100));
     var h=0;
     var heightArr = [0,.5, .8, 1]
     for (i=1; i<=3; i++) {
@@ -462,12 +464,13 @@ function drawResizeBox() {
         },
         rend= function() {
             //prevWidth = selectedWidth;
-            if (this.box.attr("height") > 100) {
-                this.box.attr("height", 100);
+
+            if (this.box.attr("height") > 100*legendDivRatio) {
+                this.box.attr("height", 100*legendDivRatio);
             }
 
-            if (this.box.attr("width") > 100) {
-                this.box.attr("width", 100);
+            if (this.box.attr("width") > 100*legendDivRatio) {
+                this.box.attr("width", 100*legendDivRatio);
             }
             if (this.box.attr("height") > this.box.attr("width")) {
                 selectedHeight = selectedWidth =  this.box.attr("height")
@@ -477,9 +480,9 @@ function drawResizeBox() {
             prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
             /*selectedHeight = this.box.attr("height");
             selectedWidth = this.box.attr("width");*/
-            $("#scatter").empty();
-            $("#legend").empty();
-            $("#resizeBox").empty();
+            /*$("#scatter").empty();
+            $("#legend").empty();*/
+            //$("#resizeBox").empty();
             if (isMV) {
                 getQuantity();
             } else{
@@ -495,34 +498,34 @@ function drawResizeBox() {
 
 }
 
-function threeD() {
+function threeD(data) {
     selectedHeight= 100;
-    selectedWidth = 50;
+    selectedWidth = 100;
     prefNumberSeries = threeDSeries;
-    $("#container").empty();
-    create3dViz(ThreeDDataStore, quantitySelected);
-    $("#map").hide();
+    create3dViz(data, quantitySelected);
+    $("#legendContainer").height(heightRatio*610);
+    finalShow("3D");
+    /*$("#map").hide();
     $("#scatterDiv").hide();
     $("#resizeBox").hide();
     $("#resizeBoxText").hide();
-    $("#legendContainer").height(heightRatio*590);
-    $("#container").show();
+    $("#container").show();*/
 }
 
 function twoD() {
     selectedHeight= 20;
     selectedWidth = 20;
     prefNumberSeries = twoDseries;
-    $("#scatter").empty();
+    /*$("#scatter").empty();
     $("#legend").empty();
-    $("#resizeBox").empty();
+    //$("#resizeBox").empty();
     $("#map").hide();
-    $("#container").hide();
+    $("#container").hide();*/
     //createViz(dataStore, quantitySelected);
     getCutPlane();
-    $("#scatterDiv").show();
+    /*$("#scatterDiv").show();
     $("#resizeBox").show();
-    $("#resizeBoxText").show();
+    $("#resizeBoxText").show();*/
 
 }
 
@@ -552,16 +555,18 @@ function vizRouter(type, pageLoad, data, quantity) {
     }
     data = data || dataStore;
     if(type == "2D") {
-        selectedHeight= 20;
-        selectedWidth = 20;
+        selectedHeight= 30;
+        selectedWidth = 30;
         prefNumberSeries = twoDseries;
         quantitySelected = quantity;
+        selectedVizType = "2D";
         createVizFromFile(data, quantitySelected);
     } else if (type == "3D") {
         selectedHeight= 100;
         selectedWidth = 50;
+        selectedVizType = "3D";
         prefNumberSeries = threeDSeries;
-        threeD();
+        threeD(data);
     } else if(type == "Maps") {
         selectedHeight= 50;
         selectedWidth = 50;
@@ -583,17 +588,26 @@ d3.select("#fileUpload").on("change", function(){
         var uploadFile = this.files[0];
         var name = uploadFile.name;
         var filereader = new FileReader();
-
+        initialHide();
         filereader.onload = function (e) {
             //Txt file output
             var txtRes = filereader.result;
             try {
                 if (name.split(".")[1] == "csv") {
+                    cutPlaneSelected == 0;
                     var data = d3.csvParse(txtRes);
                     var columns = filterQuantities(data.columns);
                     populateDropdown(columns);
-                    determmineVizType(data.columns);
-                    vizRouter("2D", false, data, columns[0]);
+                    //determmineVizType(data.columns);
+                    if (data.length > 5000) {
+                        $("#resizeBox").empty();
+                        selectedHeight =30;
+                        selectedWidth =30;
+                        drawResizeBox();
+                        vizRouter("2D", false, data, columns[0]);
+                    } else {
+                        vizRouter("3D", false, data, columns[0]);
+                    }
                 } else {
                     var data = e.target.result;
                     var workbook = XLSX.read(data, {type : 'binary'});
@@ -609,6 +623,7 @@ d3.select("#fileUpload").on("change", function(){
                         }
                         columns.push(sheetName);
                     })
+                    selectedVizType = "mv";
                     populateDropdown(columns, true);
                     brainViz(brainData, columns);
                 }
@@ -628,22 +643,23 @@ function createVizFromFile(data, q) {
         })
         .entries(data);
     //data = selectRandom1000(data);
-    ThreeDDataStore = data;
+    //ThreeDDataStore = data;
     var planes = _.pluck(dataGroupByZ, "key");
-
     //populateCuttingPlanes(planes)
     dataStore = dataGroupByZ;
     //dataStore = dataGroupByZ[0].values;
-    $("#scatter").empty();
-    $("#legend").empty();
-    $("#resizeBox").empty();
-    $("#map").hide();
-    $("#container").hide();
+    //$("#scatter").empty();
+    //$("#legend").empty();
+    //$("#resizeBox").empty();
+    //$("#map").hide();
+    //$("#container").hide();
+    initialHide();
+    prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
     //quantitySelected = 'q_magnitude';
     //quantitySelected = $("#quantities").val()[0];
     //cutPlaneSelected = dataGroupByZ[0].key;
     createViz(dataGroupByZ[0].values, q);
-    $("#scatterDiv").show();
+    //$("#scatterDiv").show();
 }
 
 function createCCGlyphs(markerId, data, station) {
@@ -732,9 +748,10 @@ function orient() {
 }
 
 function getCutPlane(cp, orient) {
-    $("#scatter").empty();
-    $("#legend").empty();
-    $("#resizeBox").empty();
+    /*$("#scatter").empty();
+    $("#legend").empty();*/
+    //$("#resizeBox").empty();
+    initialHide();
     var q = cutPlaneSelected;
     /*if (!q) {
         createViz(dataStore, quantitySelected);

@@ -1,11 +1,12 @@
 function getQuantity(quant) {
     var q = $("#quantities").val();
     if (q.length >0) {
-        $("#scatter").empty();
+        initialHide();
+        /*$("#scatter").empty();
         $("#legend").empty();
         $("#resizeBox").empty();
         $("#map").hide();
-        $("#container").hide();
+        $("#container").hide();*/
        /* if (q.length > 1) {
             quantitySelected = q.join(",");
             createMultiViz(q);
@@ -13,9 +14,12 @@ function getQuantity(quant) {
             quantitySelected = q[0];
             createViz(dataStore, quantitySelected);
         }*/
-       maxMagnitudeBD = 0;
+       //maxMagnitudeBD = 0;
         drawMeanMVCC(brainData, q);
-        $("#scatterDiv").show();
+        finalShow("mv")
+       /* $("#scatterDiv").show();*/
+    } else{
+        initialHide();
     }
 }
 
@@ -75,8 +79,8 @@ function drawMeanMVCC(data, cols) {
     initiatePlaneSlider(27, 180)
     d3.csv("/views/sliceIndexes/"+ cutPlaneSelected+".csv", function(indexData) {
         brainRegions = indexData;
-        dsYoungMetas = calculateMeanForBrainData(bDYoung);
-        dsAdultMetas = calculateMeanForBrainData(bDAdult);
+        dsYoungMetas = calculateMeanForBrainData(bDYoung, cols);
+        dsAdultMetas = calculateMeanForBrainData(bDAdult, cols);
         drawBrainMeta(cols, maxChemicalValues);
         finalShow("mv");
     })
@@ -200,10 +204,13 @@ function drawBrainMeta(cols, maxChemicalValues) {
             var column = parseInt(absRow);
             var absCol = (posY)/((5*mvBarHeight+10));
             var row = parseInt(absCol);
-            var ind = (10*row) + column;
+            var ind = (10*row) + column+1;
 
             if (grid[ind]) {
-                var retFlag = drawBMRegionGlyphs(g, cols, dsY, dsA, posX, posY, valScale, maxChemicalValues);
+                posx = topLeftGlyph + column*(2*mvBarWidth) + mvBarWidth;
+                posy = (row*(5*mvBarHeight+10)) + mvBarHeight*5/2;
+                /*var retFlag = drawBMRegionGlyphs(g, cols, dsY, dsA, posX, posY, valScale, maxChemicalValues);*/
+                var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                 if (retFlag) {
                     grid[ind] = false;
                     //gridFill(absRow, absCol, grid)
@@ -305,8 +312,8 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
     var g = d3.select("#legend").attr("height", 150).
     attr("width", 200).append("g");
 
-    addBDText(g, 5, 20, "0", "10");
-    addBDText(g, 20 + mvBarWidth, 20, parseInt(maxMagnitudeBD), "10");
+    addBDText(g, 5, 22, "0", "10");
+    addBDText(g, 20 + mvBarWidth, 22, parseInt(maxMagnitudeBD), "10");
     drawMVRects(valScale(maxMagnitudeBD), mvBarHeight, g, 15, 20, 0);
 
     addBDText(g, 10, 70, " <", "10");
@@ -415,7 +422,7 @@ function drawRangeBar(w, h, g, x, y) {
     attr("height", h)
 }
 
-function calculateMeanForBrainData(data) {
+function calculateMeanForBrainData(data, cols) {
     var regionMetas = [];
     for (br=0; br<brainRegions.length; br++) {
         var region = brainIndexes[brainRegions[br].index].replace("_", " ");
@@ -424,7 +431,7 @@ function calculateMeanForBrainData(data) {
         obj.region = region;
         var metaDetails = {};
         Object.keys(data).forEach(function (item, i) {
-            metaDetails[item] = minMaxMean(_.pluck(data[item], region));
+            metaDetails[item] = minMaxMean(_.pluck(data[item], region), cols);
         });
         obj.metaDetails = metaDetails;
         regionMetas.push(obj);
@@ -432,7 +439,7 @@ function calculateMeanForBrainData(data) {
     return regionMetas;
 }
 
-function minMaxMean(arr) {
+function minMaxMean(arr, cols) {
     var obj = {}; var c=0;
     var min = Number.MAX_VALUE;
     var max = 0;
@@ -446,7 +453,7 @@ function minMaxMean(arr) {
             if (val > max) {
                 max = val;
             }
-            if (val > maxMagnitudeBD) {
+            if (val > maxMagnitudeBD && cols.length == 5) {
                 maxMagnitudeBD = val;
             }
             sum += val;

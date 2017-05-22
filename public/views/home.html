@@ -70,9 +70,9 @@
                                 <span class="fa fa-cog fa-lg" title="Toggle options"></span>
                             </a>
                             <ul class=" actionButtons dropdown-menu">
-                                <li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
-                                <!--<li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>-->
-                                <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>
+                                <!--<li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
+                                &lt;!&ndash;<li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>&ndash;&gt;
+                                <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>-->
                                 <li><a href="#" onclick="orient()"><i class="fa fa-bar-chart" aria-hidden="true"></i> Orient</a></li>
                             </ul>
                         </div>
@@ -140,13 +140,12 @@
 <script src="/js/jszip.js"></script>
 <script src="/js/xlsx.js"></script>
 <script>
-
+    initialHide();
     $( document ).ready(function() {
+        //initialHide();
+        initialConfig();
         vizRouter("2D", true);
         $("#overlay").hide();
-        initialConfig();
-        initialHide();
-
     });
 
 </script>
