@@ -1,7 +1,11 @@
-function getQuantity(quant) {
+function getQuantity(quant, redraw) {
     var q = $("#quantities").val();
     if (q.length >0) {
-        initialHide();
+        initialHide(!redraw);
+        if(!redraw) {
+            $(".mvGlyph").remove();
+            $(".posLine").remove();
+        }
         /*$("#scatter").empty();
         $("#legend").empty();
         $("#resizeBox").empty();
@@ -15,11 +19,11 @@ function getQuantity(quant) {
             createViz(dataStore, quantitySelected);
         }*/
        //maxMagnitudeBD = 0;
-        drawMeanMVCC(brainData, q);
+        drawMeanMVCC(brainData, q, redraw);
         finalShow("mv")
        /* $("#scatterDiv").show();*/
     } else{
-        initialHide();
+        initialHide(!redraw);
     }
 }
 
@@ -50,7 +54,7 @@ function createMultiViz(q) {
     createViz(data, obj, true);
 }
 
-function drawMeanMVCC(data, cols) {
+function drawMeanMVCC(data, cols, redraw) {
     var bDYoung= {};var bDAdult={};var maxChemicalValues = {};
     var max = 0; var min = 200;
     cols.forEach(function (col, c) {
@@ -76,20 +80,27 @@ function drawMeanMVCC(data, cols) {
     })
 
     initiateAgeSlider(min, max)
-    initiatePlaneSlider(27, 180)
-    d3.csv("/views/sliceIndexes/"+ cutPlaneSelected+".csv", function(indexData) {
-        brainRegions = indexData;
-        dsYoungMetas = calculateMeanForBrainData(bDYoung, cols);
-        dsAdultMetas = calculateMeanForBrainData(bDAdult, cols);
-        drawBrainMeta(cols, maxChemicalValues);
+    initiatePlaneSlider(27, 180, "1");
+    if (redraw) {
+        d3.csv("/views/sliceIndexes/"+ cutPlaneSelected+".csv", function(indexData) {
+            brainRegions = indexData;
+            dsYoungMetas = calculateMeanForBrainData(bDYoung, cols, maxChemicalValues, "y" );
+            dsAdultMetas = calculateMeanForBrainData(bDAdult, cols, maxChemicalValues, "a");
+            drawBrainMeta(cols, maxChemicalValues, redraw);
+            finalShow("mv");
+        })
+    } else {
+        dsYoungMetas = calculateMeanForBrainData(bDYoung, cols, maxChemicalValues, "y" );
+        dsAdultMetas = calculateMeanForBrainData(bDAdult, cols, maxChemicalValues, "a");
+        drawBrainMeta(cols, maxChemicalValues, redraw);
         finalShow("mv");
-    })
+    }
 
     $("#scatter").css("background-color", "#ffffff")
 
 }
 
-function drawBrainMeta(cols, maxChemicalValues) {
+function drawBrainMeta(cols, maxChemicalValues, redraw) {
 
     var svg = d3.select("#scatter").attr("height", brHeight)/*.call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
         svg.attr("transform", d3.event.transform)
@@ -162,35 +173,38 @@ function drawBrainMeta(cols, maxChemicalValues) {
     d3.csv("/views/slices/"+cutPlaneSelected+".csv", function(data) {
         var k=0,l=0;
         var arr = [];
-        for (i=0; i<data.length; i++) {
-            arr[k++] = data[i].index;
-            if (k==181) {
-                pixelInfo[l++] = arr;
-                k=0;arr=[];
+        if(redraw) {
+            for (i=0; i<data.length; i++) {
+                arr[k++] = data[i].index;
+                if (k==181) {
+                    pixelInfo[l++] = arr;
+                    k=0;arr=[];
+                }
             }
-        }
-        for (i=1; i<216; i++) {
-            for (j=1; j<180; j++) {
-                if (!((pixelInfo[i][j] == pixelInfo[i-1][j])
-                    && (pixelInfo[i][j] == pixelInfo[i+1][j])
-                    && (pixelInfo[i][j] == pixelInfo[i][j-1])
-                    && (pixelInfo[i][j] == pixelInfo[i][j+1])
-                    /*&& (pixelInfo[i][j] != pixelInfo[i-1][j-1])
-                    && (pixelInfo[i][j] != pixelInfo[i-1][j+1])
-                    && (pixelInfo[i][j] != pixelInfo[i+1][j-1])
-                    && (pixelInfo[i][j] != pixelInfo[i+1][j+1])*/)) {
-                    if (pixelInfo[i][j] !=0) {
-                        /*if (pixelInfo[i][j] != pixelInfo[i][j-1] && pixelInfo[i][j-1] !=0) {
-                            continue;
+            for (i=1; i<216; i++) {
+                for (j=1; j<180; j++) {
+                    if (!((pixelInfo[i][j] == pixelInfo[i-1][j])
+                        && (pixelInfo[i][j] == pixelInfo[i+1][j])
+                        && (pixelInfo[i][j] == pixelInfo[i][j-1])
+                        && (pixelInfo[i][j] == pixelInfo[i][j+1])
+                            /*&& (pixelInfo[i][j] != pixelInfo[i-1][j-1])
+                             && (pixelInfo[i][j] != pixelInfo[i-1][j+1])
+                             && (pixelInfo[i][j] != pixelInfo[i+1][j-1])
+                             && (pixelInfo[i][j] != pixelInfo[i+1][j+1])*/)) {
+                        if (pixelInfo[i][j] !=0) {
+                            /*if (pixelInfo[i][j] != pixelInfo[i][j-1] && pixelInfo[i][j-1] !=0) {
+                             continue;
+                             }
+                             if (pixelInfo[i][j] != pixelInfo[i+1][j] && pixelInfo[i+1][j] !=0) {
+                             continue;
+                             }*/
+                            drawPixel(ceilRatio -1, ceilRatio-1, g, x(j), y(i));
                         }
-                        if (pixelInfo[i][j] != pixelInfo[i+1][j] && pixelInfo[i+1][j] !=0) {
-                            continue;
-                        }*/
-                        drawPixel(ceilRatio -1, ceilRatio-1, g, x(j), y(i));
                     }
                 }
             }
         }
+
 
         var overLappingRegions = [];
 
@@ -206,9 +220,12 @@ function drawBrainMeta(cols, maxChemicalValues) {
             var row = parseInt(absCol);
             var ind = (10*row) + column+1;
 
+            var gridWidth = 2*mvBarWidth ;
+            var gridHeight = 5*mvBarHeight +10;
+
             if (grid[ind]) {
-                posx = topLeftGlyph + column*(2*mvBarWidth) + mvBarWidth;
-                posy = (row*(5*mvBarHeight+10)) + mvBarHeight*5/2;
+                posx = topLeftGlyph + column*(gridWidth) + gridWidth/2;
+                posy = (row*(gridHeight)) + gridHeight/2;
                 /*var retFlag = drawBMRegionGlyphs(g, cols, dsY, dsA, posX, posY, valScale, maxChemicalValues);*/
                 var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                 if (retFlag) {
@@ -218,23 +235,29 @@ function drawBrainMeta(cols, maxChemicalValues) {
 
             } else {
                 if (row>5) {
-                    ind = 10*(row++);
+                    ind = 10*(row +1);
+                    if (row==11) {
+                        ind = 10*(row);
+                    }
 
                 } else {
-                    ind = 10*(row--);
+                    ind = 10*(row-1);
+                    if (row==0) {
+                        ind = 10*(row);
+                    }
                 }
                 if (column >4) {
                     if (grid[ind + 9]) {
-                        posx = topLeftGlyph + 8*(2*mvBarWidth) + mvBarWidth;
-                        posy = (row*(5*mvBarHeight+10)) + mvBarHeight*5/2;
+                        posx = topLeftGlyph + 8*(gridWidth) + gridWidth/2;
+                        posy = (row*(gridHeight)) + gridHeight/2;
                         var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                         if (retFlag) {
                             grid[ind + 9] = false;
                             drawMVLine(svg, posx, posy, topLeft+posX, posY)
                         }
                     } else if(grid[ind + 10]){
-                        posx = topLeftGlyph +9*(2*mvBarWidth) + mvBarWidth;
-                        posy = (row*(5*mvBarHeight+10))  + mvBarHeight*5/2;
+                        posx = topLeftGlyph +9*(gridWidth) + gridWidth/2;
+                        posy = (row*(gridHeight))  + gridHeight/2;
                         var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                         if (retFlag) {
                             drawMVLine(svg, posx, posy, topLeft+posX, posY)
@@ -243,8 +266,8 @@ function drawBrainMeta(cols, maxChemicalValues) {
                     }
                 } else {
                     if (grid[ind + 1]) {
-                        posx =  topLeftGlyph + mvBarWidth;
-                        posy = (row*(5*mvBarHeight+10))  + mvBarHeight*5/2;
+                        posx =  topLeftGlyph + gridWidth/2;
+                        posy = (row*(gridHeight))  + gridHeight/2;
                         var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                         if(retFlag) {
                             drawMVLine(svg, posx, posy, topLeft+posX, posY)
@@ -252,8 +275,8 @@ function drawBrainMeta(cols, maxChemicalValues) {
                         }
 
                     } else if(grid[ind + 2]){
-                        posx = topLeftGlyph + 1*(2*mvBarWidth) + mvBarWidth;
-                        posy = (row*(5*mvBarHeight+10))  + mvBarHeight*5/2;
+                        posx = topLeftGlyph + 1*(gridWidth) + gridWidth/2;
+                        posy = (row*(gridHeight))  + gridHeight/2;
                         var retFlag = drawBMRegionGlyphs(svg, cols, dsY, dsA, posx, posy, valScale, maxChemicalValues);
                         if (retFlag) {
                             drawMVLine(svg, posx, posy, topLeft+posX, posY)
@@ -296,8 +319,9 @@ function addBDText(g, x, y, text, fontSize, color) {
     g.append("text")
         .attr("x", x)
         .attr("y", y + 5)
-        /*.attr("dy", ".10em")*/
+        .attr("dy", ".10em")
         .attr("font-size", fontSize +"px")
+        .attr("font-weight", "bold")
         .attr("fill", color)
         .text(text);
 }
@@ -311,7 +335,7 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
     $("#legend").empty();
     var g = d3.select("#legend").attr("height", 150).
     attr("width", 200).append("g");
-    $("#legendContainer").height(558*heightRatio);
+    $("#legendContainer").height(550*heightRatio);
 
     addBDText(g, 5, 22, "0", "10");
     addBDText(g, 20 + mvBarWidth, 22, parseInt(maxMagnitudeBD), "10");
@@ -325,16 +349,24 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
 
     fiveCols.forEach(function (col, i) {
         var width = maxChemicalValues[col].ymax;
+        var meanWidth = valScale(maxChemicalValues[col].yMean);
         if (_.contains(cols, col) && cols.length <5) {
             drawMVRectsLegends(width, mvBarHeight, g, w - width , h + i*mvBarHeight, 0, true);
+            //drawRangeBar(yMax, mvBarHeight, g, x-yMax, startY + i*mvBarHeight);
+            drawMVRects(meanWidth, mvBarHeight, g, w - meanWidth , h + i*mvBarHeight, 0);
         } else {
             drawMVRectsLegends(width, mvBarHeight, g, w - width , h + i*mvBarHeight, 0);
+            //drawRangeBar(yMax, mvBarHeight, g, x-yMax, startY + i*mvBarHeight);
+            drawMVRects(meanWidth, mvBarHeight, g, w - meanWidth , h + i*mvBarHeight, 0);
         }
         width = maxChemicalValues[col].amax;
+        meanWidth = valScale(maxChemicalValues[col].aMean);
         if (_.contains(cols, col) && cols.length <5) {
             drawMVRectsLegends(width, mvBarHeight, g, w , h + i*mvBarHeight, 0, true);
+            drawMVRects(meanWidth, mvBarHeight, g, w , h + i*mvBarHeight, 0);
         } else {
             drawMVRectsLegends(width, mvBarHeight, g, w , h + i*mvBarHeight, 0);
+            drawMVRects(meanWidth, mvBarHeight, g, w , h + i*mvBarHeight, 0);
         }
 
 
@@ -361,7 +393,7 @@ var div = d3.select("body").append("div")
 function drawBMRegionGlyphs(g, cols, youngData, adultData, x, y, valScale, maxChemicalValues) {
     var startY = y - cols.length * (mvBarHeight/2) ;
     var endY = startY + cols.length * (mvBarHeight);
-    g = g.append("g").attr("class", "draggable").data([ {"x":parseInt(x), "y":parseInt(y)} ])/*.on("mouseover", function(d) {
+    g = g.append("g").attr("class", "draggable mvGlyph").data([ {"x":parseInt(x), "y":parseInt(y)} ])/*.on("mouseover", function(d) {
         div.transition()
             .duration(200)
             .style("opacity", .9);
@@ -397,7 +429,7 @@ function drawBMRegionGlyphs(g, cols, youngData, adultData, x, y, valScale, maxCh
 
     })
     if (flag) {
-        addBDText(g,x-mvBarWidth/5, startY + (cols.length + 1)*mvBarHeight -5 , youngData.region, "10", "#990000");
+        addBDText(g,x-mvBarWidth/5, startY + (cols.length + 1)*mvBarHeight -3 , youngData.region, "11", "#990000");
         return true;
     } else {
         return false;
@@ -423,8 +455,9 @@ function drawRangeBar(w, h, g, x, y) {
     attr("height", h)
 }
 
-function calculateMeanForBrainData(data, cols) {
+function calculateMeanForBrainData(data, cols, maxChemicalValues, type) {
     var regionMetas = [];
+    var maxMean = {"Creatine" : 0, "Glx" : 0, "Choline" : 0, "Inositol": 0, "NAA": 0}
     for (br=0; br<brainRegions.length; br++) {
         var region = brainIndexes[brainRegions[br].index].replace("_", " ");
         var obj = {};
@@ -433,6 +466,14 @@ function calculateMeanForBrainData(data, cols) {
         var metaDetails = {};
         Object.keys(data).forEach(function (item, i) {
             metaDetails[item] = minMaxMean(_.pluck(data[item], region), cols);
+            if (metaDetails[item].mean > maxMean[item] ) {
+                maxMean[item] = metaDetails[item].mean;
+                if (type == "a") {
+                    maxChemicalValues[item].aMean = metaDetails[item].mean;
+                } else {
+                    maxChemicalValues[item].yMean = metaDetails[item].mean;
+                }
+            }
         });
         obj.metaDetails = metaDetails;
         regionMetas.push(obj);
@@ -585,7 +626,7 @@ function drawMVRectsLegends(w, h, g, x, y, i, highlight) {
         attr("y", y ).
         attr("width", w).
         attr("stroke", 'red').
-        attr("fill", '#321f91').
+        attr("fill", 'none').
         /*attr("fill", markerFillClr).*/
         attr("fill-opacity", .8).
         attr("stroke-width", '2').
@@ -597,10 +638,10 @@ function drawMVRectsLegends(w, h, g, x, y, i, highlight) {
         attr("y", y ).
         attr("width", w).
         attr("stroke", 'black').
-        attr("fill", '#321f91').
+        attr("fill", 'none').
         /*attr("fill", markerFillClr).*/
         attr("fill-opacity", .8).
-        attr("stroke-width", '.4').
+        attr("stroke-width", '1').
         attr("stroke-opacity", '.5').
         attr("height", h)
     }
@@ -608,7 +649,7 @@ function drawMVRectsLegends(w, h, g, x, y, i, highlight) {
 }
 
 function drawMVLine(g, x1, y1, x2, y2) {
-    g.append("line")
+    g.append("line").attr("class", "posLine")
         .style("stroke", "red")
         .attr("x1", x1)
         .attr("y1", y1)

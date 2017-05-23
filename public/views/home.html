@@ -49,32 +49,37 @@
                         <!--<label class="qlabel">Select Cutting Planes</label>-->
                         <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
                         <!--<select id="cutPlanes" class="selectpicker" onchange="getCutPlane(this);">-->
-                        </select>
-                        <!--<label class="qlabel">Select quantities</label>-->
-                        <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
-                        <select id="quantities" class="selectpicker" multiple onchange="getQuantity(this);">
-                        </select>
-                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
-                        <i class="fa fa-upload clickable" onclick="uploadTexture()" title="Click to upload texture" aria-hidden="true"></i>
-                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
-                        <!--<i class="fa fa-upload clickable" onclick="uploadFile()" title="Click to upload Data File" aria-hidden="true"></i>-->
-                        <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
-                        <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
-                        <input class="fileInput clickable" id="fileUpload" type="file">
-                        <!--<input type="file" id="fileUpload" style="display:none">-->
-                        <input type="file" id="textureFile" style="display:none">
-                        <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
-                        <div class="btn-group">
-                            <!--<a class="btn btn-primary" href="#"><i class="fa fa-cog" aria-hidden="true"></i></i> </a>-->
-                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-                                <span class="fa fa-cog fa-lg" title="Toggle options"></span>
-                            </a>
-                            <ul class=" actionButtons dropdown-menu">
-                                <!--<li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
-                                &lt;!&ndash;<li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>&ndash;&gt;
-                                <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>-->
-                                <li><a href="#" onclick="orient()"><i class="fa fa-bar-chart" aria-hidden="true"></i> Orient</a></li>
-                            </ul>
+                        <div class="containerDiv">
+                            <div class="fixed">
+                                <select id="quantities" class="selectpicker" multiple onchange="getQuantity(this);"></select>
+                            </div>
+                            <!--</select>-->
+                            <!--<label class="qlabel">Select quantities</label>-->
+                            <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
+                            <div class="flex-item">
+                                <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                                <i class="fa fa-upload clickable" onclick="uploadTexture()" title="Click to upload texture" aria-hidden="true"></i>
+                                <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                                <!--<i class="fa fa-upload clickable" onclick="uploadFile()" title="Click to upload Data File" aria-hidden="true"></i>-->
+                                <!--<i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>-->
+                                <!--<i class="fa fa-upload" aria-hidden="true"></i>-->
+                                <input class="fileInput clickable" id="fileUpload" type="file">
+                                <!--<input type="file" id="fileUpload" style="display:none">-->
+                                <input type="file" id="textureFile" style="display:none">
+                                <i class="fa fa-ellipsis-v fa-lg separator" aria-hidden="true"></i>
+                                <div class="btn-group">
+                                    <!--<a class="btn btn-primary" href="#"><i class="fa fa-cog" aria-hidden="true"></i></i> </a>-->
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-cog fa-lg" title="Toggle options"></span>
+                                    </a>
+                                    <ul class=" actionButtons dropdown-menu">
+                                        <!--<li><a href="#" onclick="twoD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 2D</a></li>
+                                        &lt;!&ndash;<li><a href="#" onclick="mapViz()"><i class="fa fa-globe" aria-hidden="true"></i> Maps</a></li>&ndash;&gt;
+                                        <li><a href="#" onclick="threeD()"><i class="fa fa-bar-chart" aria-hidden="true"></i> 3D</a></li>-->
+                                        <li><a href="#" onclick="orient()"><i class="fa fa-bar-chart" aria-hidden="true"></i> Orient</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -91,9 +96,14 @@
             <div id="legendDiv" class="col-lg-2 col-md-2 col-sm-2">
                 <!--<span id="resizeBoxText" class="legendText ">Drag the rectangle <i class="fa fa-arrows" aria-hidden="true">
                 </i> to resize the markers</span>-->
-                <div id="planeSlider" title=" Slide to select cutting plane"><span id="planeValue"></span></div>
-                <div  title = "Drag the rectangle to resize the markers" id="resizeBox"></div>
+                <div id="planeSlider" title=" Slide to select cutting plane">
+                    <span id="planeValue"></span>
+                </div>
+
                 <div id="ageSlider" title=" select age group"><span id="ageValue"></span></div>
+
+                <div  title = "Drag the rectangle to resize the markers" id="resizeBox"></div>
+
                 <!--<span class="legendText">Legend:</span>-->
                 <div id="legendContainer">
                     <svg id="legend" >
@@ -154,7 +164,7 @@
             } else if (selectedVizType == "3D") {
                 vizRouter("3D", false, threeDStore, quantitySelected);
             } else if (selectedVizType == "mv") {
-                getQuantity();
+                getQuantity(undefined, true);
             }
         });
         drawResizeBox();

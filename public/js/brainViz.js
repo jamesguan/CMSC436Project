@@ -70,7 +70,7 @@ function brainViz(data, columns,  patientId) {
     createViz(patientRecords[pids[0]], 'Choline');*/
     cutPlaneSelected = 90;
     selectedVizType = "mv"
-    drawMeanMVCC(data, columns);
+    drawMeanMVCC(data, columns, true);
     $('.selectpicker').selectpicker('val', ['Choline','Glx', 'NAA', 'Inositol', 'Creatine']);
 
     /*$("#scatterDiv").show();*/
@@ -90,14 +90,14 @@ function initiateAgeSlider(min, max) {
         },
         stop: function (event, ui) {
             ageSelected = ui.value;
-            getQuantity();
+            getQuantity(undefined, false);
         }
     });
     $( "#ageSlider" ).slider( "value", ageSelected );
-    $("#ageValue").text(ageSelected)
+    $("#ageValue").text( ageSelected);
 }
 
-function initiatePlaneSlider(min, max) {
+function initiatePlaneSlider(min, max, step) {
     $( "#planeSlider" ).slider({
         max: parseInt(max),
         min: parseInt(min),
@@ -105,15 +105,16 @@ function initiatePlaneSlider(min, max) {
             $("#planeValue").text(ui.value)
         },
         stop: function (event, ui) {
-            cutPlaneSelected = ui.value;
+            cutPlaneSelected =  ui.value;
             getCutPlane();
-        }
+        },
+        step: step
     });
     $( "#planeSlider" ).slider( "value", cutPlaneSelected );
     $("#planeValue").text(cutPlaneSelected)
 }
 
-function initialHide() {
+function initialHide(redraw) {
     $("#ageSlider").hide();
     $("#planeSlider").hide();
     $("#scatter").hide();
@@ -121,10 +122,13 @@ function initialHide() {
     $("#legendDiv").hide();
     $("#resizeBox").hide();
     $("#legendContainer").hide();
-    $("#scatter").empty();
+    if (!redraw) {
+        $("#scatter").empty();
+    }
     $("#legend").empty();
     $("#legend").hide();
     $("#container").empty();
+    $("#quantitiesDiv").hide();
     //$("#resizeBox").empty();
     $("#map").hide();
     $("#container").hide();
@@ -146,6 +150,7 @@ function finalShow(vizType) {
         $("#scatter").show();
         $("#legendDiv").show();
         $("#legend").show();
+        $("#quantitiesDiv").show();
         $("#scatterDiv").show()
         $("#legendContainer").show();
     } else if(vizType == "3D") {
@@ -155,7 +160,7 @@ function finalShow(vizType) {
         $("#legendContainer").show();
     }
 
-    $("#legendDiv").height(heightRatio*616);
+    $("#legendDiv").height(heightRatio*610);
 }
 
 function gridFill(r, c, grid) {

@@ -130,9 +130,9 @@ function createViz(data, val, multi, orient) {
         return parseFloat(num);
     })
     if (cutPlaneSelected == 0) {
-        cutPlaneSelected = planes[0];
+        cutPlaneSelected = planes[5];
     }
-    initiatePlaneSlider(planes[0], planes[planes.length -1]);
+    initiatePlaneSlider(planes[0], planes[planes.length -1], ".25");
 }
 
 function createsampleVals(data) {
@@ -348,7 +348,7 @@ function drawLegend() {
     //var g = d3.select("#legend").attr("height", brHeight - $("#resizeBox").height() - 5).append("g");
     var g = d3.select("#legend").attr("height", calcHeight).
     attr("width", calcWidth).append("g");
-    $("#legendContainer").height(brHeight - 46 - (legendDivRatio*100));
+    $("#legendContainer").height(brHeight - 50 - (heightRatio*100));
     var h=0;
     var heightArr = [0,.5, .8, 1]
     for (i=1; i<=3; i++) {
@@ -658,7 +658,7 @@ function createVizFromFile(data, q) {
     //quantitySelected = 'q_magnitude';
     //quantitySelected = $("#quantities").val()[0];
     //cutPlaneSelected = dataGroupByZ[0].key;
-    createViz(dataGroupByZ[0].values, q);
+    createViz(dataGroupByZ[5].values, q);
     //$("#scatterDiv").show();
 }
 
@@ -751,7 +751,6 @@ function getCutPlane(cp, orient) {
     /*$("#scatter").empty();
     $("#legend").empty();*/
     //$("#resizeBox").empty();
-    initialHide();
     var q = cutPlaneSelected;
     /*if (!q) {
         createViz(dataStore, quantitySelected);
@@ -766,9 +765,10 @@ function getCutPlane(cp, orient) {
        var slice = _.find(dataStore, function (d) {
            return d.key == q;
        })
+       initialHide();
        createViz(slice.values, quantitySelected, false, orient);
    } else {
-       getQuantity();
+       getQuantity(undefined, true);
    }
 
 }
