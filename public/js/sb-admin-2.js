@@ -39,6 +39,9 @@ function initialConfig() {
     heightRatio = brHeight/608;
     legendDivRatio = (window.innerWidth*2/12)/228;
     scatterDivRatio = brWidth/1128;
+    /*selectedHeight = heightRatio*selectedHeight;
+    selectedWidth = legendDivRatio*selectedWidth;
+    prevWidth = prevWidth*legendDivRatio;*/
 }
 
 function readData() {
@@ -132,7 +135,7 @@ function createViz(data, val, multi, orient) {
     if (cutPlaneSelected == 0) {
         cutPlaneSelected = planes[5];
     }
-    initiatePlaneSlider(planes[0], planes[planes.length -1], ".25");
+    initiatePlaneSlider(planes[0], planes[planes.length -1], .25);
 }
 
 function createsampleVals(data) {

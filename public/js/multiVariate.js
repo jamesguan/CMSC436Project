@@ -80,7 +80,7 @@ function drawMeanMVCC(data, cols, redraw) {
     })
 
     initiateAgeSlider(min, max)
-    initiatePlaneSlider(27, 180, "1");
+    initiatePlaneSlider(27, 180, 1);
     if (redraw) {
         d3.csv("/views/sliceIndexes/"+ cutPlaneSelected+".csv", function(indexData) {
             brainRegions = indexData;
@@ -118,8 +118,11 @@ function drawBrainMeta(cols, maxChemicalValues, redraw) {
     var ratio = brHeight/180;
     var ceilRatio = Math.ceil(ratio);
 
+    var gridWidth = 2*mvBarWidth  ;
+    var gridHeight = 5*mvBarHeight +10;
+
     var topLeft = (width/2) - ratio*80;
-    var topLeftGlyph = (width/2) - 10*mvBarWidth;
+    var topLeftGlyph = (width/2) - 5*gridWidth;
     var diff = topLeft - topLeftGlyph;
 
     var height = brHeight,
@@ -153,7 +156,7 @@ function drawBrainMeta(cols, maxChemicalValues, redraw) {
 
 
     var grid = [];
-    for(i=1; i<=120; i++) {
+    for(i=1; i<=144; i++) {
         grid[i] = true;
     }
 
@@ -214,14 +217,11 @@ function drawBrainMeta(cols, maxChemicalValues, redraw) {
             var dsY = dsYoungMetas[br];
             var dsA = dsAdultMetas[br];
 
-            var absRow = (posX + diff)/(2*mvBarWidth);
+            var absRow = (posX + diff)/gridWidth;
             var column = parseInt(absRow);
-            var absCol = (posY)/((5*mvBarHeight+10));
+            var absCol = posY/gridHeight;
             var row = parseInt(absCol);
             var ind = (10*row) + column+1;
-
-            var gridWidth = 2*mvBarWidth ;
-            var gridHeight = 5*mvBarHeight +10;
 
             if (grid[ind]) {
                 posx = topLeftGlyph + column*(gridWidth) + gridWidth/2;
@@ -236,7 +236,7 @@ function drawBrainMeta(cols, maxChemicalValues, redraw) {
             } else {
                 if (row>5) {
                     ind = 10*(row +1);
-                    if (row==11) {
+                    if (row==11) { //changed from 11
                         ind = 10*(row);
                     }
 
@@ -333,19 +333,21 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
     }
     maxChemicalValues = fiveMetaMax;
     $("#legend").empty();
-    var g = d3.select("#legend").attr("height", 150).
-    attr("width", 200).append("g");
+    var g = d3.select("#legend").attr("height", 300*heightRatio).
+    attr("width", 200*legendDivRatio).append("g");
     $("#legendContainer").height(550*heightRatio);
 
-    addBDText(g, 5, 22, "0", "10");
-    addBDText(g, 20 + mvBarWidth, 22, parseInt(maxMagnitudeBD), "10");
-    drawMVRects(valScale(maxMagnitudeBD), mvBarHeight, g, 15, 20, 0);
+    addBDText(g, 5, 22, "Legend:", "12");
+    addBDText(g, 5, 42, "0", "10");
+    addBDText(g, 20 + mvBarWidth, 42, parseInt(maxMagnitudeBD), "10");
+    drawMVRects(valScale(maxMagnitudeBD), mvBarHeight, g, 15, 40, 0);
 
-    addBDText(g, 10, 70, " <", "10");
-    addBDText(g, 20 + mvBarWidth, 70, "<", "10");
-    addBDText(g, 2 + mvBarWidth, 70, ageSelected, "10");
+    addBDText(g, 10, 70, "AgeGroup:", "10");
+    addBDText(g, 15, 90, "12-"+ageSelected, "10");
+    addBDText(g, 40 + mvBarWidth, 90, ageSelected+1 +"-70", "10");
+    //addBDText(g, 2 + mvBarWidth, 70, ageSelected, "10");
 
-    var h = 90;var w=2 + mvBarWidth;
+    var h = 110;var w=30 + mvBarWidth; // changed from 2
 
     fiveCols.forEach(function (col, i) {
         var width = maxChemicalValues[col].ymax;
@@ -641,7 +643,7 @@ function drawMVRectsLegends(w, h, g, x, y, i, highlight) {
         attr("fill", 'none').
         /*attr("fill", markerFillClr).*/
         attr("fill-opacity", .8).
-        attr("stroke-width", '1').
+        attr("stroke-width", '2').
         attr("stroke-opacity", '.5').
         attr("height", h)
     }

@@ -24,10 +24,12 @@ function create3dViz(data, q) {
             antialias: true
         });
 
-        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setPixelRatio( 1 );
+        //renderer.setPixelRatio( window.devicePixelRatio );
         //renderer.setSize( window.innerWidth, window.innerHeight );
         //renderer.setSize( window.innerWidth, window.innerHeight );
 		renderer.setSize( brWidth, brHeight, false );
+        //renderer.setSize( window.innerWidth, window.innerHeight, false );
         scene.background = new THREE.Color( 0xffffff );
 
         var container = document.getElementById( 'container' );
@@ -160,7 +162,9 @@ function create3dViz(data, q) {
             .range([-250, 250]);
 
         var min = d3.min(data, function (d) {
-            return parseFloat(d[q]);
+            if (parseFloat(d[q])) {
+                return parseFloat(d[q]);
+            }
         });
 
         if (min < 1) {
@@ -186,6 +190,8 @@ function create3dViz(data, q) {
         var groups = legendGroup();
 
         draw3DLegend();
+        var d = new Date();
+        var n1 = d.getTime();
         for (i=0; i<data.length; i++) {
             var item = data[i];
             var dmnsn ={};
@@ -203,6 +209,9 @@ function create3dViz(data, q) {
                 drawPosition( scene, x1, y1, z1, item);
             }
         }
+        d = new Date();
+        var n2 = d.getTime();
+        console.log(n2-n1);
     }
 
 }
@@ -368,8 +377,8 @@ function mergeMeshes (meshes) {
 
 function draw3DLegend() {
     $("#legend").empty();
-    var g = d3.select("#legend").attr("height", 450*heightRatio).
-    attr("width", 200*legendDivRatio).append("g");
+    var g = d3.select("#legend").attr("height", 450).
+    attr("width", 200).append("g");
     $("#legendContainer").height(610*heightRatio);
     var w=10, h=10;
     var height=selectedHeight;
