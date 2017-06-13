@@ -115,9 +115,11 @@ function initiatePlaneSlider(min, max, step) {
 }
 
 function initialHide(redraw) {
+    scaleFactor = 1;
     $("#ageSlider").hide();
     $("#planeSlider").hide();
     $("#scatter").hide();
+    $("#map").hide();
     $("#scatterDiv").hide()
     $("#legendDiv").hide();
     $("#resizeBox").hide();
@@ -178,5 +180,55 @@ function gridFill(r, c, grid) {
     if(c - pc < .15) {
         grid[(pr)*10 + pc-1] = false;
     }
+
+}
+
+
+function USAMapViz(data) {
+    initialHide();
+    selectedHeight = 50; selectedWidth = 50;
+    g_margin.top = 0;
+    g_margin.left = 0;
+    prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
+    var svg = d3.select("#scatter").attr("height", brHeight)/*.call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
+     svg.attr("transform", d3.event.transform)
+     }))*/.append("g");
+    var mR = 0;
+    var mB = 0;
+    var margin = {top: 0 + mB, right: mR, bottom: 0, left: 0},
+        width = brWidth,
+        height = brHeight,
+        domainwidth = width - margin.left - margin.right,
+        domainheight = height - margin.top - margin.bottom;
+
+
+
+    var g = svg.append("g").attr("class", "mapUSA")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    /*g.append("rect")
+     .attr("width", width - margin.left)
+     .attr("height", height- margin.top)
+     .attr("fill", "#f5f5f5");*/
+
+    var x = d3.scaleLinear()
+        .domain([-126,-66])
+        .range([0, domainwidth]);
+    var y = d3.scaleLinear()
+        .domain([25,49])
+        .range([domainheight, 0]);
+    var tr = brHeight - 24 - mB;
+
+        /*g.append("g")
+            .call(d3.axisBottom(x)).attr("transform", "translate(0,"+tr+")");
+        g.append("g")
+            .call(d3.axisLeft(y).ticks(9));*/
+        data = _.where(data, {iso3: "USA"});
+
+    data = _.sortBy(data, function(item) {
+        return parseFloat(item['q_population']);
+    });
+    draw(data.reverse(), g, x, y, 'q_population', false);
+    $("#scatter").css("background-image", "url(USA.JPG)");
 
 }

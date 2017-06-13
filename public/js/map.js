@@ -174,13 +174,13 @@ function initMap1() {
     
 }
 
-function initMap() {
+function initMap(data) {
     String.prototype.replaceAll = function(target, replacement) {
         return this.split(target).join(replacement);
     };
 
-    var mapData = {};
-    var data = $.ajax({
+    var mapData = data;
+   /* var data = $.ajax({
         type: 'POST',
         url: 'http://127.0.0.1:1337/getMapData',
         data: JSON.stringify({
@@ -191,11 +191,11 @@ function initMap() {
         success: function (data) {
             mapData = data
         }
-    });
+    });*/
 
-    var myLatlng = new google.maps.LatLng(38.014390,-76.177689);
+    var myLatlng = new google.maps.LatLng(38,-96);
     var mapOptions = {
-        zoom: 9,
+        zoom: 5,
         center: myLatlng,
         disableDefaultUI: true,
 		mapTypeId: 'terrain'
@@ -221,23 +221,30 @@ function initMap() {
 
     initializeCustomMapMarker();
 
-    mapData.stationData.forEach( function(d, index) {
-        var latlng = new google.maps.LatLng(d.lat,d.long);
+    mapData.forEach( function(d, index) {
+        var latlng = new google.maps.LatLng(d.y,d.x);
         overlay = new CustomMarker(
             latlng,
             map,
             {
-                marker_id: d.id.replaceAll(".", "-"),
+                marker_id: d.city_ascii.replace(/[.' ]/g, ''),
                 mapData : mapData
             }
         );
     });
 
+    drawLegend();
 
     google.maps.event.addListenerOnce(map, 'idle', function(){
-        mapData.stationData.forEach( function(d, index) {
+        var max = d3.max(mapData, function (d) {
+            return parseInt(d.q_population) ;
+        });
+        var normMax = normalizeExtremes(max);
+        var ratio = calculateScalingRatio(normMax);
+        var groups = legendGroup();
+        mapData.forEach( function(d, index) {
             //createGlyph(d.id.replaceAll(".", "-"), mapData, d);
-            //createCCGlyphs(d.id.replaceAll(".", "-"), mapData, d);
+            createCCGlyphs(d.city_ascii.replace(/[.' ]/g, ''), mapData, d, groups, ratio);
         });
         //loadKML("https://dl.dropbox.com/s/6tr7uczhj2zqnwc/salinity.kmz", map);
     });

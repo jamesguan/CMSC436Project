@@ -1,7 +1,8 @@
 var prefNumberSeries = [];
-var selectedHeight = 30, selectedWidth = 30;
+var selectedHeight = 50, selectedWidth = 50;
 var prevWidth = 40;
-const twoDseries = [1,selectedWidth/4, selectedWidth/2, selectedWidth];
+//const twoDseries = [1,selectedWidth/4, selectedWidth/2, selectedWidth];
+const twoDseries = [.005*selectedWidth,.04*selectedWidth, .2*selectedWidth, selectedWidth];
 var dataStore={};
 var brHeight = window.innerHeight - 54;
 var brWidth = (window.innerWidth*10/12) -10;
@@ -30,6 +31,7 @@ var legendDivRatio = 1;
 var scatterDivRatio = 1;
 var heightRatio = 1;
 var threeDStore = {};
+var g_margin = {};
 
 function initialConfig() {
     brHeight = window.innerHeight - 54;
@@ -70,9 +72,7 @@ function selectRandom1000(data) {
 function createViz(data, val, multi, orient) {
 
     isMV = multi;
-    var svg = d3.select("#scatter").attr("height", brHeight)/*.call(d3.zoom().scaleExtent([1, 8]).on("zoom", function () {
-        svg.attr("transform", d3.event.transform)
-    }))*/.append("g");
+
     var mR = selectedWidth;
     var mB = selectedHeight;
     if (multi) {
@@ -85,37 +85,60 @@ function createViz(data, val, multi, orient) {
         domainwidth = width - margin.left - margin.right,
         domainheight = height - margin.top - margin.bottom;
 
+    g_margin = margin;
 
+    var x = d3.scaleLinear()
+        .domain([d3.min(data, function (d) {
+            return parseInt(d.x);
+        }) -1, d3.max(data, function (d) {
+            return parseInt(d.x);
+        })+1])
+        .range([0, domainwidth]);
+    var y = d3.scaleLinear()
+        .domain([d3.min(data, function (d) {
+            return parseInt(d.y );
+        })-1, d3.max(data, function (d) {
+            return parseInt(d.y);
+        })+1])
+        .range([domainheight-25, 0]);
 
-    var g = svg.append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select("#scatter").attr("height", brHeight).append("g")
+        .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+        .call(d3.zoom().scaleExtent([1, 2]).on("zoom", function () {
+            svg.selectAll(".markers").attr("transform", d3.event.transform);
+            gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+            gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+    }));
 
+    var tr = brHeight - 24 - mB + margin.top;// margin top added
+
+    var xAxis = d3.axisBottom(x)
+        /*.ticks((width + 2) / (height + 2) * 10)
+        .tickSize(height)
+        .tickPadding(8 - height)*/;
+
+    var yAxis = d3.axisLeft(y)
+        .ticks(9)
+        /*.tickSize(width)
+        .tickPadding(8 - width)*/;
+
+    var gX;
+    var gY;
+
+    var view = svg.append("svg").attr("class", "rectDiv").attr("height", domainheight-25+margin.top)
+        ;
+
+    view.attr("overflow", "hidden");
     /*g.append("rect")
         .attr("width", width - margin.left)
         .attr("height", height- margin.top)
         .attr("fill", "#f5f5f5");*/
 
-        var x = d3.scaleLinear()
-            .domain([d3.min(data, function (d) {
-                return parseInt(d.x);
-            }) -1, d3.max(data, function (d) {
-                return parseInt(d.x);
-            })+1])
-            .range([0, domainwidth]);
-        var y = d3.scaleLinear()
-            .domain([d3.min(data, function (d) {
-                return parseInt(d.y );
-            })-1, d3.max(data, function (d) {
-                return parseInt(d.y);
-            })+1])
-            .range([domainheight-25, 0]);
-    var tr = brHeight - 24 - mB;
-
     if (val != 'val') {
-        g.append("g")
-            .call(d3.axisBottom(x)).attr("transform", "translate(0,"+tr+")");
-        g.append("g")
-            .call(d3.axisLeft(y).ticks(9));
+        var gX = svg.append("g").attr("class", "axis axis--x")
+            .call(xAxis).attr("transform", "translate(0,"+tr+")");
+        var gY = svg.append("g").attr("class", "axis axis--y")
+            .call(yAxis).attr("transform", "translate(0,55)");
     }
 
 
@@ -126,7 +149,7 @@ function createViz(data, val, multi, orient) {
         data = _.sortBy(data, function(item) {
             return parseFloat(item[val]);
         });
-        draw(data.reverse(), g, x, y, val, orient);
+        draw(data.reverse(), view, x, y, val, orient);
     }
     var planes = _.pluck(dataStore, "key");
     _.sortBy(planes, function (num) {
@@ -190,23 +213,28 @@ function draw(data, g,x, y, val, orient) {
         }
         var h = dmnsn.height;
         var w = dmnsn.width;
-        var posX = x(item.x);
-        var posY = y(item.y) - h;
-        var x2 = posX +h*(item.directionX);
-        var y2 = posY +h*(item.directionY);
-        var x3 = posX +w*(-item.directionY);
-        var y3 = posY +w*(item.directionX);
-        var x4 = x2 +w*(-item.directionY);
-        var y4 = y2 +w*(item.directionX);
+        var posX = x(item.x) /*+ g_margin.left*/;
+        var posY = y(item.y) - h + g_margin.top;
         var posstr = "M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z";
         if (orient) {
+            var x2 = posX +h*(item.directionX);
+            var y2 = posY +h*(item.directionY);
+            var x3 = posX +w*(-item.directionY);
+            var y3 = posY +w*(item.directionX);
+            var x4 = x2 +w*(-item.directionY);
+            var y4 = y2 +w*(item.directionX);
             posstr = "M "+posX+" "+posY+" "+ "L "+ (x2)+" " + y2+" " + "L " + (x4)+" " + (y4)+" " + "L " + x3+" " + (y3)+" " + "Z"
+        }
+        var strokeWidth = .5;
+        if (w <=1) {
+            strokeWidth = .1;
         }
         var s = g.append("svg");
         s.append("svg:path")
             //.attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
-            .attr("d",posstr)
-            .style("stroke-width", .5)
+            .attr("d",posstr).
+            attr("class", "markers")
+            .style("stroke-width", strokeWidth)
             .style("stroke", '#f5f5f5')
             .style("stroke-opacity", '1')
             .style("fill", markerFillClr);
@@ -234,7 +262,6 @@ function normalizeExtremes(num) {
     while(num > 10) {
         num = parseInt(num/10);
         tens++;
-
     }
 
     /*/!*if (num >=2 && num<5) {
@@ -244,6 +271,9 @@ function normalizeExtremes(num) {
     } else {*/
         norm = 10 * Math.pow(10, tens);
     /*}*/
+    if (selectedVizType == "USA") {
+        return norm/10;
+    }
     return norm;
 }
 
@@ -277,12 +307,18 @@ function getDimensions(num, groups, ratio) {
     groups.some(function (item) {
         if (scaledValue< item.maxValue) {
             dmnsn.width = item.width;
+            if (item.width < 1) {
+                dmnsn.width = 1;
+            }
             dmnsn.height = parseInt(scaledValue/item.width);
             return true;
         }
     })
+    if (!dmnsn.width) {
+        dmnsn.width = selectedWidth;
+        dmnsn.height = parseInt(scaledValue/selectedWidth);
+    }
     return dmnsn;
-    
 }
 
 function legendHeightForGroup(num) {
@@ -353,16 +389,20 @@ function drawLegend() {
     attr("width", calcWidth).append("g");
     $("#legendContainer").height(brHeight - 50 - (heightRatio*100));
     var h=0;
-    var heightArr = [0,.5, .8, 1]
+    var heightArr = [0,.2, .5, 1]
     for (i=1; i<=3; i++) {
         var w=5, height=selectedHeight*heightArr[i]; // changed from i/4
         var y = h+selectedHeight-height;
         for (j=0; j<prefNumberSeries.length; j++) {
             if (prefNumberSeries[j] <=selectedWidth) {
+                var m_width = prefNumberSeries[j];
+                if ( m_width< 1) {
+                    m_width =1;
+                }
                 g.append("rect").
                 attr("x", w).
                 attr("y", y).
-                attr("width", prefNumberSeries[j]).
+                attr("width", m_width).
                 attr("fill", markerFillClr).
                 attr("fill-opacity", 1).
                 attr("stroke", '#ffffff').
@@ -375,15 +415,17 @@ function drawLegend() {
                         .attr("y", h+selectedHeight +10) // changed from 10
                         .attr("dy", ".35em")
                         .attr("font-size", "9px")
-                        .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio) * selectedWidth/prevWidth)));
-                    w+=  prefNumberSeries[j] +35; // changed from 50
+                        //.text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio) * selectedWidth/prevWidth)));
+                        .text(convertLabel((Math.ceil(prefNumberSeries[j]*height*(scalingRatio) * selectedWidth/prevWidth)/scaleFactor).toExponential()));
+                    w+=  prefNumberSeries[j] +45; // changed from 50
                 } else{
                     g.append("text")
                         .attr("x", w-3)
                         .attr("y", h+selectedHeight +10)
                         .attr("dy", ".35em")
                         .attr("font-size", "9px")
-                        .text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
+                        //.text(convertLabel(Math.ceil(prefNumberSeries[j]*height*(scalingRatio))));
+                        .text(convertLabel((Math.ceil(prefNumberSeries[j]*height*(scalingRatio))/scaleFactor).toExponential()));
                     w+=  prefNumberSeries[j] +25; // changed from 50
                 }
 
@@ -403,17 +445,23 @@ function drawLegend() {
                     .attr("y", h+selectedHeight +10)
                     .attr("dy", ".35em")
                     .attr("font-size", "9px")
-                    .text(convertLabel(Math.ceil(selectedWidth*height*(scalingRatio))));
+                    //.text(convertLabel(Math.ceil(selectedWidth*height*(scalingRatio))));
+                    .text(convertLabel((Math.ceil(selectedWidth*height*(scalingRatio))/scaleFactor).toExponential()));
                 break;
             } else {
                 break;
             }
         }
-        h+= height+ 50; // changed from 50
+        h+= selectedHeight + 20; // changed from 50
     }
 }
 
 function convertLabel(num) {
+    if (num < 1) {
+        var exponent= String(num).split(/[eE]/)[1];
+        var mentissa = String(num).split(/[eE]/)[0];
+        return parseInt(mentissa)+"e"+exponent;
+    }
     if (num >= 1000000) {
         if (isInt(num/1000000)) {
             return (num/1000000) + "M";
@@ -474,14 +522,18 @@ function drawResizeBox() {
             if (this.box.attr("width") > 100*legendDivRatio) {
                 this.box.attr("width", 100*legendDivRatio);
             }
-            if (this.box.attr("height") > this.box.attr("width")) {
+            /*if (this.box.attr("height") > this.box.attr("width")) {
                 selectedHeight = selectedWidth =  this.box.attr("height")
+                //this.box.attr("width", this.box.attr("height"));
             } else {
                 selectedHeight = selectedWidth =  this.box.attr("width");
-            }
-            prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
-            /*selectedHeight = this.box.attr("height");
-            selectedWidth = this.box.attr("width");*/
+                //this.box.attr("height", this.box.attr("width"));
+            }*/
+            selectedHeight = this.box.attr("height");
+             selectedWidth = this.box.attr("width");
+            //prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
+            prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
+
             /*$("#scatter").empty();
             $("#legend").empty();*/
             //$("#resizeBox").empty();
@@ -532,13 +584,18 @@ function twoD() {
 
 }
 
-function mapViz() {
+function mapViz(data) {
     selectedHeight= 50;
     selectedWidth = 50;
+    data = _.where(data, {iso3: "USA"});
+    data = _.sortBy(data, function(item) {
+        return parseFloat(item['q_population']);
+    });
+    data = data.reverse();
     prefNumberSeries = twoDseries;
     $("#map").show();
     if(firstClickMap) {
-        initMap();
+        initMap(data);
         firstClickMap = false;
     }
     $("#scatterDiv").hide();
@@ -558,8 +615,8 @@ function vizRouter(type, pageLoad, data, quantity) {
     }
     data = data || dataStore;
     if(type == "2D") {
-        selectedHeight= 30;
-        selectedWidth = 30;
+        selectedHeight= 50;
+        selectedWidth = 50;
         prefNumberSeries = twoDseries;
         quantitySelected = quantity;
         selectedVizType = "2D";
@@ -596,7 +653,19 @@ d3.select("#fileUpload").on("change", function(){
             //Txt file output
             var txtRes = filereader.result;
             try {
-                if (name.split(".")[1] == "csv") {
+                if (name == "countryPopulation.csv") {
+                    var data = d3.csvParse(txtRes);
+                    data = [{"key":1, "values" : data}];
+                    dataStore = data;
+                    selectedVizType = "USA";
+                    selectedHeight = 50;
+                    selectedWidth = 50;
+                    prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
+                    //cutPlaneSelected = 1;
+                    //USAMapViz(data[0].values);
+                    initialHide();
+                    mapViz(data[0].values);
+                } else if (name.split(".")[1] == "csv") {
                     cutPlaneSelected = 0;
                     var data = d3.csvParse(txtRes);
                     var columns = filterQuantities(data.columns);
@@ -657,7 +726,8 @@ function createVizFromFile(data, q) {
     //$("#map").hide();
     //$("#container").hide();
     initialHide();
-    prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
+    //prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
+    prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
     //quantitySelected = 'q_magnitude';
     //quantitySelected = $("#quantities").val()[0];
     //cutPlaneSelected = dataGroupByZ[0].key;
@@ -665,20 +735,27 @@ function createVizFromFile(data, q) {
     //$("#scatterDiv").show();
 }
 
-function createCCGlyphs(markerId, data, station) {
+function createCCGlyphs(markerId, data, city, groups, ratio ) {
+
+    dmnsn = getDimensions(parseInt(city.q_population), groups, ratio);
 
     var vis = d3.select($("#"+markerId).get(0))
         .append("svg")
-        .attr("width", selectedWidth)
-        .attr("height", selectedHeight);
+        .attr("width", 100)
+        .attr("height", 100);
 
     vis.append("rect").
     attr("x", 0).
     attr("y", 0).
-    attr("width", Math.random() * selectedWidth).
+    attr("width", dmnsn.width).
     attr("opacity", 1).
-    attr("height", Math.random() * selectedHeight).attr("fill", markerFillClr);
+    attr("stroke-width", .2).
+    attr("stroke", '#f5f5f5').
+    attr("height", dmnsn.height).attr("fill", markerFillClr);
 
+    $("#legendContainer").show();
+    $("#legendDiv").show();
+    $("#legend").show();
 }
 
 function uploadTexture() {

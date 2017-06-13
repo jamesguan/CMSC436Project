@@ -344,7 +344,7 @@ function drawMVBDLegend(maxChemicalValues, valScale, cols) {
 
     addBDText(g, 10, 70, "AgeGroup:", "10");
     addBDText(g, 15, 90, "12-"+ageSelected, "10");
-    addBDText(g, 40 + mvBarWidth, 90, ageSelected+1 +"-70", "10");
+    addBDText(g, 40 + mvBarWidth, 90, ageSelected+1 +"-77", "10");
     //addBDText(g, 2 + mvBarWidth, 70, ageSelected, "10");
 
     var h = 110;var w=30 + mvBarWidth; // changed from 2

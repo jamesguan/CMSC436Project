@@ -40,17 +40,17 @@ function initializeCustomMapMarker() {
 			});
 
             google.maps.event.addDomListener(div, "mouseover", function(event) {
-                //var point = self.getProjection().fromLatLngToDivPixel(self.latlng);
+                var point = self.getProjection().fromLatLngToDivPixel(self.latlng);
                 //alert(self.getProjection().fromLatLngToDivPixel(self.latlng).x);
                 //alert(self.getPosition().lat());
-                /*$('#marker-tooltip').html(self.args.marker_id.replaceAll("-",".")).css({
+                $('#marker-tooltip').html(self.args.marker_id.replaceAll("-",".")).css({
                     'left': (point.x ) + 'px',
                     'top': (point.y ) + 'px'
-                }).show();*/
+                }).show();
             });
 
             google.maps.event.addDomListener(div, "mouseout", function(event) {
-               // $('#marker-tooltip').hide();
+                $('#marker-tooltip').hide();
             });
 
 			var panes = this.getPanes();

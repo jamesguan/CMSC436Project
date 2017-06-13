@@ -650,3 +650,10 @@ body, html {
   float: right;
   flex-grow: 1;
 }
+.bootstrap-select {
+  left:-55px;
+}
+
+.rectDiv{
+  overflow: hidden;
+}
