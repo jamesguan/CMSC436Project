@@ -32,6 +32,26 @@ var scatterDivRatio = 1;
 var heightRatio = 1;
 var threeDStore = {};
 var g_margin = {};
+var g_x = {};
+var g_y = {};
+var g_view = {};
+var g_NMax = 0;
+var g_min = 0;
+var g_svg = {};
+var gX ;
+var gY ;
+var g_xAxis;
+var g_yAxis;
+/*var g_ratio = {};
+var g_groups = {}*/
+
+var zoom = d3.zoom()
+    .scaleExtent([1, 2])
+    .on("zoom",  function () {
+        g_svg.selectAll(".markers").attr("transform", d3.event.transform);
+        gX.call(g_xAxis.scale(d3.event.transform.rescaleX(g_x)));
+        gY.call(g_yAxis.scale(d3.event.transform.rescaleY(g_y)));
+    });
 
 function initialConfig() {
     brHeight = window.innerHeight - 54;
@@ -73,8 +93,10 @@ function createViz(data, val, multi, orient) {
 
     isMV = multi;
 
-    var mR = selectedWidth;
-    var mB = selectedHeight;
+    /*var mR = selectedWidth;
+    var mB = selectedHeight;*/
+    var mR = 0;
+    var mB = 0;
     if (multi) {
         mR = val.marginRight;
         mB = val.marginBottom;
@@ -82,33 +104,43 @@ function createViz(data, val, multi, orient) {
     var margin = {top: 5 + mB, right: mR, bottom: 0, left: 25},
         width = brWidth,
         height = brHeight,
-        domainwidth = width - margin.left - margin.right,
-        domainheight = height - margin.top - margin.bottom;
+        domainwidth = width - margin.left /*- margin.right*/,
+        domainheight = height -25/*- margin.top - margin.bottom*/;
+
+    var screenRes = domainwidth/domainheight;
 
     g_margin = margin;
 
+    /*var x = d3.scaleLinear()
+        .domain([(d3.min(data, function (d) {
+            return parseInt(d.x);
+        }) -1)*screenRes, d3.max(data, function (d) {
+            return parseInt(d.x);
+        })*1.2*screenRes])
+        .range([0, domainwidth]);*/
     var x = d3.scaleLinear()
-        .domain([d3.min(data, function (d) {
+        .domain([(d3.min(data, function (d) {
             return parseInt(d.x);
-        }) -1, d3.max(data, function (d) {
+        }) -1), d3.max(data, function (d) {
             return parseInt(d.x);
-        })+1])
+        })*1.2])
         .range([0, domainwidth]);
     var y = d3.scaleLinear()
         .domain([d3.min(data, function (d) {
             return parseInt(d.y );
         })-1, d3.max(data, function (d) {
             return parseInt(d.y);
-        })+1])
-        .range([domainheight-25, 0]);
+        })*1.2])
+        .range([domainheight, 0 ]);
+
+    g_x = x;
+    g_y = y;
 
     var svg = d3.select("#scatter").attr("height", brHeight).append("g")
         .attr("transform", "translate(" + margin.left + "," + 0 + ")")
-        .call(d3.zoom().scaleExtent([1, 2]).on("zoom", function () {
-            svg.selectAll(".markers").attr("transform", d3.event.transform);
-            gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
-            gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
-    }));
+        .call(zoom);
+
+    g_svg = svg;
 
     var tr = brHeight - 24 - mB + margin.top;// margin top added
 
@@ -121,27 +153,26 @@ function createViz(data, val, multi, orient) {
         .ticks(9)
         /*.tickSize(width)
         .tickPadding(8 - width)*/;
+    g_xAxis = xAxis;
+    g_yAxis = yAxis;
 
-    var gX;
-    var gY;
 
-    var view = svg.append("svg").attr("class", "rectDiv").attr("height", domainheight-25+margin.top)
-        ;
+    var view = svg.append("svg").attr("class", "rectDiv").attr("height", domainheight+margin.top);
+    g_view = view;
 
     view.attr("overflow", "hidden");
     /*g.append("rect")
         .attr("width", width - margin.left)
         .attr("height", height- margin.top)
         .attr("fill", "#f5f5f5");*/
+    var dh = domainheight+5;
 
     if (val != 'val') {
-        var gX = svg.append("g").attr("class", "axis axis--x")
-            .call(xAxis).attr("transform", "translate(0,"+tr+")");
-        var gY = svg.append("g").attr("class", "axis axis--y")
-            .call(yAxis).attr("transform", "translate(0,55)");
+        gX = svg.append("g").attr("class", "axis axis--x")
+            .call(xAxis).attr("transform", "translate(0,"+dh+")");
+        gY = svg.append("g").attr("class", "axis axis--y")
+            .call(yAxis).attr("transform", "translate(0,0)");
     }
-
-
 
     if (multi) {
         drawMVCC(data, g, x, y, val)
@@ -193,6 +224,8 @@ function draw(data, g,x, y, val, orient) {
         scaleValues(min);
     }
 
+    g_min = min;
+
     var max = d3.max(data, function (d) {
         return parseFloat(d[val] * scaleFactor) ;
     });
@@ -201,10 +234,13 @@ function draw(data, g,x, y, val, orient) {
     var ratio = calculateScalingRatio(normMax);
     var groups = legendGroup();
 
+    g_NMax = normMax;
+    /*g_ratio  =ratio;
+    g_groups = groups;*/
+
     drawLegend();
 
     data.forEach(function (item) {
-        var degree = Math.atan2(item.directionY,item.directionX)* (180 / Math.PI);
         var dmnsn = {};
         if (min < 1) {
             dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
@@ -511,10 +547,6 @@ function drawResizeBox() {
             this.attr({x: this.ox + dx, y: this.oy + dy});
             this.box.attr({width: this.box.ow + dx, height: this.box.oh + dy});
 
-        },
-        rend= function() {
-            //prevWidth = selectedWidth;
-
             if (this.box.attr("height") > 100*legendDivRatio) {
                 this.box.attr("height", 100*legendDivRatio);
             }
@@ -522,27 +554,52 @@ function drawResizeBox() {
             if (this.box.attr("width") > 100*legendDivRatio) {
                 this.box.attr("width", 100*legendDivRatio);
             }
-            /*if (this.box.attr("height") > this.box.attr("width")) {
+
+            selectedHeight = this.box.attr("height");
+            selectedWidth = this.box.attr("width");
+            prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
+            //g_margin.top = 5+selectedHeight;
+
+            if (isMV) {
+                getQuantity();
+            } else{
+                scaleGlyphs( g_x, g_y, quantitySelected);
+            }
+
+        },
+        rend= function() {
+            //prevWidth = selectedWidth;
+
+            /*if (this.box.attr("height") > 100*legendDivRatio) {
+                this.box.attr("height", 100*legendDivRatio);
+            }
+
+            if (this.box.attr("width") > 100*legendDivRatio) {
+                this.box.attr("width", 100*legendDivRatio);
+            }
+            /!*if (this.box.attr("height") > this.box.attr("width")) {
                 selectedHeight = selectedWidth =  this.box.attr("height")
                 //this.box.attr("width", this.box.attr("height"));
             } else {
                 selectedHeight = selectedWidth =  this.box.attr("width");
                 //this.box.attr("height", this.box.attr("width"));
-            }*/
+            }*!/
             selectedHeight = this.box.attr("height");
              selectedWidth = this.box.attr("width");
             //prefNumberSeries = [1*(selectedWidth/prevWidth), selectedWidth/4, selectedWidth/2, selectedWidth];
             prefNumberSeries = [selectedWidth*.005 ,selectedWidth*.04, selectedWidth*.2, selectedWidth];
+            //g_margin.top = 5+selectedHeight;
 
-            /*$("#scatter").empty();
-            $("#legend").empty();*/
+            /!*$("#scatter").empty();
+            $("#legend").empty();*!/
             //$("#resizeBox").empty();
             if (isMV) {
                 getQuantity();
             } else{
-                getCutPlane();
+                scaleGlyphs( g_x, g_y, quantitySelected);
+                //getCutPlane();
                 //createViz(dataStore, quantitySelected);
-            }
+            }*/
         };
     // rstart and rmove are the resize functions;
     //c.drag(move, start, up);
@@ -602,9 +659,9 @@ function mapViz(data) {
     $("#container").hide();
 }
 
-function zoom(svg) {
+/*function zoom(svg) {
     svg.attr("transform", d3.event.transform);
-}
+}*/
 
 function vizRouter(type, pageLoad, data, quantity) {
     if (pageLoad) {
@@ -860,6 +917,55 @@ function determmineVizType(columns) {
         orientedViz = true;
     }
 
+}
+
+function scaleGlyphs( x, y, val) {
+
+    g_svg.transition()
+        .duration(750)
+        .call(zoom.transform, d3.zoomIdentity);
+    var ratio = calculateScalingRatio(g_NMax);
+    var groups = legendGroup();
+    $(".markers").remove();
+    var slice = _.find(dataStore, function (d) {
+        return d.key == cutPlaneSelected;
+    })
+    var data = slice.values;
+    data.forEach(function (item) {
+        var dmnsn = {};
+        if (g_min < 1) {
+            dmnsn = getDimensions(item[val]* scaleFactor, groups, ratio);
+        } else {
+            dmnsn = getDimensions(item[val], groups, ratio);
+        }
+        var h = dmnsn.height;
+        var w = dmnsn.width;
+        var posX = x(item.x) /*+ g_margin.left*/;
+        var posY = y(item.y) - h + g_margin.top;
+        var posstr = "M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z";
+        if (orient) {
+            var x2 = posX +h*(item.directionX);
+            var y2 = posY +h*(item.directionY);
+            var x3 = posX +w*(-item.directionY);
+            var y3 = posY +w*(item.directionX);
+            var x4 = x2 +w*(-item.directionY);
+            var y4 = y2 +w*(item.directionX);
+            posstr = "M "+posX+" "+posY+" "+ "L "+ (x2)+" " + y2+" " + "L " + (x4)+" " + (y4)+" " + "L " + x3+" " + (y3)+" " + "Z"
+        }
+        var strokeWidth = .5;
+        if (w <=1) {
+            strokeWidth = .1;
+        }
+        var s = g_view.append("svg");
+        s.append("svg:path")
+        //.attr("d","M "+posX+" "+posY+" "+ "L "+ (posX+w)+" " + posY+" " + "L " + (posX+w)+" " + (posY+h)+" " + "L " + posX+" " + (posY+h)+" " + "Z")
+            .attr("d",posstr).
+        attr("class", "markers")
+            .style("stroke-width", strokeWidth)
+            .style("stroke", '#f5f5f5')
+            .style("stroke-opacity", '1')
+            .style("fill", markerFillClr);
+    })
 }
 
 
