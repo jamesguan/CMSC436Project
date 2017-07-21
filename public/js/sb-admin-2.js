@@ -180,7 +180,7 @@ function createViz(data, val, multi, orient) {
         data = _.sortBy(data, function(item) {
             return parseFloat(item[val]);
         });
-        draw(data.reverse(), view, x, y, val, orient);
+        draw(data.reverse(), view, x, y, val, true);
     }
     var planes = _.pluck(dataStore, "key");
     _.sortBy(planes, function (num) {
@@ -563,7 +563,10 @@ function drawResizeBox() {
             if (isMV) {
                 getQuantity();
             } else{
-                scaleGlyphs( g_x, g_y, quantitySelected);
+                //scaleGlyphs( g_x, g_y, quantitySelected);
+                getCutPlane();
+                createViz(dataStore, quantitySelected);
+
             }
 
         },
@@ -966,6 +969,7 @@ function scaleGlyphs( x, y, val) {
             .style("stroke-opacity", '1')
             .style("fill", markerFillClr);
     })
+    drawLegend();
 }
 
 

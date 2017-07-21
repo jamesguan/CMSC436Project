@@ -1,5 +1,8 @@
 function getQuantity(quant, redraw) {
     var q = $("#quantities").val();
+    if (selectedVizType == '2D') {
+        return;
+    }
     if (q.length >0) {
         initialHide(!redraw);
         if(!redraw) {
